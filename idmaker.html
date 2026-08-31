@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ID Maker Portal – Senior Citizens Bureau</title>
+
+  <!-- Fonts (unchanged) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Chart.js (unchanged) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Flaticon Uicons -->
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css" />
+
+  <link rel="stylesheet" href="base.css?v=12" />
+  <link rel="stylesheet" href="idmaker.css?v=12" />
+</head>
+
+<body class="portal-mode">
+
+  <div class="app-shell" id="portal-shell">
+
+    <!-- -----------------------------------
+     SIDEBAR (UNCHANGED)
+----------------------------------- -->
+    <aside class="sidebar">
+      <a href="#" class="sidebar__brand">
+        <div class="sidebar__brand-icon">
+          <img src="portal-logo.jpg" alt="Senior Citizens Bureau logo" />
+        </div>
+        <div class="sidebar__brand-text">
+          <span class="sidebar__brand-name" id="portal-brand-name">Admin Portal</span>
+          <span class="sidebar__brand-subtitle">Senior Citizens Bureau</span>
+        </div>
+      </a>
+
+      <nav class="sidebar__section">
+        <span class="sidebar__section-label">Main Menu</span>
+
+        <button class="nav-link active" data-module="id-maker-dashboard">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-id-card-clip-alt"></i>
+          </span>
+          <span class="nav-link__label">ID Maker Dashboard</span>
+        </button>
+
+        <button class="nav-link" data-module="id-maker-analytics">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-chart-histogram"></i>
+          </span>
+          <span class="nav-link__label">Queue Analytics</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__user">
+          <div class="sidebar__avatar">
+            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=128&q=80"
+              alt="Cindy" />
+          </div>
+          <div class="sidebar__user-info">
+            <span class="sidebar__user-name" id="current-user-name">Cindy Bulanhagui</span>
+            <span class="sidebar__user-role" id="current-role-label">ID Maker</span>
+          </div>
+          <button class="sidebar__user-action" id="role-switch-trigger" onclick="toggleRoleSwitcher()">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- ADDED: Quick role switcher (RBAC demo) -->
+        <div id="role-switcher" style="display:none;padding:6px 10px 10px">
+          <div
+            style="font-family:var(--font-data);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-placeholder);padding:6px 2px">
+            Quick Role Switch</div>
+          <select class="filter-select" style="width:100%" id="role-switch-select" onchange="setRole(this.value)">
+            <option value="Admin">Admin</option>
+            <option value="Staff">Staff</option>
+            <option value="ID Maker" selected>ID Maker</option>
+          </select>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;line-height:1.4">
+            Roles affect access to: approval, printing, user management, exports.
+          </div>
+        </div>
+
+        <button class="sidebar__logout-btn" onclick="requestLogout()">
+          <i class="fi fi-rr-sign-out-alt" style="font-size:14px;color:var(--text-muted)"></i>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- -----------------------------------
+     MAIN
+----------------------------------- -->
+    <main class="main-content">
+
+      <!-- ---------- DASHBOARD (unchanged content + ADDED AI panel + notifications log) ---------- -->
+      <div class="module" id="mod-id-maker-dashboard">
+        <header class="page-header">
+          <div class="page-header__left">
+            <div class="page-header__eyebrow">
+              <h1 class="page-header__title">Dashboard</h1>
+              <span class="page-header__badge purple">ID Production Ops</span>
+            </div>
+            <p class="page-header__sub">Process pre-approved applications, generate documents, and track issuance status.</p>
+          </div>
+        </header>
+
+        <!-- System Alert Banner -->
+        <div class="alert-banner" id="system-alert-banner" style="margin-bottom:18px">
+          <div class="alert-banner__icon"><i class="fi fi-rr-triangle-warning"></i></div>
+          <div class="alert-banner__content">
+            <strong class="alert-banner__title">3 operational blockers need attention</strong>
+            <ul class="alert-banner__list">
+              <li><span class="ab-dot"></span><b>Missing photo</b> • 2 applications flagged
+                (SCB-2026-00410, SCB-2026-00408)</li>
+              <li><span class="ab-dot"></span><b>Incomplete birth date</b> • 1 application requires data entry</li>
+              <li><span class="ab-dot"></span><b>Blocked export</b> • Document template missing for 2 pending files</li>
+            </ul>
+          </div>
+          <button class="alert-banner__dismiss" onclick="dismissSystemAlert()" aria-label="Dismiss alerts">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path
+                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" /></svg>
+          </button>
+        </div>
+
+        <!-- ID Maker KPI strip -->
+        <div class="admin-kpi-strip">
+          <div class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-warn"><i class="fi fi-rr-clock ic-warn"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-up">+2.1%</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Pending Export</div>
+              <div class="stat-card__value">64</div>
+              <div class="stat-card__sub">Awaiting File Generation</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-blue"><i class="fi fi-rr-document ic-blue"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-neutral">8 active</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">In Production</div>
+              <div class="stat-card__value">8</div>
+              <div class="stat-card__sub">Generating Documents</div>
+            </div>
+          </div>
+          <div class="stat-card stat-card--success">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-green"><i class="fi fi-rr-check-double ic-green"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-good">+11.8%</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Exported</div>
+              <div class="stat-card__value">31</div>
+              <div class="stat-card__sub">Files Created Today</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-purple"><i class="fi fi-rr-id-card-clip-alt ic-purple"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-good">+6.4%</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Ready for Release</div>
+              <div class="stat-card__value">44</div>
+              <div class="stat-card__sub">Available for Distribution</div>
+            </div>
+          </div>
+          <div class="stat-card stat-card--danger">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-red"><i class="fi fi-rr-x ic-red"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-down">-0.8%</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Export Errors</div>
+              <div class="stat-card__value">3</div>
+                <div class="stat-card__sub">Failed Exports &amp; Data Fix</div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="data-table-card">
+          <div class="table-header main-queue-header">
+            <div class="main-queue-header__title">
+              <div class="table-header__title">Main Queue List</div>
+              <div class="table-header__desc">Pre-approved applications ready for document export — click "View
+                Form" to update status.</div>
+            </div>
+            <div class="table-header__actions main-queue-header__controls">
+              <div class="table-search">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="6.5" cy="6.5" r="4.5" />
+                  <path d="M11 11l3 3" />
+                </svg>
+                <input type="search" placeholder="Search queue…" oninput="filterIdMakerQueue(this.value)" />
+              </div>
+              <div class="queue-filter-dropdown" id="queue-filter-wrap">
+                <button class="queue-filter-trigger" onclick="toggleQueueFilter()">
+                  <span class="queue-filter-icon"><svg viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        d="M2 4.5A.5.5 0 012.5 4h15a.5.5 0 010 1h-15A.5.5 0 012 4.5zm2 4A.5.5 0 014.5 8h11a.5.5 0 010 1h-11A.5.5 0 014 8.5zm3 4a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5z" />
+                    </svg></span>
+                  <span class="queue-filter-label" id="queue-filter-label">All</span>
+                  <svg class="queue-filter-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                    stroke-width="1.6">
+                    <path d="M3 4.5L6 7.5L9 4.5" />
+                  </svg>
+                </button>
+                <div class="queue-filter-menu" id="queue-filter-menu">
+                  <button class="queue-filter-option active" data-filter="all" onclick="selectQueueFilter(this,'all')">
+                    <span class="qfo-dot" style="background:var(--text-muted)"></span>
+                    <span class="qfo-label">All</span>
+                    <span class="qfo-count" id="qf-count-all">8</span>
+                  </button>
+                  <button class="queue-filter-option" data-filter="Queued" onclick="selectQueueFilter(this,'Queued')">
+                    <span class="qfo-dot" style="background:var(--warning)"></span>
+                    <span class="qfo-label">Queued</span>
+                    <span class="qfo-count" id="qf-count-queued">2</span>
+                  </button>
+                  <button class="queue-filter-option" data-filter="In Production"
+                    onclick="selectQueueFilter(this,'In Production')">
+                    <span class="qfo-dot" style="background:var(--primary)"></span>
+                    <span class="qfo-label">In Production</span>
+                    <span class="qfo-count" id="qf-count-production">2</span>
+                  </button>
+                  <button class="queue-filter-option" data-filter="Printed" onclick="selectQueueFilter(this,'Printed')">
+                    <span class="qfo-dot" style="background:var(--purple)"></span>
+                    <span class="qfo-label">Printed</span>
+                    <span class="qfo-count" id="qf-count-printed">2</span>
+                  </button>
+                  <button class="queue-filter-option" data-filter="In Transit"
+                    onclick="selectQueueFilter(this,'In Transit')">
+                    <span class="qfo-dot" style="background:var(--success)"></span>
+                    <span class="qfo-label">In Transit</span>
+                    <span class="qfo-count" id="qf-count-transit">2</span>
+                  </button>
+                </div>
+              </div>
+              <button class="btn btn--ghost" style="height:36px;font-size:12px"
+                onclick="showToast('Queue refreshed (demo)','success')">Refresh</button>
+            </div>
+          </div>
+
+          <!-- Barangay / District filter + Quick-search status tags -->
+          <div class="filter-bar ops-toolbar">
+            <select class="filter-select" id="queue-barangay-filter" onchange="filterQueueByBarangay(this.value)">
+              <option value="all">All Barangays / Districts</option>
+            </select>
+            <span class="ops-toolbar__sep"></span>
+            <span class="ops-toolbar__label">Quick Filter:</span>
+            <button class="filter-chip active" onclick="filterQueueByStatusTag(this,'all')">All</button>
+            <button class="filter-chip" data-qtag="Queued" onclick="filterQueueByStatusTag(this,'Queued')">Pending Export
+              (<span id="qt-queued">0</span>)</button>
+            <button class="filter-chip" data-qtag="In Production" onclick="filterQueueByStatusTag(this,'In Production')">In
+              Production (<span id="qt-production">0</span>)</button>
+            <button class="filter-chip" data-qtag="Printed" onclick="filterQueueByStatusTag(this,'Printed')">Exported
+              (<span id="qt-printed">0</span>)</button>
+            <button class="filter-chip" data-qtag="In Transit" onclick="filterQueueByStatusTag(this,'In Transit')">Ready
+              (<span id="qt-transit">0</span>)</button>
+          </div>
+
+          <!-- Batch Export toolbar -->
+          <div class="batch-export" id="batch-export-bar">
+            <label class="batch-export__select-all">
+              <input type="checkbox" id="select-all-queue" onchange="toggleSelectAllQueue(this.checked)" />
+              <span>Select All</span>
+            </label>
+            <span class="batch-export__count" id="batch-selected-count">0 selected</span>
+            <span class="batch-export__spacer"></span>
+            <button class="btn btn--ghost btn--sm" onclick="batchExport('word')"
+              id="btn-export-word" disabled>
+              <i class="fi fi-rr-doc-file" style="margin-right:5px"></i>Export to Word
+            </button>
+            <button class="btn btn--primary btn--sm" onclick="batchExport('pdf')" id="btn-export-pdf" disabled>
+              <i class="fi fi-rr-file-pdf" style="margin-right:5px"></i>Export to PDF
+            </button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="col-check"><input type="checkbox" disabled title="Select all above" /></th>
+                <th>Applicant Name</th>
+                <th>Control No.</th>
+                <th>Barangay</th>
+                <th>Status</th>
+                <th style="text-align:right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="id-maker-queue-tbody">
+              <!-- populated by initIdMakerQueue() -->
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <span class="table-footer__info">Showing 8 of 64 print-ready applications</span>
+          </div>
+        </div>
+      </div>
+
+  <div class="module" id="mod-id-maker-analytics">
+    <header class="page-header">
+      <div class="page-header__left">
+        <div class="page-header__eyebrow">
+          <h1 class="page-header__title">Queue Analytics</h1>
+          <span class="page-header__badge purple">Live</span>
+        </div>
+        <p class="page-header__sub">Badge production workflow metrics</p>
+      </div>
+    </header>
+
+    <div class="an-grid-main" style="gap:16px">
+      <div class="an-card an-grid-wide-col">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Production Queue Status</div>
+            <div class="an-card__sub">Current distribution across production stages</div>
+          </div>
+        </div>
+        <div class="an-card__body" style="flex-direction:row;align-items:center;justify-content:space-around;gap:20px;padding:16px 18px">
+          <div class="chart-wrap" style="height:160px;width:160px;flex-shrink:0"><canvas id="chart-idmaker-status"></canvas></div>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+              <span style="width:10px;height:10px;border-radius:50%;background:#FDA4AF;flex-shrink:0"></span>
+              <span><strong style="font-size:13px">Awaiting</strong><br /><span style="color:var(--text-muted);font-size:12px" id="idm-awaiting-count">0</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+              <span style="width:10px;height:10px;border-radius:50%;background:#F43F5E;flex-shrink:0"></span>
+              <span><strong style="font-size:13px">In Production</strong><br /><span style="color:var(--text-muted);font-size:12px" id="idm-production-count">0</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+              <span style="width:10px;height:10px;border-radius:50%;background:#BE123C;flex-shrink:0"></span>
+              <span><strong style="font-size:13px">Exported</strong><br /><span style="color:var(--text-muted);font-size:12px" id="idm-completed-count">0</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+              <span style="width:10px;height:10px;border-radius:50%;background:#9F1239;flex-shrink:0"></span>
+              <span><strong style="font-size:13px">Ready for Release</strong><br /><span style="color:var(--text-muted);font-size:12px" id="idm-transit-count">0</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="an-card">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Avg Crafting Time</div>
+            <div class="an-card__sub">Minutes per file (In Production ? Exported)</div>
+          </div>
+        </div>
+        <div class="an-card__body" style="flex-direction:column;align-items:center;justify-content:center;padding:16px 18px">
+          <div id="idm-avg-time-display" style="text-align:center">
+            <div style="font-size:36px;font-weight:800;font-family:var(--font-display);color:var(--primary);line-height:1">1.8</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">minutes avg</div>
+            <div style="margin-top:8px"><span class="badge badge-approved" style="font-size:10px">-0.3 min from last week</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- --- Production throughput charts: Daily Export + Peak Hours --- -->
+    <div class="an-charts-2col" style="margin-top:20px">
+      <div class="an-card">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Daily Files Exported</div>
+            <div class="an-card__sub">Files generated per shift this week</div>
+          </div>
+        </div>
+        <div class="an-card__body--nop" style="padding:0 20px 20px">
+          <div class="chart-wrap" style="height:240px"><canvas id="chart-idmaker-daily"></canvas></div>
+        </div>
+      </div>
+      <div class="an-card">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Peak Generation Hours</div>
+            <div class="an-card__sub">Files generated per hour across shifts</div>
+          </div>
+        </div>
+        <div class="an-card__body--nop" style="padding:0 20px 20px">
+          <div class="chart-wrap" style="height:240px"><canvas id="chart-idmaker-peak"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- --- Analytics additions: insights & optimization --- -->
+    <div class="an-grid-main insights" style="margin-top:24px">
+      <div class="an-card an-card--metric">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Queue Aging / SLA Tracker</div>
+            <div class="an-card__sub">Applications waiting beyond target SLA windows</div>
+          </div>
+        </div>
+        <div class="an-card__body" style="justify-content:center">
+          <div class="sla-tracker">
+            <div class="sla-big">
+              <div class="sla-big__value" id="sla-24h">0</div>
+              <div class="sla-big__label">waiting &gt; 24h</div>
+            </div>
+            <div class="sla-row">
+              <div class="sla-row__box sla-warn"><strong id="sla-48h">0</strong><span>over 48h</span></div>
+              <div class="sla-row__box sla-ok"><strong id="sla-on-time">0</strong><span>on time</span></div>
+              <div class="sla-row__box sla-total"><strong id="sla-total">0</strong><span>in queue</span></div>
+            </div>
+            <div class="sla-note"><i class="fi fi-rr-info" style="margin-right:5px"></i>Target: zero backlog growth beyond 48h for this shift.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="an-card">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Error Reason Breakdown</div>
+            <div class="an-card__sub">Causes affecting file generation</div>
+          </div>
+        </div>
+        <div class="an-card__body" style="flex-direction:row;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+          <div class="chart-wrap" style="height:150px;width:150px;flex-shrink:0"><canvas id="chart-idmaker-errors"></canvas></div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:150px" id="error-breakdown-legend"></div>
+        </div>
+      </div>
+
+      <div class="an-card">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Document Format Breakdown</div>
+            <div class="an-card__sub">Exported documents split by file format</div>
+          </div>
+        </div>
+        <div class="an-card__body" style="gap:12px">
+          <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:8px">
+            <div>
+              <div style="font-size:42px;font-weight:800;font-family:var(--font-display);color:var(--text-primary);line-height:1" id="idm-doc-total">38</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:4px">documents exported</div>
+            </div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:4px">
+                <span style="width:8px;height:8px;border-radius:50%;background:#3B82F6"></span> Word (.docx)
+                <strong style="margin-left:auto;color:var(--text-primary)">24</strong>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)">
+                <span style="width:8px;height:8px;border-radius:50%;background:#EF4444"></span> PDF (.pdf)
+                <strong style="margin-left:auto;color:var(--text-primary)">14</strong>
+              </div>
+            </div>
+          </div>
+          <div style="height:8px;background:var(--bg-alt);border-radius:var(--r-pill);overflow:hidden;display:flex">
+            <div style="width:63%;background:#3B82F6"></div>
+            <div style="width:37%;background:#EF4444"></div>
+          </div>
+          <div style="background:var(--bg-alt);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text-muted);line-height:1.5">
+            <strong style="color:var(--text-primary)">Note:</strong> Documents are exported as Word (.docx) for editable templates and PDF (.pdf) for final distribution files.
+          </div>
+        </div>
+      </div>
+
+      <div class="an-card an-insights-wide">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Processing Speed by Barangay</div>
+            <div class="an-card__sub">Average fulfillment time (minutes) to flag regional bottlenecks</div>
+          </div>
+        </div>
+        <div class="an-card__body--nop" style="padding:0 22px 22px">
+          <div class="chart-wrap" style="height:230px"><canvas id="chart-idmaker-brgy-speed"></canvas></div>
+        </div>
+      </div>
+
+      <div class="an-card">
+        <div class="an-card__header">
+          <div>
+            <div class="an-card__title">Export Volume by Barangay</div>
+            <div class="an-card__sub">Distribution of generated documents for this shift</div>
+          </div>
+        </div>
+        <div class="an-card__body" style="padding:14px 18px" id="productivity-list"></div>
+      </div>
+    </div>
+  </div>
+
+  </main>
+
+  <!-- -----------------------------------
+     APPLICATION DETAIL MODAL (ADDED)
+     - Workflow stages (Pending ? In Review ? ID on Process ? Ready for Release)
+     - Document verification UI
+     - AI duplicate detection banner
+     - Audit log (DPA)
+----------------------------------- -->
+  <div class="modal-backdrop" id="idcard-modal">
+    <div class="modal idcard-modal-wrap" role="dialog" aria-modal="true" aria-labelledby="idcard-modal-title">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title" id="idcard-modal-title">Senior Citizen ID Card</div>
+          <div class="modal__sub">CR80 card preview — review before printing</div>
+        </div>
+        <button class="modal__close" onclick="closeIdCardModal()">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" style="align-items:center">
+        <div class="idcard-tab-group">
+          <button class="idcard-tab active" id="btn-card-front" onclick="switchCardSide('front')">Front</button>
+          <button class="idcard-tab" id="btn-card-back" onclick="switchCardSide('back')">Back</button>
+        </div>
+
+        <!-- Front Side -->
+        <div class="idcard-wrapper" id="idcard-front-wrapper">
+          <div class="idcard cr80">
+            <div class="idcard__header">
+              <div class="idcard__emblem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2v20M2 12h20M6.34 6.34l11.32 11.32M17.66 6.34L6.34 17.66" />
+                </svg>
+              </div>
+              <div class="idcard__header-text">
+                <div class="idcard__republic">Republic of the Philippines</div>
+                <div class="idcard__office">Office of the Senior Citizen Affairs</div>
+                <div class="idcard__municipality">Municipality of Bauan, Batangas</div>
+              </div>
+            </div>
+            <div class="idcard__body">
+              <div class="idcard__photo-area">
+                <img class="idcard__photo" id="idcard-photo" alt="Applicant photo" />
+                <div class="idcard__photo-fb" id="idcard-photo-fb">--</div>
+              </div>
+              <div class="idcard__fields">
+                <div class="idcard__field"><span class="idcard__label">Name:</span><span class="idcard__value"
+                    id="idcard-name">________________</span></div>
+                <div class="idcard__field"><span class="idcard__label">Date of Birth:</span><span class="idcard__value"
+                    id="idcard-dob">________________</span></div>
+                <div class="idcard__field"><span class="idcard__label">Address:</span><span class="idcard__value"
+                    id="idcard-address">________________</span></div>
+                <div class="idcard__field"><span class="idcard__label">Sex:</span><span class="idcard__value"
+                    id="idcard-sex">________________</span></div>
+              </div>
+            </div>
+            <div class="idcard__footer">
+              <div class="idcard__id-row">
+                <div class="idcard__field"><span class="idcard__label">SCB ID No.:</span><span class="idcard__value"
+                    id="idcard-scb-id">–</span></div>
+                <div class="idcard__field"><span class="idcard__label">Valid Until:</span><span class="idcard__value"
+                    id="idcard-validity">–</span></div>
+                <div class="idcard__field"><span class="idcard__label">Control No.:</span><span class="idcard__value"
+                    id="idcard-control-no">–</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back Side -->
+        <div class="idcard-wrapper" id="idcard-back-wrapper" style="display:none">
+          <div class="idcard cr80">
+            <div class="idcard__back-content">
+              <div class="idcard__privileges">
+                <div class="idcard__back-title">Senior Citizen Privileges</div>
+                <ul class="idcard__privilege-list">
+                  <li>20% discount on medicine &amp; drugs</li>
+                  <li>20% discount on medical services</li>
+                  <li>20% discount on transport fares</li>
+                  <li>20% discount on establishments</li>
+                  <li>Exempted from VAT on applicable goods</li>
+                </ul>
+                <div class="idcard__ra-ref">Pursuant to RA 9994 (Expanded Senior Citizens Act of 2010)</div>
+              </div>
+              <div class="idcard__back-bottom">
+                <div class="idcard__barcode-area">
+                  <div class="idcard__barcode-lines"></div>
+                  <div class="idcard__barcode-text" id="idcard-barcode-text">–</div>
+                </div>
+                <div class="idcard__back-signatures">
+                  <div class="idcard__sig-line">
+                    <div class="idcard__sig-bar"></div>
+                    <div class="idcard__sig-label">Authorized Signature</div>
+                  </div>
+                  <div class="idcard__sig-line">
+                    <div class="idcard__sig-bar"></div>
+                    <div class="idcard__sig-label">OSCA Head</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer" style="justify-content:center;gap:10px">
+        <button class="btn btn--ghost" onclick="closeIdCardModal()">Close</button>
+        <button class="btn btn--secondary" onclick="downloadIdCard()">Download PNG</button>
+        <button class="btn btn--primary" onclick="printIdCard()">
+          <svg viewBox="0 0 16 16" fill="currentColor" style="width:14px;height:14px;margin-right:4px">
+            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+            <path
+              d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5z" />
+          </svg>
+          Print ID
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- PRINT DETAIL MODAL (ID Maker – limited data) ---------- -->
+  <div class="modal-backdrop" id="print-detail-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pd-modal-title" style="width:min(540px,100%)">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title" id="pd-modal-title">Applicant Printing Details</div>
+          <div class="modal__sub">Essential information for ID printing only</div>
+        </div>
+        <button class="modal__close" onclick="closePrintDetail()">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" style="padding:24px 28px">
+        <div
+          style="display:flex;gap:18px;align-items:center;padding:20px;background:var(--bg-alt);border-radius:var(--r-lg);border:1px solid var(--border-subtle)">
+          <div
+            style="width:72px;height:72px;border-radius:var(--r-md);overflow:hidden;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--surface)">
+            <img id="pd-photo" alt="Photo" style="width:100%;height:100%;object-fit:cover;display:none" />
+            <div id="pd-photo-fb" style="font-size:22px;font-weight:800;color:var(--text-muted);display:flex">--</div>
+          </div>
+          <div>
+            <div id="pd-name"
+              style="font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--text-primary)">–</div>
+            <div id="pd-id" style="font-size:13px;color:var(--text-muted);margin-top:4px">–</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div
+            style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border-subtle)">
+            <div
+              style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px">
+              Date of Birth</div>
+            <div id="pd-dob" style="font-size:14.5px;font-weight:600;color:var(--text-primary)">–</div>
+          </div>
+          <div
+            style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border-subtle)">
+            <div
+              style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px">
+              Sex</div>
+            <div id="pd-sex" style="font-size:14.5px;font-weight:600;color:var(--text-primary)">–</div>
+          </div>
+        </div>
+        <div
+          style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border-subtle)">
+          <div
+            style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px">
+            Address</div>
+          <div id="pd-address" style="font-size:14.5px;font-weight:600;color:var(--text-primary)">–</div>
+        </div>
+        <div
+          style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border-subtle)">
+          <div
+            style="font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px">
+            Barangay</div>
+          <div id="pd-barangay" style="font-size:14.5px;font-weight:600;color:var(--text-primary)">–</div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closePrintDetail()">Close</button>
+        <button class="btn btn--primary"
+          onclick="closePrintDetail(); openIdCardModal(document.getElementById('pd-id').textContent)">Preview ID
+          Card</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- -----------------------------------
+     DIGITAL ISSUANCE FORM (Small Form Modal)
+----------------------------------- -->
+  <div class="modal-backdrop" id="digital-issuance-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="di-modal-title" style="width:min(640px,100%)">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title" id="di-modal-title">Digital Issuance Form</div>
+          <div class="modal__sub">Review small form details and update production status</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn btn--ghost" style="height:32px;font-size:12px;padding:0 12px"
+            onclick="downloadDigitalIssuanceDocs()">
+            <i class="fi fi-rr-download" style="margin-right:5px"></i>Download as Docs
+          </button>
+          <button class="modal__close" onclick="closeDigitalIssuance()">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal__body">
+        <div class="small-form-preview" style="margin:0 auto 18px">
+          <div class="small-form-head">
+            <div>REPUBLIC OF THE PHILIPPINES</div>
+            <div>OFFICE OF THE SENIOR CITIZEN AFFAIRS - OSCA</div>
+            <div>MUNICIPALITY OF BAUAN</div>
+          </div>
+          <div class="small-form-photo">
+            <img id="di-preview-photo" alt="Citizen photo" />
+            <div class="small-form-photo-fallback" id="di-preview-photo-fallback">--</div>
+          </div>
+          <div class="small-form-lines">
+            <div class="small-form-line"><strong>NAME:</strong><span id="di-preview-name">________________</span></div>
+            <div class="small-form-line"><strong>ADDRESS:</strong><span id="di-preview-address">________________</span>
+            </div>
+            <div class="small-form-line"><strong>DATE OF BIRTH:</strong><span
+                id="di-preview-dob">________________</span></div>
+            <div class="small-form-line"><strong>SEX:</strong><span id="di-preview-sex">________________</span></div>
+            <div class="small-form-line"><strong>DATE ISSUED:</strong><span
+                id="di-preview-date-issued">________________</span></div>
+            <div class="small-form-line"><strong>CONTROL NO.:</strong><span
+                id="di-preview-control-no">________________</span></div>
+          </div>
+          <div class="small-form-foot">
+            <div class="small-form-sign-wrap">
+              <div class="small-form-sign-box">
+                <img id="di-preview-signature" alt="Signature" />
+                <div class="small-form-sign-fallback" id="di-preview-sign-fallback">No signature image</div>
+              </div>
+              <div class="small-form-sign-label">Signature</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__footer" id="di-modal-footer"
+          style="display:none;border-top:1px solid var(--border);padding-top:14px;margin-top:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+            <span class="small-pill" style="font-size:11px;color:var(--text-muted)"><i class="fi fi-rr-info"
+                style="margin-right:4px"></i>Edit fields directly to correct typos before sending</span>
+            <button class="btn btn--primary" onclick="sendToIdMaker()" id="btn-send-idmaker">
+              <i class="fi fi-rr-paper-plane" style="margin-right:6px"></i>Send to ID Maker
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout confirmation modal -->
+  <div class="modal-backdrop" id="logout-confirm-modal">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title">
+      <div class="confirm-hero">
+        <div class="confirm-icon"><i class="fi fi-rr-sign-out-alt"></i></div>
+        <div>
+          <div class="confirm-title" id="logout-confirm-title">Sign out of portal?</div>
+          <div class="confirm-desc">Your current session will end and protected pages will require login again.</div>
+        </div>
+      </div>
+      <div class="confirm-body">
+        <div class="confirm-user">
+          <div>
+            <div class="applicant-name" id="confirm-logout-user">Current user</div>
+            <div class="applicant-id" id="confirm-logout-role">Role</div>
+          </div>
+          <span class="small-pill">Secure logout</span>
+        </div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn btn--ghost" onclick="closeLogoutConfirm()">Cancel</button>
+        <button class="btn btn--danger" onclick="confirmLogout()">Yes, Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
+
+<script src="app.js?v=14"></script>
+  <script src="idmaker.js?v=12"></script>
+</body>
+
+</html>

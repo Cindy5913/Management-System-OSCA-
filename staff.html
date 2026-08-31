@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Portal – Senior Citizens Bureau</title>
+
+  <!-- Fonts (unchanged) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Chart.js (unchanged) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Flaticon Uicons -->
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css" />
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css" />
+
+  <link rel="stylesheet" href="base.css?v=12" />
+  <link rel="stylesheet" href="staff.css?v=12" />
+</head>
+
+<body class="portal-mode">
+
+  <div class="app-shell" id="portal-shell">
+
+    <!-- -----------------------------------
+     SIDEBAR (UNCHANGED)
+----------------------------------- -->
+    <aside class="sidebar">
+      <a href="#" class="sidebar__brand">
+        <div class="sidebar__brand-icon">
+          <img src="portal-logo.jpg" alt="Senior Citizens Bureau logo" />
+        </div>
+        <div class="sidebar__brand-text">
+          <span class="sidebar__brand-name" id="portal-brand-name">Staff Portal</span>
+          <span class="sidebar__brand-subtitle">Senior Citizens Bureau</span>
+        </div>
+      </a>
+
+      <nav class="sidebar__section">
+        <span class="sidebar__section-label">Main Menu</span>
+
+        <button class="nav-link active" data-module="dashboard">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-layout-fluid"></i>
+          </span>
+          <span class="nav-link__label">Dashboard</span>
+        </button>
+
+        <span class="sidebar__section-label" style="margin-top:14px">Staff Section</span>
+
+        <button class="nav-link admin-hidden" data-module="applicants">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-users"></i>
+          </span>
+          <span class="nav-link__label">Applicants</span>
+          <span class="nav-link__badge">843</span>
+        </button>
+
+        <button class="nav-link staff-only" data-module="applications">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-document"></i>
+          </span>
+          <span class="nav-link__label">Applications</span>
+        </button>
+
+        <button class="nav-link admin-hidden" data-module="analytics">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-chart-histogram"></i>
+          </span>
+          <span class="nav-link__label">Analytics</span>
+        </button>
+
+        <button class="nav-link staff-only" data-module="id-issuance">
+          <span class="nav-link__icon-wrap">
+            <i class="fi fi-rr-id-card-clip-alt"></i>
+          </span>
+          <span class="nav-link__label">ID Issuance</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__user">
+          <div class="sidebar__avatar">
+            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=128&q=80"
+              alt="Cindy" />
+          </div>
+          <div class="sidebar__user-info">
+            <span class="sidebar__user-name" id="current-user-name">Cindy Bulanhagui</span>
+            <span class="sidebar__user-role" id="current-role-label">Staff</span>
+          </div>
+          <button class="sidebar__user-action" id="role-switch-trigger" onclick="toggleRoleSwitcher()">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Role Switcher -->
+        <div id="role-switcher" style="display:none;padding:6px 10px 10px">
+          <div
+            style="font-family:var(--font-data);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-placeholder);padding:6px 2px">
+            Quick Role Switch</div>
+          <select class="filter-select" style="width:100%" id="role-switch-select" onchange="setRole(this.value)">
+            <option value="Admin">Admin</option>
+            <option value="Staff" selected>Staff</option>
+            <option value="ID Maker">ID Maker</option>
+          </select>
+          <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;line-height:1.4">
+            Roles affect access to: approval, printing, user management, exports.
+          </div>
+        </div>
+
+        <button class="sidebar__logout-btn" onclick="requestLogout()">
+          <i class="fi fi-rr-sign-out-alt" style="font-size:14px;color:var(--text-muted)"></i>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- -----------------------------------
+     MAIN
+----------------------------------- -->
+    <main class="main-content">
+
+      <!-- ---------- DASHBOARD (Fixed for Staff) ---------- -->
+      <div class="module active" id="mod-dashboard">
+        <header class="page-header">
+          <div class="page-header__left">
+            <div class="page-header__eyebrow">
+              <h1 class="page-header__title" id="dashboard-title">Staff Dashboard</h1>
+              <span class="page-header__badge" id="dashboard-role-badge">Staff View</span>
+            </div>
+            <p class="page-header__sub" id="dashboard-welcome"></p>
+          </div>
+          <div class="page-header__controls">
+            <label class="search-field">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="6.5" cy="6.5" r="4.5" />
+                <path d="M11 11l3 3" />
+              </svg>
+              <input type="search" placeholder="Quick search…" />
+            </label>
+            <div class="date-pill" id="dashboard-date-pill" onclick="toggleDateFilter(event)">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="1" y="2" width="14" height="13" rx="2" />
+                <path d="M5 1v2M11 1v2M1 6h14" />
+              </svg>
+              <span id="dashboard-date-label"></span>
+            </div>
+            <div class="date-filter-menu" id="dashboard-date-menu" onclick="event.stopPropagation()">
+              <div class="calendar">
+                <div class="calendar-header">
+                  <button type="button" class="calendar-nav" onclick="changeCalendarMonth(-1)">‹</button>
+                  <span id="calendar-month-year">April 2026</span>
+                  <button type="button" class="calendar-nav" onclick="changeCalendarMonth(1)">›</button>
+                </div>
+                <div class="calendar-days">
+                  <div class="calendar-day-header">Sun</div>
+                  <div class="calendar-day-header">Mon</div>
+                  <div class="calendar-day-header">Tue</div>
+                  <div class="calendar-day-header">Wed</div>
+                  <div class="calendar-day-header">Thu</div>
+                  <div class="calendar-day-header">Fri</div>
+                  <div class="calendar-day-header">Sat</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                  <!-- Days will be populated by JS -->
+                </div>
+              </div>
+            </div>
+            <button class="icon-btn">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path
+                  d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917z" />
+              </svg>
+              <span class="icon-btn__dot"></span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Staff KPI Strip (Place here so it always appears for Staff) -->
+        <div class="admin-kpi-strip" id="staff-kpi-strip">
+          <!-- Card 1 -->
+          <div class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-blue"><i class="fi fi-rr-apps ic-blue"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-up">+12 %</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Total applications</div>
+              <div class="stat-card__value">1,245</div>
+              <div class="stat-card__sub">System Volume</div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="stat-card stat-card--warn">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-warn"><i class="fi fi-rr-clock ic-warn"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-up">+3</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Pending Review</div>
+              <div class="stat-card__value">8</div>
+              <div class="stat-card__sub">Awaiting action</div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="stat-card stat-card--success">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-green"><i class="fi fi-rr-check-double ic-green"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-good">+4 today</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Approved Today</div>
+              <div class="stat-card__value">4</div>
+              <div class="stat-card__sub">Completed this shift</div>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-teal"><i class="fi fi-rr-chart-line-up ic-teal"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-good">+15 %</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Applications processed</div>
+              <div class="stat-card__value">180</div>
+              <div class="stat-card__sub">This month</div>
+            </div>
+          </div>
+          <!-- Card 5 -->
+          <div class="stat-card stat-card--danger">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-red"><i class="fi fi-rr-x ic-red"></i></div>
+              <div class="stat-card__meta">
+                <div class="stat-card__trend trend-down">+2</div>
+              </div>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__label">Rejected Applications</div>
+              <div class="stat-card__value">8</div>
+              <div class="stat-card__sub">This month</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REMOVED: Admin Ops Panel (admin-ops-grid, admin-metrics-panel, admin-only-panel) -->
+
+        <!-- Existing charts (unchanged) -->
+        <section class="dash-charts-row">
+
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div>
+                <div class="chart-card__title">Senior Registrations by Barangay (Top 6)</div>
+                <p class="chart-card__subtitle">Highest registration areas</p>
+              </div>
+              <span class="chart-card__chip">2026 Data</span>
+            </div>
+            <div class="bar-chart-wrap">
+              <div class="bar-chart">
+                <div class="bar-col">
+                  <div class="bar-col__bar" style="height:50%"></div>
+                  <div class="bar-col__tooltip">1,220</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-col__bar" style="height:75%"></div>
+                  <div class="bar-col__tooltip">1,840</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-col__bar" style="height:31%"></div>
+                  <div class="bar-col__tooltip">760</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-col__bar" style="height:86%"></div>
+                  <div class="bar-col__tooltip">2,110</div>
+                </div>
+                <div class="bar-col bar-col--peak">
+                  <div class="bar-col__peak-label">Highest</div>
+                  <div class="bar-col__bar bar-col__bar--peak" style="height:100%"></div>
+                  <div class="bar-col__tooltip">2,458</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-col__bar" style="height:65%"></div>
+                  <div class="bar-col__tooltip">1,604</div>
+                </div>
+              </div>
+              <div class="bar-chart__axis">
+                <span class="bar-chart__axis-label">San Diego</span><span class="bar-chart__axis-label">Barangay I
+                  (Poblacion)</span><span class="bar-chart__axis-label">Manghinao Proper</span><span
+                  class="bar-chart__axis-label">Santa Maria</span><span class="bar-chart__axis-label">Aplaya</span><span
+                  class="bar-chart__axis-label">San Roque</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="donut-card">
+            <div class="donut-card__title">Demographics</div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 134 134">
+                <circle class="track" cx="67" cy="67" r="54" />
+                <circle class="fill" cx="67" cy="67" r="54" />
+              </svg>
+              <div class="donut-inner"><span class="donut-inner__pct">54%</span><span
+                  class="donut-inner__tag">Female</span></div>
+            </div>
+            <div class="donut-legend">
+              <div class="donut-legend__item">
+                <div class="donut-legend__left"><span class="donut-legend__dot" style="background:#93C5FD"></span><span
+                    class="donut-legend__key">Female</span></div><span class="donut-legend__val">54%</span>
+              </div>
+              <div class="donut-legend__item">
+                <div class="donut-legend__left"><span class="donut-legend__dot" style="background:#3D6FE8"></span><span
+                    class="donut-legend__key">Male</span></div><span class="donut-legend__val">46%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Submissions table -->
+        <section class="data-table-card">
+          <div class="table-header">
+            <div>
+              <div class="table-header__title">Recent Submissions</div>
+              <div class="table-header__desc">Latest applicants awaiting review</div>
+            </div>
+            <div class="table-header__actions">
+              <label class="table-search">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="6.5" cy="6.5" r="4.5" />
+                  <path d="M11 11l3 3" />
+                </svg>
+                <input type="search" id="recent-submission-search" placeholder="Search applicants…"
+                  oninput="filterRecentSubmissions()" />
+              </label>
+              <select class="filter-select" id="recent-barangay-filter" onchange="filterRecentSubmissions()">
+                <option value="">All Barangays</option>
+                <option value="Alagao">Alagao</option>
+                <option value="Aplaya">Aplaya</option>
+                <option value="As-Is">As-Is</option>
+                <option value="Bagong Silang">Bagong Silang</option>
+                <option value="Baguilawa">Baguilawa</option>
+                <option value="Balayong">Balayong</option>
+                <option value="Barangay I (Poblacion)">Barangay I (Poblacion)</option>
+                <option value="Barangay II (Poblacion)">Barangay II (Poblacion)</option>
+                <option value="Barangay III (Poblacion)">Barangay III (Poblacion)</option>
+                <option value="Barangay IV (Poblacion)">Barangay IV (Poblacion)</option>
+                <option value="Bolo">Bolo</option>
+                <option value="Colvo">Colvo</option>
+                <option value="Cupang">Cupang</option>
+                <option value="Durungao">Durungao</option>
+                <option value="Gulibay">Gulibay</option>
+                <option value="Inicbulan">Inicbulan</option>
+                <option value="Locloc">Locloc</option>
+                <option value="Magalang-Galang">Magalang-Galang</option>
+                <option value="Malindig">Malindig</option>
+                <option value="Manalupang">Manalupang</option>
+                <option value="Manghinao Proper">Manghinao Proper</option>
+                <option value="Manghinao Uno">Manghinao Uno</option>
+                <option value="New Danglayan">New Danglayan</option>
+                <option value="Orense">Orense</option>
+                <option value="Pitugo">Pitugo</option>
+                <option value="Rizal">Rizal</option>
+                <option value="Sampaguita">Sampaguita</option>
+                <option value="San Agustin">San Agustin</option>
+                <option value="San Andres Proper">San Andres Proper</option>
+                <option value="San Andres Uno">San Andres Uno</option>
+                <option value="San Diego">San Diego</option>
+                <option value="San Miguel">San Miguel</option>
+                <option value="San Pablo">San Pablo</option>
+                <option value="San Pedro">San Pedro</option>
+                <option value="San Roque">San Roque</option>
+                <option value="San Teodoro">San Teodoro</option>
+                <option value="San Vicente">San Vicente</option>
+                <option value="Santa Maria">Santa Maria</option>
+                <option value="Santo Domingo">Santo Domingo</option>
+                <option value="Sinala">Sinala</option>
+              </select>
+              <button class="btn btn--secondary" onclick="exportCSV()">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                  <path d="M8 2v10M4 9l4 4 4-4M2 14h12" />
+                </svg>
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable('recent-submissions-tbody',0,this)">Applicant Name <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('recent-submissions-tbody',1,this)">Submission Date <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('recent-submissions-tbody',2,this)">Barangay <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('recent-submissions-tbody',3,this)">Status <span class="sort-icon">↕</span></th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="recent-submissions-tbody">
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#34D399,#059669)">MA</div>
+                    <div class="applicant-info">
+                      <span class="applicant-name">Maria Abad</span>
+                      <span class="applicant-id">SCB-2026-00421</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 7, 2026</span></td>
+                <td><span class="cell-text">Manghinao Proper</span></td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00421')">Review</button>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#60A5FA,#1A4FBA)">JR</div>
+                    <div class="applicant-info">
+                      <span class="applicant-name">Jose Reyes</span>
+                      <span class="applicant-id">SCB-2026-00418</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 7, 2026</span></td>
+                <td><span class="cell-text">Barangay I (Poblacion)</span></td>
+                <td><span class="badge badge-review">In Review</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00418')">Review</button>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#FCA5A5,#D9233A)">LS</div>
+                    <div class="applicant-info">
+                      <span class="applicant-name">Lourdes Santos</span>
+                      <span class="applicant-id">SCB-2026-00415</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 6, 2026</span></td>
+                <td><span class="cell-text">Santa Maria</span></td>
+                <td><span class="badge badge-approved">Approved</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00415')">Open</button>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#FDE68A,#D97706)">RC</div>
+                    <div class="applicant-info">
+                      <span class="applicant-name">Roberto Cruz</span>
+                      <span class="applicant-id">SCB-2026-00410</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 5, 2026</span></td>
+                <td><span class="cell-text">San Roque</span></td>
+                <td><span class="badge badge-pending">Pending</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00410')">Review</button>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#C4B5FD,#7140D8)">ET</div>
+                    <div class="applicant-info">
+                      <span class="applicant-name">Estrella Torres</span>
+                      <span class="applicant-id">SCB-2026-00408</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 5, 2026</span></td>
+                <td><span class="cell-text">Aplaya</span></td>
+                <td><span class="badge badge-rejected">Rejected</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00408')">Open</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-footer">
+            <span class="table-footer__info">Showing 5 of 843 pending submissions</span>
+            <button class="view-all-btn" id="btn-view-all-submissions" onclick="navigate('applicants')">
+              View all submissions
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Notifications & Tracking Monitor -->
+        <section class="log-card">
+          <div class="log-card__header">
+            <div>
+              <div class="log-card__title">Notifications & Tracking Monitor</div>
+              <div class="log-card__sub">Outbound SMS/Email logs + applicant tracking views</div>
+            </div>
+            <span class="small-pill">DPA-aware log</span>
+          </div>
+          <div class="log-card__body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date/Time</th>
+                  <th>Applicant</th>
+                  <th>Event</th>
+                  <th>Channel</th>
+                  <th>Result</th>
+                  <th style="text-align:right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="notify-log-body">
+                <tr>
+                  <td><span class="cell-text">Apr 8, 2026 10:18</span></td>
+                  <td><span class="cell-text">SCB-2026-00421</span></td>
+                  <td><span class="cell-text">Tracking Viewed (x3)</span></td>
+                  <td><span class="badge badge-review">Portal</span></td>
+                  <td><span class="badge badge-approved">OK</span></td>
+                  <td style="text-align:right"><button class="row-action always-visible"
+                      onclick="openApplicationDetail('SCB-2026-00421')">Open</button></td>
+                </tr>
+                <tr>
+                  <td><span class="cell-text">Apr 8, 2026 09:40</span></td>
+                  <td><span class="cell-text">SCB-2026-00410</span></td>
+                  <td><span class="cell-text">Missing Document Reminder</span></td>
+                  <td><span class="badge badge-issued">SMS</span></td>
+                  <td><span class="badge badge-approved">Sent</span></td>
+                  <td style="text-align:right"><button class="row-action always-visible"
+                      onclick="showToast('Resent SMS reminder (demo)','success')">Resend</button></td>
+                </tr>
+                <tr>
+                  <td><span class="cell-text">Apr 7, 2026 16:12</span></td>
+                  <td><span class="cell-text">SCB-2026-00418</span></td>
+                  <td><span class="cell-text">Status Updated</span></td>
+                  <td><span class="badge badge-review">Email</span></td>
+                  <td><span class="badge badge-approved">Delivered</span></td>
+                  <td style="text-align:right"><button class="row-action always-visible"
+                      onclick="openApplicationDetail('SCB-2026-00418')">Open</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ---------- APPLICANTS (unchanged) ---------- -->
+      <div class="module" id="mod-applicants">
+        <header class="page-header">
+          <div class="page-header__left">
+            <div class="page-header__eyebrow">
+              <h1 class="page-header__title">Applicants</h1><span class="page-header__badge">12,482 Total</span>
+            </div>
+            <p class="page-header__sub">Manage and review all registered senior citizen applicants</p>
+          </div>
+          <div class="page-header__controls">
+            <button class="btn btn--primary" onclick="showToast('New applicant form opened','info')">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+              </svg>
+              Add Applicant
+            </button>
+            <button class="btn btn--ghost" onclick="exportCSV()">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M8 2v10M4 9l4 4 4-4M2 14h12" />
+              </svg>
+              Export
+            </button>
+          </div>
+        </header>
+
+        <div class="cards-grid">
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-blue"><svg class="stat-card__icon ic-blue" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    d="M9 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM17 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 0 0-1.5-4.33A5 5 0 0 1 19 16v1h-6.07zM6 11a5 5 0 0 1 5 5v1H1v-1a5 5 0 0 1 5-5z" />
+                </svg></div>
+              <div class="stat-card__meta"><span class="stat-card__trend trend-good">+124 this week</span></div>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Total Registered</span><span
+                class="stat-card__value">12,482</span></div>
+          </article>
+          <article class="stat-card stat-card--success">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-green"><svg class="stat-card__icon ic-green" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg></div>
+              <div class="stat-card__meta"><span class="stat-card__trend trend-good">+3.2%</span></div>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Verified</span><span
+                class="stat-card__value">8,494</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-warn"><svg class="stat-card__icon ic-warn" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd" />
+                </svg></div>
+              <div class="stat-card__meta"><span class="stat-card__period">Awaiting</span></div>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Unverified</span><span
+                class="stat-card__value">3,988</span></div>
+          </article>
+          <article class="stat-card stat-card--purple">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-purple"><svg class="stat-card__icon ic-purple" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm10.5 4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h9z" />
+                </svg></div>
+              <div class="stat-card__meta"><span class="stat-card__trend trend-neutral">Active</span></div>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">IDs Issued</span><span
+                class="stat-card__value">7,841</span></div>
+          </article>
+        </div>
+
+        <div class="data-table-card">
+          <div class="table-header">
+            <div>
+              <div class="table-header__title">All Applicants</div>
+              <div class="table-header__desc">12,482 registered senior citizens</div>
+            </div>
+            <div class="table-header__actions">
+              <label class="table-search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="6.5" cy="6.5" r="4.5" />
+                  <path d="M11 11l3 3" />
+                </svg><input type="search" id="applicant-search" placeholder="Search by name or ID…"
+                  oninput="filterApplicants(this.value)" /></label>
+              <select class="filter-select" onchange="filterApplicantsByBarangay(this.value)">
+                <option value="">All Barangays</option>
+                <option>Alagao</option>
+                <option>Aplaya</option>
+                <option>As-Is</option>
+                <option>Bagong Silang</option>
+                <option>Baguilawa</option>
+                <option>Balayong</option>
+                <option>Barangay I (Poblacion)</option>
+                <option>Barangay II (Poblacion)</option>
+                <option>Barangay III (Poblacion)</option>
+                <option>Barangay IV (Poblacion)</option>
+                <option>Bolo</option>
+                <option>Colvo</option>
+                <option>Cupang</option>
+                <option>Durungao</option>
+                <option>Gulibay</option>
+                <option>Inicbulan</option>
+                <option>Locloc</option>
+                <option>Magalang-Galang</option>
+                <option>Malindig</option>
+                <option>Manalupang</option>
+                <option>Manghinao Proper</option>
+                <option>Manghinao Uno</option>
+                <option>New Danglayan</option>
+                <option>Orense</option>
+                <option>Pitugo</option>
+                <option>Rizal</option>
+                <option>Sampaguita</option>
+                <option>San Agustin</option>
+                <option>San Andres Proper</option>
+                <option>San Andres Uno</option>
+                <option>San Diego</option>
+                <option>San Miguel</option>
+                <option>San Pablo</option>
+                <option>San Pedro</option>
+                <option>San Roque</option>
+                <option>San Teodoro</option>
+                <option>San Vicente</option>
+                <option>Santa Maria</option>
+                <option>Santo Domingo</option>
+                <option>Sinala</option>
+              </select>
+              <select class="filter-select" onchange="filterApplicantsByStatus(this.value)">
+                <option>All Status</option>
+                <option>Verified</option>
+                <option>Unverified</option>
+                <option>ID Issued</option>
+              </select>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable('applicants-tbody',0,this)">Name <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('applicants-tbody',1,this)">ID Number <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('applicants-tbody',2,this)">Barangay <span class="sort-icon">↕</span></th>
+                <th>Civil Status</th>
+                <th>Occupation</th>
+                <th onclick="sortTable('applicants-tbody',5,this)">Status <span class="sort-icon">↕</span></th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="applicants-tbody">
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#34D399,#059669)">MA</div>
+                    <div class="applicant-info"><span class="applicant-name">Maria Abad</span><span
+                        class="applicant-id">Female · 67 yrs</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">SCB-2026-00421</span></td>
+                <td><span class="cell-text">Manghinao Proper</span></td>
+                <td><span class="cell-text">Widower</span></td>
+                <td><span class="cell-text">Retired Teacher</span></td>
+                <td><span class="badge badge-approved">Verified</span></td>
+                <td style="text-align:right"><button class="row-action always-visible"
+                    onclick="openApplicationDetail('SCB-2026-00421')">View</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#60A5FA,#1A4FBA)">JR</div>
+                    <div class="applicant-info"><span class="applicant-name">Jose Reyes</span><span
+                        class="applicant-id">Male · 74 yrs</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">SCB-2026-00418</span></td>
+                <td><span class="cell-text">Barangay I (Poblacion)</span></td>
+                <td><span class="cell-text">Married</span></td>
+                <td><span class="cell-text">Retired Gov't Employee</span></td>
+                <td><span class="badge badge-issued">ID Issued</span></td>
+                <td style="text-align:right"><button class="row-action always-visible"
+                    onclick="openApplicationDetail('SCB-2026-00418')">View</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#FCA5A5,#D9233A)">LS</div>
+                    <div class="applicant-info"><span class="applicant-name">Lourdes Santos</span><span
+                        class="applicant-id">Female · 82 yrs</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">SCB-2026-00415</span></td>
+                <td><span class="cell-text">Santa Maria</span></td>
+                <td><span class="cell-text">Widower</span></td>
+                <td><span class="cell-text">Housewife</span></td>
+                <td><span class="badge badge-approved">Verified</span></td>
+                <td style="text-align:right"><button class="row-action always-visible"
+                    onclick="openApplicationDetail('SCB-2026-00415')">Open</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#FDE68A,#D97706)">RC</div>
+                    <div class="applicant-info"><span class="applicant-name">Roberto Cruz</span><span
+                        class="applicant-id">Male · 71 yrs</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">SCB-2026-00410</span></td>
+                <td><span class="cell-text">San Roque</span></td>
+                <td><span class="cell-text">Married</span></td>
+                <td><span class="cell-text">Tricycle Driver</span></td>
+                <td><span class="badge badge-pending">Unverified</span></td>
+                <td style="text-align:right"><button class="row-action always-visible"
+                    onclick="openApplicationDetail('SCB-2026-00410')">View</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#C4B5FD,#7140D8)">ET</div>
+                    <div class="applicant-info"><span class="applicant-name">Estrella Torres</span><span
+                        class="applicant-id">Female · 78 yrs</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">SCB-2026-00408</span></td>
+                <td><span class="cell-text">Aplaya</span></td>
+                <td><span class="cell-text">Widower</span></td>
+                <td><span class="cell-text">Retired Seamstress</span></td>
+                <td><span class="badge badge-issued">ID Issued</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00408')">View</button>
+                </td>
+              </tr>
+
+              <!-- Duplicate row -->
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#F8A4CC,#D64F8A)">JC</div>
+                    <div class="applicant-info">
+                      <span class="applicant-name">Juan Cruz</span>
+                      <span class="applicant-id">Male · 66 yrs</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="cell-text">SCB-2026-00502</span>
+                  <div style="margin-top:6px">
+                    <span class="flag-badge">
+                      <svg viewBox="0 0 16 16" fill="currentColor">
+                        <path
+                          d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM7.25 4.75a.75.75 0 1 1 1.5 0v4.25a.75.75 0 1 1-1.5 0V4.75zm.75 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                      </svg>
+                      Duplicate Suspected
+                    </span>
+                  </div>
+                </td>
+                <td><span class="cell-text">San Diego</span></td>
+                <td><span class="cell-text">Married</span></td>
+                <td><span class="cell-text">Farmer</span></td>
+                <td><span class="badge badge-review">Unverified</span></td>
+                <td style="text-align:right"><button class="row-action always-visible"
+                    onclick="openApplicationDetail('SCB-2026-00502')">Investigate</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#A78BFA,#7C3AED)">CM</div>
+                    <div class="applicant-info"><span class="applicant-name">Corazon Mendoza</span><span
+                        class="applicant-id">Female · 72 yrs</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">SCB-2026-00503</span></td>
+                <td><span class="cell-text">Santa Maria</span></td>
+                <td><span class="cell-text">Married</span></td>
+                <td><span class="cell-text">Retired Nurse</span></td>
+                <td><span class="badge badge-pending">Unverified</span></td>
+                <td style="text-align:right"><button class="row-action always-visible"
+                    onclick="openApplicationDetail('SCB-2026-00503')">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-footer">
+            <span class="table-footer__info">Showing 8 of 12,482 applicants</span>
+            <button class="view-all-btn">Load more
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- APPLICATIONS (unchanged) ---------- -->
+      <div class="module" id="mod-applications">
+        <header class="page-header">
+          <div class="page-header__left">
+            <div class="page-header__eyebrow">
+              <h1 class="page-header__title">Applications</h1><span class="page-header__badge amber">12 Urgent</span>
+            </div>
+            <p class="page-header__sub">Review, approve, or reject senior citizen applications</p>
+          </div>
+          <div class="page-header__controls">
+            <div class="batch-ops-wrap" id="batch-ops-wrap">
+              <button type="button" class="btn btn--secondary batch-ops__trigger" id="batch-ops-trigger"
+                onclick="toggleBatchMenu(this,event)" disabled
+                title="Select at least one applicant to enable batch operations">
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M2.5 3.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-2zM5 6v.5h6V6H5zm9.5 1.5h-13a.5.5 0 0 1 0-1h13a.5.5 0 0 1 0 1z"
+                    clip-rule="evenodd" />
+                  <path fill-rule="evenodd"
+                    d="M2.5 9.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-2zm5 0a.5.5 0 0 1 .5-.5h5.5a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span id="batch-ops-label">Batch Operations</span>
+                <svg class="batch-ops__arrow" viewBox="0 0 12 12" fill="currentColor">
+                  <path d="M3 4l3 3 3-3" />
+                </svg>
+              </button>
+              <div class="batch-ops__menu" id="batch-ops-menu">
+                <button type="button" class="batch-ops__item" onclick="runBatchAction('export')" disabled>
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M8 1.5a.75.75 0 0 0-.75.75V7H3.75a.75.75 0 0 0 0 1.5h3.5v4.75a.75.75 0 0 0 1.5 0V8.5h3.5a.75.75 0 0 0 0-1.5h-3.5V2.25A.75.75 0 0 0 8 1.5z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  Export Selected
+                </button>
+                <button type="button" class="batch-ops__item" onclick="runBatchAction('reviewer')" disabled>
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8zm7-4.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM4.6 12.2c.9-1.4 2.2-2.2 3.4-2.2s2.5.8 3.4 2.2A5.5 5.5 0 0 0 8 13.5c-1.3 0-2.5-.5-3.4-1.3z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  Assign Reviewer
+                </button>
+                <button type="button" class="batch-ops__item batch-ops__item--danger"
+                  onclick="runBatchAction('approve')" disabled>
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  Bulk Approve
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="alert alert-warn" id="urgent-alert" style="justify-content:space-between">
+          <div style="display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </svg>
+            <div class="alert-content">
+              <div class="alert-title">12 applications require urgent review</div>
+              <div class="alert-desc">These applications have been pending for more than 5 days and need immediate
+                attention.</div>
+            </div>
+          </div>
+          <button type="button" onclick="dismissUrgentAlert()" aria-label="Dismiss alert"
+            style="flex-shrink:0;color:#92400e;padding:6px 8px;border-radius:8px;border:none;background:transparent;cursor:pointer;font-size:15px;line-height:1;transition:color .15s,background .15s"
+            onmouseenter="this.style.color='#78350f';this.style.background='rgba(253,230,138,0.5)'"
+            onmouseleave="this.style.color='#92400e';this.style.background='transparent'">
+            ✕
+          </button>
+        </div>
+
+        <div class="cards-grid">
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-blue"><svg class="stat-card__icon ic-blue" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                  <path fill-rule="evenodd"
+                    d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                    clip-rule="evenodd" />
+                </svg></div><span class="stat-card__period">My Queue</span>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Assigned to Me</span><span
+                class="stat-card__value">18</span><span class="stat-card__sub">Needs your attention today</span></div>
+          </article>
+          <article class="stat-card stat-card--warn">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-warn"><svg class="stat-card__icon ic-warn" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd" />
+                </svg></div><span class="stat-card__trend trend-up"><svg viewBox="0 0 10 10" fill="currentColor">
+                  <path d="M5 2l4 5H1z" />
+                </svg>12 urgent</span>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Pending (All Staff)</span><span
+                class="stat-card__value">843</span><span class="stat-card__sub">Awaiting review</span></div>
+          </article>
+          <article class="stat-card stat-card--success">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-green"><svg class="stat-card__icon ic-green" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg></div><span class="stat-card__trend trend-good"><svg viewBox="0 0 10 10" fill="currentColor">
+                  <path d="M5 2l4 5H1z" />
+                </svg>+5 today</span>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Reviewed by Me Today</span><span
+                class="stat-card__value">14</span><span class="stat-card__sub">12 approved · 2 rejected</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-red"><svg class="stat-card__icon ic-red" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1-8a1 1 0 0 0-1 1v3a1 1 0 0 0 2 0V6a1 1 0 0 0-1-1z"
+                    clip-rule="evenodd" />
+                </svg></div><span class="stat-card__trend trend-down"><svg viewBox="0 0 10 10" fill="currentColor">
+                  <path d="M5 8L1 3h8z" />
+                </svg>Needs action</span>
+            </div>
+            <div class="stat-card__body"><span class="stat-card__label">Incomplete Docs</span><span
+                class="stat-card__value">31</span><span class="stat-card__sub">Awaiting resubmission</span></div>
+          </article>
+        </div>
+
+        <div class="data-table-card">
+          <div class="filter-bar">
+            <div class="status-tabs" role="tablist">
+              <button class="status-tab active" role="tab" data-key="all" data-count="0"
+                onclick="filterByStatus(this,'all')">
+                <span class="tab-count chip-count" data-count-key="all">0</span>
+                All
+              </button>
+              <button class="status-tab" role="tab" data-key="pending" data-count="0"
+                onclick="filterByStatus(this,'pending')">
+                <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd" />
+                </svg>
+                Pending
+                <span class="tab-count chip-count" data-count-key="pending">0</span>
+              </button>
+              <button class="status-tab" role="tab" data-key="review" data-count="0"
+                onclick="filterByStatus(this,'review')">
+                <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                  <path fill-rule="evenodd"
+                    d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                    clip-rule="evenodd" />
+                </svg>
+                Under Review
+                <span class="tab-count chip-count" data-count-key="review">0</span>
+              </button>
+              <button class="status-tab" role="tab" data-key="process" data-count="0"
+                onclick="filterByStatus(this,'process')">
+                <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+                In Process
+                <span class="tab-count chip-count" data-count-key="process">0</span>
+              </button>
+              <button class="status-tab" role="tab" data-key="release" data-count="0"
+                onclick="filterByStatus(this,'release')">
+                <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M2.5 4.5A1.5 1.5 0 0 1 4 3h8a1.5 1.5 0 0 1 1.5 1.5V11h.75a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1 .75-.75V9.5H4.5V11h-.75a.75.75 0 0 1 0-1.5H4V4.5zM4.5 13.25a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zm9 0a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"
+                    clip-rule="evenodd" />
+                </svg>
+                Release
+                <span class="tab-count chip-count" data-count-key="release">0</span>
+              </button>
+              <button class="status-tab" role="tab" data-key="completed" data-count="0"
+                onclick="filterByStatus(this,'completed')">
+                <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1.293-4.293a1 1 0 0 1-1.414 0l-2.5-2.5a1 1 0 1 1 1.414-1.414l1.793 1.792 4.793-4.792a1 1 0 1 1 1.414 1.414l-5.5 5.5z"
+                    clip-rule="evenodd" />
+                </svg>
+                Completed
+                <span class="tab-count chip-count" data-count-key="completed">0</span>
+              </button>
+              <button class="status-tab" role="tab" data-key="rejected" data-count="0"
+                onclick="filterByStatus(this,'rejected')">
+                <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.707 7.293a1 1 0 0 0-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 1 0 1.414 1.414L10 11.414l1.293 1.293a1 1 0 0 0 1.414-1.414L11.414 10l1.293-1.293a1 1 0 0 0-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd" />
+                </svg>
+                Rejected
+                <span class="tab-count chip-count" data-count-key="rejected">0</span>
+              </button>
+            </div>
+            <div class="filter-spacer"></div>
+            <label class="table-search" style="flex-shrink:0;margin-right:8px">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10.5 3.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm-6 5a6 6 0 1 1 11 0 6 6 0 0 1-11 0zm10.03 4.44-2.5 2.5a.75.75 0 0 1-1.06-1.06l2.5-2.5a.75.75 0 1 1 1.06 1.06z"
+                  clip-rule="evenodd" />
+              </svg>
+              <input type="search" placeholder="Search applicant or ID..." oninput="filterApplicationsTable(this.value)"
+                aria-label="Search applicant or ID" />
+            </label>
+            <select class="filter-select">
+              <option>Sort: Newest First</option>
+              <option>Sort: Oldest First</option>
+              <option>Sort: Name A–Z</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px">
+                  <input type="checkbox" class="row-check" id="select-all-apps" title="Select all"
+                    aria-label="Select all" onchange="toggleSelectAllApps(this.checked)" />
+                </th>
+                <th onclick="sortTable('applications-tbody',1,this)">Applicant <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('applications-tbody',2,this)">Date <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('applications-tbody',3,this)">Barangay <span class="sort-icon">↕</span></th>
+                <th>Status</th>
+                <th>Reviewer</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="applications-tbody">
+              <tr data-app-id="SCB-2026-00410">
+                <td style="width:40px"><input type="checkbox" class="row-check" data-app-id="SCB-2026-00410"
+                    aria-label="Select Roberto Cruz" onchange="updateBatchState()" /></td>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#FDE68A,#D97706)">RC</div>
+                    <div class="applicant-info"><span class="applicant-name">Roberto Cruz</span><span
+                        class="applicant-id">SCB-2026-00410</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 5, 2026</span></td>
+                <td><span class="cell-text">San Roque</span></td>
+                <td>
+                  <div class="status-select" data-app-id="SCB-2026-00410">
+                    <button type="button" class="status-select__trigger" onclick="toggleStatusSelect(this,event)">
+                      <span class="status-select__icon" style="color:#C07A0A"><svg viewBox="0 0 20 20"
+                          fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd" />
+                        </svg></span>
+                      <span class="status-select__label">Pending</span>
+                      <svg class="status-select__arrow" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M3 4l3 3 3-3" />
+                      </svg>
+                    </button>
+                    <div class="status-select__menu">
+                      <button type="button" class="status-select__option active" data-status="Pending" data-icon="clock"
+                        data-color="#C07A0A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#C07A0A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Pending</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Under Review"
+                        data-icon="document" data-color="#1A4FBA" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#1A4FBA"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                            <path fill-rule="evenodd"
+                              d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Under Review</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="In Process" data-icon="checkmark"
+                        data-color="#0B9E6C" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#0B9E6C"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>In Process</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Rejected" data-icon="x"
+                        data-color="#D9233A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#D9233A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.707 7.293a1 1 0 0 0-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 1 0 1.414 1.414L10 11.414l1.293 1.293a1 1 0 0 0 1.414-1.414L11.414 10l1.293-1.293a1 1 0 0 0-1.414-1.414L10 8.586 8.707 7.293z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Rejected</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Unassigned</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00410')">Open</button>
+                </td>
+              </tr>
+              <tr data-app-id="SCB-2026-00421">
+                <td style="width:40px"><input type="checkbox" class="row-check" data-app-id="SCB-2026-00421"
+                    aria-label="Select Maria Abad" onchange="updateBatchState()" /></td>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#34D399,#059669)">MA</div>
+                    <div class="applicant-info"><span class="applicant-name">Maria Abad</span><span
+                        class="applicant-id">SCB-2026-00421</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 7, 2026</span></td>
+                <td><span class="cell-text">Manghinao Proper</span></td>
+                <td>
+                  <div class="status-select" data-app-id="SCB-2026-00421">
+                    <button type="button" class="status-select__trigger" onclick="toggleStatusSelect(this,event)">
+                      <span class="status-select__icon" style="color:#C07A0A"><svg viewBox="0 0 20 20"
+                          fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd" />
+                        </svg></span>
+                      <span class="status-select__label">Pending</span>
+                      <svg class="status-select__arrow" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M3 4l3 3 3-3" />
+                      </svg>
+                    </button>
+                    <div class="status-select__menu">
+                      <button type="button" class="status-select__option active" data-status="Pending" data-icon="clock"
+                        data-color="#C07A0A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#C07A0A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Pending</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Under Review"
+                        data-icon="document" data-color="#1A4FBA" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#1A4FBA"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                            <path fill-rule="evenodd"
+                              d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Under Review</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="In Process" data-icon="checkmark"
+                        data-color="#0B9E6C" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#0B9E6C"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>In Process</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Rejected" data-icon="x"
+                        data-color="#D9233A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#D9233A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.707 7.293a1 1 0 0 0-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 1 0 1.414 1.414L10 11.414l1.293 1.293a1 1 0 0 0 1.414-1.414L11.414 10l1.293-1.293a1 1 0 0 0-1.414-1.414L10 8.586 8.707 7.293z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Rejected</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Unassigned</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00421')">Open</button>
+                </td>
+              </tr>
+              <tr data-app-id="SCB-2026-00418">
+                <td style="width:40px"><input type="checkbox" class="row-check" data-app-id="SCB-2026-00418"
+                    aria-label="Select Jose Reyes" onchange="updateBatchState()" /></td>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#60A5FA,#1A4FBA)">JR</div>
+                    <div class="applicant-info"><span class="applicant-name">Jose Reyes</span><span
+                        class="applicant-id">SCB-2026-00418</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 7, 2026</span></td>
+                <td><span class="cell-text">Barangay I (Poblacion)</span></td>
+                <td>
+                  <div class="status-select" data-app-id="SCB-2026-00418">
+                    <button type="button" class="status-select__trigger" onclick="toggleStatusSelect(this,event)">
+                      <span class="status-select__icon" style="color:#1A4FBA"><svg viewBox="0 0 20 20"
+                          fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                          <path fill-rule="evenodd"
+                            d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                            clip-rule="evenodd" />
+                        </svg></span>
+                      <span class="status-select__label">In Review</span>
+                      <svg class="status-select__arrow" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M3 4l3 3 3-3" />
+                      </svg>
+                    </button>
+                    <div class="status-select__menu">
+                      <button type="button" class="status-select__option active" data-status="Pending" data-icon="clock"
+                        data-color="#C07A0A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#C07A0A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Pending</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Under Review"
+                        data-icon="document" data-color="#1A4FBA" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#1A4FBA"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                            <path fill-rule="evenodd"
+                              d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Under Review</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="In Process" data-icon="checkmark"
+                        data-color="#0B9E6C" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#0B9E6C"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>In Process</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Rejected" data-icon="x"
+                        data-color="#D9233A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#D9233A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.707 7.293a1 1 0 0 0-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 1 0 1.414 1.414L10 11.414l1.293 1.293a1 1 0 0 0 1.414-1.414L11.414 10l1.293-1.293a1 1 0 0 0-1.414-1.414L10 8.586 8.707 7.293z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Rejected</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Cindy B.</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00418')">Open</button>
+                </td>
+              </tr>
+              <tr data-app-id="SCB-2026-00415">
+                <td style="width:40px"><input type="checkbox" class="row-check" data-app-id="SCB-2026-00415"
+                    aria-label="Select Lourdes Santos" onchange="updateBatchState()" /></td>
+                <td>
+                  <div class="applicant-cell">
+                    <div class="applicant-avatar" style="background:linear-gradient(135deg,#FCA5A5,#D9233A)">LS</div>
+                    <div class="applicant-info"><span class="applicant-name">Lourdes Santos</span><span
+                        class="applicant-id">SCB-2026-00415</span></div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Apr 6, 2026</span></td>
+                <td><span class="cell-text">Santa Maria</span></td>
+                <td>
+                  <div class="status-select" data-app-id="SCB-2026-00415">
+                    <button type="button" class="status-select__trigger" onclick="toggleStatusSelect(this,event)">
+                      <span class="status-select__icon" style="color:#0B9E6C"><svg viewBox="0 0 20 20"
+                          fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                            clip-rule="evenodd" />
+                        </svg></span>
+                      <span class="status-select__label">Approved</span>
+                      <svg class="status-select__arrow" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M3 4l3 3 3-3" />
+                      </svg>
+                    </button>
+                    <div class="status-select__menu">
+                      <button type="button" class="status-select__option" data-status="Pending" data-icon="clock"
+                        data-color="#C07A0A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#C07A0A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Pending</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Under Review"
+                        data-icon="document" data-color="#1A4FBA" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#1A4FBA"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 2a1 1 0 0 0 0 2h2a1 1 0 1 0 0-2H9z" />
+                            <path fill-rule="evenodd"
+                              d="M4 5a2 2 0 0 1 2-2 3 3 0 0 0 3 3h2a3 3 0 0 0 3-3 2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm3 4a1 1 0 0 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 0 0 0 2h3a1 1 0 1 0 0-2h-3zm-3 4a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H7zm3 0a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2h-3z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Under Review</span>
+                      </button>
+                      <button type="button" class="status-select__option active" data-status="In Process"
+                        data-icon="checkmark" data-color="#0B9E6C" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#0B9E6C"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>In Process</span>
+                      </button>
+                      <button type="button" class="status-select__option" data-status="Rejected" data-icon="x"
+                        data-color="#D9233A" onclick="selectStatusOption(this,event)">
+                        <span class="status-select__option-icon" style="color:#D9233A"><svg viewBox="0 0 20 20"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.707 7.293a1 1 0 0 0-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 1 0 1.414 1.414L10 11.414l1.293 1.293a1 1 0 0 0 1.414-1.414L11.414 10l1.293-1.293a1 1 0 0 0-1.414-1.414L10 8.586 8.707 7.293z"
+                              clip-rule="evenodd" />
+                          </svg></span>
+                        <span>Rejected</span>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="cell-text">Cindy B.</span></td>
+                <td style="text-align:right">
+                  <button class="row-action always-visible" onclick="openApplicationDetail('SCB-2026-00415')">Open</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-footer">
+            <span class="table-footer__info"><span id="apps-shown">4</span> of <span id="apps-total">0</span>
+              shown</span>
+            <button class="view-all-btn">Load more<svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- ID ISSUANCE (unchanged) ---------- -->
+      <div class="module" id="mod-id-issuance">
+        <header class="page-header">
+          <div class="page-header__left">
+            <div class="page-header__eyebrow">
+              <h1 class="page-header__title">ID Issuance</h1><span class="page-header__badge green">Auto-Fill
+                Enabled</span>
+            </div>
+            <p class="page-header__sub">Auto-fill citizen details from database, then staff enters date issued and
+              control number</p>
+          </div>
+          <div class="page-header__controls">
+            <button class="btn btn--primary" id="btn-send-idmaker-issuance" onclick="sendFromIssuanceToIdMaker()"
+              style="display:none"></button>
+          </div>
+        </header>
+
+        <section class="cards-grid">
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-blue">
+                <svg class="stat-card__icon ic-blue" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    d="M4 4a2 2 0 0 1 2-2h4.586A2 2 0 0 1 12 2.586L15.414 6A2 2 0 0 1 16 7.414V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4z" />
+                </svg>
+              </div>
+              <div class="stat-card__meta"><span class="stat-card__period">Today</span></div>
+            </div>
+            <div class="stat-card__body">
+              <span class="stat-card__label">Forms Generated</span>
+              <span class="stat-card__value">38</span>
+              <span class="stat-card__sub">+7 from yesterday</span>
+            </div>
+          </article>
+          <article class="stat-card stat-card--warn">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-warn">
+                <svg class="stat-card__icon ic-warn" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-12a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="stat-card__meta"><span class="stat-card__trend trend-up">+2.1%</span></div>
+            </div>
+            <div class="stat-card__body">
+              <span class="stat-card__label">Queued for Print</span>
+              <span class="stat-card__value">64</span>
+              <span class="stat-card__sub">Awaiting operator release</span>
+            </div>
+          </article>
+          <article class="stat-card stat-card--success">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-green">
+                <svg class="stat-card__icon ic-green" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="stat-card__meta"><span class="stat-card__trend trend-good">+11.8%</span></div>
+            </div>
+            <div class="stat-card__body">
+              <span class="stat-card__label">Released IDs</span>
+              <span class="stat-card__value">31</span>
+              <span class="stat-card__sub">Same-day completion rate 82%</span>
+            </div>
+          </article>
+          <article class="stat-card stat-card--danger">
+            <div class="stat-card__top">
+              <div class="stat-card__icon-wrap iwrap-red">
+                <svg class="stat-card__icon ic-red" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8.707 7.293a1 1 0 0 0-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 1 0 1.414 1.414L10 11.414l1.293 1.293a1 1 0 0 0 1.414-1.414L11.414 10l1.293-1.293a1 1 0 0 0-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="stat-card__meta"><span class="stat-card__trend trend-down">-0.8%</span></div>
+            </div>
+            <div class="stat-card__body">
+              <span class="stat-card__label">Print Errors</span>
+              <span class="stat-card__value">3</span>
+              <span class="stat-card__sub">Needs template or data check</span>
+            </div>
+          </article>
+        </section>
+
+        <div class="two-col-70">
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Small Form Generator</div>
+                <div class="content-card__desc">Select an applicant to auto-fill data, then type staff-managed fields
+                </div>
+              </div>
+              <button class="btn btn--ghost" style="height:34px;font-size:12px" onclick="clearIDForm()">Clear
+                Form</button>
+            </div>
+            <div class="content-card__body">
+              <div class="form-grid form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Applicant <span>*</span></label>
+                  <select class="form-select" id="id-applicant" onchange="updatePreview()">
+                    <option value="">Select applicant</option>
+                  </select>
+                </div>
+                <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="id-fullname"
+                    readonly style="background:var(--bg);color:var(--text-muted)" /></div>
+                <div class="form-group"><label class="form-label">Address</label><input class="form-input"
+                    id="id-address" readonly style="background:var(--bg);color:var(--text-muted)" /></div>
+                <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input"
+                    id="id-dob" readonly style="background:var(--bg);color:var(--text-muted)" /></div>
+                <div class="form-group"><label class="form-label">Sex</label><input class="form-input" id="id-sex"
+                    readonly style="background:var(--bg);color:var(--text-muted)" /></div>
+                <div class="form-group"><label class="form-label">Date Issued <span>*</span></label><input
+                    class="form-input" id="id-date-issued" type="date" oninput="updatePreview()" /></div>
+                <div class="form-group"><label class="form-label">Control No. <span>*</span></label><input
+                    class="form-input" id="id-control-no" placeholder="Enter control number"
+                    oninput="updatePreview()" />
+                </div>
+              </div>
+              <div class="form-actions" style="margin-top:16px">
+                <button class="btn btn--primary" id="btn-send-idmaker-issuance" onclick="sendFromIssuanceToIdMaker()">
+                  <svg viewBox="0 0 16 16" fill="currentColor" style="width:14px;height:14px;margin-right:4px">
+                    <path
+                      d="M15.854 8.354a.5.5 0 0 0 0-.708l-5-5a.5.5 0 1 0-.708.708L14.293 7.5H1a.5.5 0 0 0 0 1h13.293l-4.147 4.146a.5.5 0 0 0 .708.708l5-5z" />
+                  </svg>
+                  Send to ID Maker
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="small-form-preview" id="id-card-preview">
+              <div class="small-form-head">
+                <div>REPUBLIC OF THE PHILIPPINES</div>
+                <div>OFFICE OF THE SENIOR CITIZEN AFFAIRS - OSCA</div>
+                <div>MUNICIPALITY OF BAUAN</div>
+              </div>
+              <div class="small-form-photo">
+                <img id="preview-photo" alt="Citizen photo" />
+                <div class="small-form-photo-fallback" id="preview-photo-fallback">--</div>
+              </div>
+              <div class="small-form-lines">
+                <div class="small-form-line"><strong>NAME:</strong><span id="preview-name">________________</span></div>
+                <div class="small-form-line"><strong>ADDRESS:</strong><span id="preview-address">________________</span>
+                </div>
+                <div class="small-form-line"><strong>DATE OF BIRTH:</strong><span
+                    id="preview-dob">________________</span></div>
+                <div class="small-form-line"><strong>SEX:</strong><span id="preview-sex">________________</span></div>
+                <div class="small-form-line"><strong>DATE ISSUED:</strong><span
+                    id="preview-date-issued">________________</span></div>
+                <div class="small-form-line"><strong>CONTROL NO.:</strong><span
+                    id="preview-control-no">________________</span></div>
+              </div>
+              <div class="small-form-foot">
+                <div class="small-form-mayor"></div>
+                <div class="small-form-sign-wrap">
+                  <div class="small-form-sign-box">
+                    <img id="preview-signature" alt="Signature" />
+                    <div class="small-form-sign-fallback" id="preview-sign-fallback">No signature image</div>
+                  </div>
+                  <div class="small-form-sign-label">Signature</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- ANALYTICS (unchanged) ---------- -->
+      <div class="module" id="mod-analytics">
+        <header class="page-header">
+          <div class="page-header__left">
+            <div class="page-header__eyebrow">
+              <h1 class="page-header__title" id="analytics-title">Analytics</h1><span class="page-header__badge purple"
+                id="analytics-scope-badge">Admin Scope</span>
+            </div>
+            <p class="page-header__sub" id="analytics-subtitle">Municipality-wide data visualizations and performance
+              insights</p>
+          </div>
+          <div class="page-header__controls">
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="switchPeriod(this,'monthly')">Monthly</button>
+              <button class="tab-btn" onclick="switchPeriod(this,'quarterly')">Quarterly</button>
+              <button class="tab-btn" onclick="switchPeriod(this,'yearly')">Yearly</button>
+            </div>
+            <select class="filter-select" style="height:36px" onchange="exportData(this.value)">
+              <option value="">Export As...</option>
+              <option value="pdf">Export PDF</option>
+              <option value="excel">Export Excel</option>
+              <option value="csv">Export CSV</option>
+            </select>
+          </div>
+        </header>
+
+        <div class="report-controls">
+          <select class="filter-select range" id="report-range"
+            onchange="showToast('Date range set: '+this.value,'info')">
+            <option>Last 7 days</option>
+            <option selected>Last 30 days</option>
+            <option>This Quarter</option>
+            <option>This Year</option>
+            <option>Custom Range (demo)</option>
+          </select>
+          <select class="filter-select" style="height:34px" onchange="exportData(this.value)">
+            <option value="">Export As...</option>
+            <option value="pdf">Export PDF</option>
+            <option value="excel">Export Excel</option>
+            <option value="csv">Export CSV</option>
+          </select>
+          <button class="mini-btn" onclick="scheduleWeeklyReport()">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M1 4h14" />
+              <path d="M5 1v3M11 1v3" />
+              <rect x="2" y="3" width="12" height="12" rx="2" />
+              <path d="M5 8h6" />
+            </svg>
+            Schedule Weekly Email
+          </button>
+          <button class="mini-btn" onclick="showToast('Anonymized export enabled for DPA compliance (demo)','success')">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M8 1s5 3 5 7-5 7-5 7-5-3-5-7 5-7 5-7z" />
+              <path d="M6 8h4" />
+            </svg>
+            Anonymize Export
+          </button>
+        </div>
+
+        <div class="an-grid-wide">
+          <div class="an-card">
+            <div class="an-card__header">
+              <div>
+                <div class="an-card__title">Application Trends</div>
+                <div class="an-card__sub">Monthly submitted vs approved vs rejected</div>
+              </div>
+              <div class="tab-group">
+                <button class="tab-btn active" onclick="switchTrendView(this,'all')">All</button>
+                <button class="tab-btn" onclick="switchTrendView(this,'approved')">Approved</button>
+                <button class="tab-btn" onclick="switchTrendView(this,'pending')">Pending</button>
+              </div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-item"><span class="legend-dash" style="background:var(--primary)"></span>Submitted
+              </div>
+              <div class="legend-item"><span class="legend-dash" style="background:var(--success)"></span>Approved</div>
+              <div class="legend-item"><span class="legend-dash" style="background:var(--danger)"></span>Rejected</div>
+            </div>
+            <div class="an-card__body--nop" style="padding:0 22px 22px">
+              <div class="chart-wrap" style="height:260px"><canvas id="chart-trend"></canvas></div>
+            </div>
+          </div>
+
+          <div class="an-card">
+            <div class="an-card__header">
+              <div>
+                <div class="an-card__title">Application Status</div>
+                <div class="an-card__sub">Current distribution across all statuses</div>
+              </div>
+            </div>
+            <div class="an-card__body" style="align-items:center;gap:18px;flex-wrap:wrap;padding:18px">
+              <div class="chart-wrap" style="height:180px;width:180px"><canvas id="chart-status"></canvas></div>
+              <div style="display:flex;flex-direction:row;gap:12px;flex-wrap:wrap;align-items:flex-start">
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#FF9A9E;flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">Approved</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">11.2K</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#FF6B6B;flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">Pending</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">843</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#FFB3B8;flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">In Review</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">231</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#C41E3A;flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">Rejected</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">435</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="an-grid-2">
+          <div class="an-card">
+            <div class="an-card__header">
+              <div>
+                <div class="an-card__title">Applications by Barangay</div>
+                <div class="an-card__sub">Registrations & approvals per area</div>
+              </div>
+              <div class="tab-group">
+                <button class="tab-btn active" onclick="switchBarangayView(this,'grouped')">Grouped</button>
+                <button class="tab-btn" onclick="switchBarangayView(this,'stacked')">Stacked</button>
+              </div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span>Total</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--success)"></span>Approved</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span>Pending</div>
+            </div>
+            <div class="an-card__body--nop" style="padding:0 22px 22px">
+              <div class="chart-wrap" style="height:240px"><canvas id="chart-barangay"></canvas></div>
+            </div>
+          </div>
+
+          <div class="an-card">
+            <div class="an-card__header">
+              <div>
+                <div class="an-card__title">Age Group Distribution</div>
+                <div class="an-card__sub">Senior citizen demographics by age bracket</div>
+              </div>
+            </div>
+            <div class="an-card__body" style="align-items:center;gap:18px;flex-wrap:wrap;padding:18px">
+              <div class="chart-wrap" style="height:240px;width:190px"><canvas id="chart-age"></canvas></div>
+              <div style="display:flex;flex-direction:row;gap:12px;flex-wrap:wrap;align-items:flex-start">
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span
+                    style="width:10px;height:10px;border-radius:50%;background:rgba(147,197,253,1);flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">60–70 yrs</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">42% · 5.2K</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span
+                    style="width:10px;height:10px;border-radius:50%;background:rgba(61,111,232,1);flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">71–80 yrs</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">35% · 4.4K</span></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
+                  <span
+                    style="width:10px;height:10px;border-radius:50%;background:rgba(10,42,124,1);flex-shrink:0"></span>
+                  <span><strong style="font-size:13px">81+ yrs</strong><br /><span
+                      style="color:var(--text-muted);font-size:12px">23% · 2.9K</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="an-card">
+          <div class="an-card__header">
+            <div>
+              <div class="an-card__title">ID Issuance Over Time</div>
+              <div class="an-card__sub">Cumulative IDs issued per month</div>
+            </div>
+            <span class="small-pill">Live</span>
+          </div>
+          <div class="an-card__body--nop" style="padding:0 22px 22px">
+            <div class="chart-wrap" style="height:220px"><canvas id="chart-issuance"></canvas></div>
+          </div>
+        </div>
+
+        <div class="an-grid-2">
+          <div class="an-card">
+            <div class="an-card__header">
+              <div>
+                <div class="an-card__title">Processing Time</div>
+                <div class="an-card__sub">Average days per month</div>
+              </div>
+            </div>
+            <div class="an-card__body--nop" style="padding:0 22px 22px">
+              <div class="chart-wrap" style="height:140px"><canvas id="chart-processing"></canvas></div>
+            </div>
+          </div>
+          <div class="an-card">
+            <div class="an-card__header">
+              <div>
+                <div class="an-card__title">Service Scorecard</div>
+                <div class="an-card__sub">Q1 2026 vs Q2 2026</div>
+              </div>
+            </div>
+            <div class="an-card__body--nop" style="padding:0 22px 22px">
+              <div class="chart-wrap" style="height:210px"><canvas id="chart-radar"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- -----------------------------------
+     MODALS (UNCHANGED)
+----------------------------------- -->
+    <!-- APPLICATION DETAIL MODAL -->
+    <div class="modal-backdrop" id="app-modal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal__header">
+          <div>
+            <div class="modal__title" id="modal-title">Application Detail</div>
+            <div class="modal__sub" id="modal-sub">–</div>
+          </div>
+          <button class="modal__close" onclick="closeModal()">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal__body" id="modal-body-content">
+          <!-- Applicant summary header -->
+          <div class="content-card modal-applicant-head">
+            <div class="content-card__body"
+              style="display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap">
+              <div class="modal-app-head-avatar">
+                <img id="detail-photo" alt="Applicant photo"
+                  style="display:none;width:100%;height:100%;object-fit:cover;border-radius:var(--r-xl)">
+                <span id="detail-photo-fb" style="font-weight:800;font-size:20px;color:var(--text-muted)">--</span>
+              </div>
+              <div style="flex:1;min-width:200px">
+                <div id="detail-name" style="font-size:16px;font-weight:800;color:var(--text-primary);line-height:1.2">–
+                </div>
+                <div id="detail-id" style="font-size:12px;color:var(--text-muted);margin-top:3px">–</div>
+                <div id="detail-barangay" style="font-size:12px;color:var(--text-muted);margin-top:2px">–</div>
+              </div>
+              <span class="badge" id="detail-status" style="font-size:11px">–</span>
+            </div>
+          </div>
+
+          <!-- AI Duplicate banner -->
+          <div class="alert alert-info" id="dup-alert" style="display:none">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM7.25 4.75a.75.75 0 1 1 1.5 0v4.25a.75.75 0 1 1-1.5 0V4.75zm.75 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+            </svg>
+            <div class="alert-content">
+              <div class="alert-title">Duplicate Detected (AI)</div>
+              <div class="alert-desc" id="dup-text">–</div>
+            </div>
+          </div>
+
+          <!-- Workflow steps -->
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+              <div
+                style="font-family:var(--font-data);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)">
+                Workflow</div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span class="small-pill" id="assigned-reviewer">Reviewer: Unassigned</span>
+                <select class="filter-select" style="height:34px" id="status-select"
+                  onchange="updateStatus(this.value)">
+                  <option value="Pending">Pending</option>
+                  <option value="Unverified">Unverified</option>
+                  <option value="Under Review">Under Review</option>
+                  <option value="Verified">Verified</option>
+                  <option value="In Process">In Process</option>
+                  <option value="Ready for Release">Ready for Release</option>
+                  <option value="ID Issued">ID Issued</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+                <select class="filter-select" style="height:34px" id="reviewer-select"
+                  onchange="assignReviewer(this.value)">
+                  <option value="Unassigned" selected>Assign Reviewer</option>
+                  <option value="Cindy B.">Cindy B.</option>
+                  <option value="Ramon P.">Ramon P.</option>
+                  <option value="Ana D.">Ana D.</option>
+                </select>
+              </div>
+            </div>
+            <div class="workflow" style="margin-top:10px" id="workflow-steps">
+              <div class="step active" data-step="Pending"><span class="bubble">1</span>Pending</div>
+              <div class="step" data-step="Under Review"><span class="bubble">2</span>Under Review</div>
+              <div class="step" data-step="Verified"><span class="bubble">3</span>Verified</div>
+              <div class="step" data-step="In Process"><span class="bubble">4</span>In Process</div>
+              <div class="step" data-step="Ready for Release"><span class="bubble">5</span>Ready for Release</div>
+              <div class="step" data-step="ID Issued"><span class="bubble">6</span>ID Issued</div>
+            </div>
+          </div>
+
+          <!-- Applicant Information -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Applicant Information</div>
+                <div class="content-card__desc">Personal details from the application form</div>
+              </div>
+            </div>
+            <div class="content-card__body" id="applicant-info-body">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Full Name</div>
+                  <div id="info-fullname" style="font-size:13px;font-weight:600">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Date of Birth</div>
+                  <div id="info-dob" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Age</div>
+                  <div id="info-age" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Sex</div>
+                  <div id="info-sex" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Place of Birth</div>
+                  <div id="info-birthplace" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Civil Status</div>
+                  <div id="info-civilstatus" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Address</div>
+                  <div id="info-address" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Barangay</div>
+                  <div id="info-barangay" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Educational Attainment</div>
+                  <div id="info-education" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Religion</div>
+                  <div id="info-religion" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Occupation</div>
+                  <div id="info-occupation" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Contact Number</div>
+                  <div id="info-contact" style="font-size:13px">–</div>
+                </div>
+              </div>
+              <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-light)">
+                <div
+                  style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+                  Government IDs</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+                  <div>
+                    <div style="font-size:11px;color:var(--text-muted)">OSCA</div>
+                    <div id="info-id-osca" style="font-size:12px">–</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--text-muted)">SSS</div>
+                    <div id="info-id-sss" style="font-size:12px">–</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--text-muted)">PhilHealth</div>
+                    <div id="info-id-philhealth" style="font-size:12px">–</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--text-muted)">GSIS</div>
+                    <div id="info-id-gsis" style="font-size:12px">–</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;color:var(--text-muted)">TIN</div>
+                    <div id="info-id-tin" style="font-size:12px">–</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Family Composition -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Family Composition</div>
+                <div class="content-card__desc">Household members and relatives</div>
+              </div>
+            </div>
+            <div class="content-card__body" id="family-body" style="padding:0;overflow-x:auto">
+              <table class="data-table" id="family-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Relationship</th>
+                    <th>Age</th>
+                    <th>Civil Status</th>
+                    <th>Occupation</th>
+                    <th>Income</th>
+                  </tr>
+                </thead>
+                <tbody id="family-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align:center;color:var(--text-muted);padding:16px">No family composition
+                      data</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Membership -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Senior Citizens Association Membership</div>
+                <div class="content-card__desc">Association affiliation details</div>
+              </div>
+            </div>
+            <div class="content-card__body" id="membership-body">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Association Name</div>
+                  <div id="info-assoc-name" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Address</div>
+                  <div id="info-assoc-address" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Date Joined</div>
+                  <div id="info-assoc-date" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Position</div>
+                  <div id="info-assoc-position" style="font-size:13px">–</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Background -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Personal Background</div>
+                <div class="content-card__desc">Income, assets, living situation, skills, and involvement</div>
+              </div>
+            </div>
+            <div class="content-card__body" id="personal-bg-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Source of Income</div>
+                  <div id="info-income-sources" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Assets &amp; Properties</div>
+                  <div id="info-assets" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Monthly Income</div>
+                  <div id="info-monthly-income" style="font-size:13px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Living / Residing With</div>
+                  <div id="info-living-with" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Skills / Specialization</div>
+                  <div id="info-skills" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Community Involvement</div>
+                  <div id="info-involvement" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Problems & Needs -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Problems &amp; Needs Assessment</div>
+                <div class="content-card__desc">Commonly encountered problems by category</div>
+              </div>
+            </div>
+            <div class="content-card__body" id="problems-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Economic</div>
+                  <div id="info-problems-economic" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Social / Emotional</div>
+                  <div id="info-problems-social" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Health</div>
+                  <div id="info-problems-health" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Housing</div>
+                  <div id="info-problems-housing" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Community Service</div>
+                  <div id="info-problems-community" style="display:flex;flex-wrap:wrap;gap:4px">–</div>
+                </div>
+                <div>
+                  <div
+                    style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">
+                    Other Specific Needs</div>
+                  <div id="info-problems-other" style="font-size:13px">–</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rule-based validation -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Eligibility Validation (Rules + AI)</div>
+                <div class="content-card__desc">Auto-check age (60+), residency, document completeness</div>
+              </div>
+              <button class="btn btn--ghost" style="height:34px;font-size:12px" onclick="runValidation()">Run
+                Validation</button>
+            </div>
+            <div class="content-card__body" id="validation-body">
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <span class="badge badge-approved">Age 60+</span>
+                <span class="badge badge-review">Residency: Needs check</span>
+                <span class="badge badge-pending">Docs: Incomplete</span>
+              </div>
+              <div style="margin-top:10px;font-size:12.5px;color:var(--text-muted);line-height:1.5">
+                Validation uses rule checks and similarity matching for duplicates (name/DOB/address).</div>
+            </div>
+          </div>
+
+          <!-- Document Verification -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Verify Documents</div>
+                <div class="content-card__desc">Valid ID (Front/Back), Photo, Birth Certificate, Cedula, Signature</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn--secondary" style="height:30px;font-size:11px;padding:0 12px" onclick="approveAllDocs()">Approve All</button>
+                <button class="btn btn--ghost" style="height:30px;font-size:11px;padding:0 12px" onclick="requestReupload()">Request Re-upload</button>
+              </div>
+            </div>
+            <div class="content-card__body">
+              <div class="doc-grid">
+                <div class="doc-card">
+                  <div class="doc-card__top">
+                    <div class="doc-card__name">Valid ID (Front)</div><span class="doc-card__status ok"
+                      id="doc-id-front-status">Pending</span>
+                  </div>
+                  <div class="doc-card__body">
+                    <div class="doc-preview" id="doc-id-front-preview" onclick="viewDocument('idFront')"
+                      title="Click to view document"><svg class="doc-preview__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>No document uploaded</div>
+                    <div class="doc-actions">
+                      <button class="btn btn--secondary" onclick="viewDocument('idFront')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" /><circle cx="8" cy="8" r="2.5" /></svg>View</button>
+                      <button class="btn btn--secondary" onclick="setDocStatus('idFront','ok')">Approve</button>
+                      <button class="btn btn--ghost" onclick="setDocStatus('idFront','warn')">Re-upload</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="doc-card">
+                  <div class="doc-card__top">
+                    <div class="doc-card__name">Valid ID (Back)</div><span class="doc-card__status ok"
+                      id="doc-id-back-status">Pending</span>
+                  </div>
+                  <div class="doc-card__body">
+                    <div class="doc-preview" id="doc-id-back-preview" onclick="viewDocument('idBack')"
+                      title="Click to view document"><svg class="doc-preview__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>No document uploaded</div>
+                    <div class="doc-actions">
+                      <button class="btn btn--secondary" onclick="viewDocument('idBack')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" /><circle cx="8" cy="8" r="2.5" /></svg>View</button>
+                      <button class="btn btn--secondary" onclick="setDocStatus('idBack','ok')">Approve</button>
+                      <button class="btn btn--ghost" onclick="setDocStatus('idBack','warn')">Re-upload</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="doc-card">
+                  <div class="doc-card__top">
+                    <div class="doc-card__name">Latest Photo</div><span class="doc-card__status ok"
+                      id="doc-photo-status">Pending</span>
+                  </div>
+                  <div class="doc-card__body">
+                    <div class="doc-preview" id="doc-photo-preview" onclick="viewDocument('photo')"
+                      title="Click to view document"><svg class="doc-preview__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>No document uploaded</div>
+                    <div class="doc-actions">
+                      <button class="btn btn--secondary" onclick="viewDocument('photo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" /><circle cx="8" cy="8" r="2.5" /></svg>View</button>
+                      <button class="btn btn--secondary" onclick="setDocStatus('photo','ok')">Approve</button>
+                      <button class="btn btn--ghost" onclick="setDocStatus('photo','warn')">Needs Better</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="doc-card">
+                  <div class="doc-card__top">
+                    <div class="doc-card__name">Birth Certificate</div><span class="doc-card__status warn"
+                      id="doc-bc-status">Pending</span>
+                  </div>
+                  <div class="doc-card__body">
+                    <div class="doc-preview" id="doc-bc-preview" onclick="viewDocument('bc')"
+                      title="Click to view document"><svg class="doc-preview__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>No document uploaded</div>
+                    <div class="doc-actions">
+                      <button class="btn btn--secondary" onclick="viewDocument('bc')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" /><circle cx="8" cy="8" r="2.5" /></svg>View</button>
+                      <button type="button" class="btn btn--secondary verify-toggle" id="doc-bc-verify"
+                        onclick="toggleDocVerified('bc')">Verified</button>
+                      <button class="btn btn--secondary" onclick="setDocStatus('bc','ok')">Approve</button>
+                      <button class="btn btn--ghost" onclick="setDocStatus('bc','warn')">Re-upload</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="doc-card">
+                  <div class="doc-card__top">
+                    <div class="doc-card__name">Community Tax Certificate</div><span class="doc-card__status ok"
+                      id="doc-cedula-status">Pending</span>
+                  </div>
+                  <div class="doc-card__body">
+                    <div class="doc-preview" id="doc-cedula-preview" onclick="viewDocument('cedula')"
+                      title="Click to view document"><svg class="doc-preview__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>No document uploaded</div>
+                    <div class="doc-actions">
+                      <button class="btn btn--secondary" onclick="viewDocument('cedula')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" /><circle cx="8" cy="8" r="2.5" /></svg>View</button>
+                      <button type="button" class="btn btn--secondary verify-toggle" id="doc-cedula-verify"
+                        onclick="toggleDocVerified('cedula')">Verified</button>
+                      <button class="btn btn--secondary" onclick="setDocStatus('cedula','ok')">Approve</button>
+                      <button class="btn btn--ghost" onclick="setDocStatus('cedula','bad')">Reject</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="doc-card">
+                  <div class="doc-card__top">
+                    <div class="doc-card__name">Signature</div><span class="doc-card__status ok"
+                      id="doc-signature-status">Pending</span>
+                  </div>
+                  <div class="doc-card__body">
+                    <div class="doc-preview" id="doc-signature-preview" onclick="viewDocument('signature')"
+                      title="Click to view document"><svg class="doc-preview__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>No document uploaded</div>
+                    <div class="doc-actions">
+                      <button class="btn btn--secondary" onclick="viewDocument('signature')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" /><circle cx="8" cy="8" r="2.5" /></svg>View</button>
+                      <button class="btn btn--secondary" onclick="setDocStatus('signature','ok')">Approve</button>
+                      <button class="btn btn--ghost" onclick="setDocStatus('signature','warn')">Re-upload</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:12px;font-size:12.5px;color:var(--text-muted)">
+                Status: <strong id="docs-summary">All documents pending review</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audit Log -->
+          <div class="content-card">
+            <div class="content-card__header">
+              <div>
+                <div class="content-card__title">Audit Log (DPA)</div>
+                <div class="content-card__desc">Who accessed/edited this applicant record</div>
+              </div>
+              <span class="small-pill">Immutable (demo)</span>
+            </div>
+            <div style="padding:0">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date/Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th style="text-align:right">Source</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-body">
+                  <tr>
+                    <td><span class="cell-text">Apr 8, 2026 10:32</span></td>
+                    <td><span class="cell-text">Cindy B.</span></td>
+                    <td><span class="cell-text">Viewed documents</span></td>
+                    <td style="text-align:right"><span class="badge badge-review">Admin</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="cell-text">Apr 8, 2026 09:15</span></td>
+                    <td><span class="cell-text">System</span></td>
+                    <td><span class="cell-text">Application submitted</span></td>
+                    <td style="text-align:right"><span class="badge badge-issued">Portal</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="cell-text">Apr 7, 2026 14:20</span></td>
+                    <td><span class="cell-text">Ramon P.</span></td>
+                    <td><span class="cell-text">Status: Pending ? In Review</span></td>
+                    <td style="text-align:right"><span class="badge badge-review">Staff</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <button class="btn btn--danger" id="btn-reject" onclick="rejectCurrent()">Reject</button>
+          <button class="btn btn--secondary" id="btn-save" onclick="saveCurrent()">Save</button>
+          <button class="btn btn--primary" id="btn-approve" onclick="generateIssuanceForm()">Generate Issuance
+            Form</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENT VIEWER LIGHTBOX -->
+    <div class="doc-viewer-backdrop" id="doc-viewer-backdrop" onclick="closeDocViewer()">
+      <div class="doc-viewer" onclick="event.stopPropagation()">
+        <div class="doc-viewer__header">
+          <div class="doc-viewer__title" id="doc-viewer-title">Document Preview</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="doc-viewer__nav" id="doc-viewer-prev" onclick="navDocViewer(-1)">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16">
+                <path
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+              </svg>
+            </button>
+            <span class="doc-viewer__counter" id="doc-viewer-counter">1 / 6</span>
+            <button class="doc-viewer__nav" id="doc-viewer-next" onclick="navDocViewer(1)">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16">
+                <path
+                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+            <button class="modal__close" onclick="closeDocViewer()">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path
+                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="doc-viewer__body">
+          <img class="doc-viewer__img" id="doc-viewer-img" src="" alt="Document" />
+          <div class="doc-viewer__empty" id="doc-viewer-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              style="width:48px;height:48px;color:var(--text-muted)">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10,9 9,9 8,9" />
+            </svg>
+            <div>No document uploaded yet</div>
+          </div>
+        </div>
+        <div class="doc-viewer__footer">
+          <span class="doc-viewer__docname" id="doc-viewer-docname">—</span>
+          <span class="doc-viewer__applicant" id="doc-viewer-applicant">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIGITAL ISSUANCE FORM MODAL -->
+    <div class="modal-backdrop" id="digital-issuance-modal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="di-modal-title" style="width:min(640px,100%)">
+        <div class="modal__header">
+          <div>
+            <div class="modal__title" id="di-modal-title">Digital Issuance Form</div>
+            <div class="modal__sub">Review small form details and update production status</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn btn--ghost" style="height:32px;font-size:12px;padding:0 12px"
+              onclick="downloadDigitalIssuanceDocs()">
+              <i class="fi fi-rr-download" style="margin-right:5px"></i>Download as Docs
+            </button>
+            <button class="modal__close" onclick="closeDigitalIssuance()">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path
+                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="modal__body">
+          <div class="small-form-preview" style="margin:0 auto 18px">
+            <div class="small-form-head">
+              <div>REPUBLIC OF THE PHILIPPINES</div>
+              <div>OFFICE OF THE SENIOR CITIZEN AFFAIRS - OSCA</div>
+              <div>MUNICIPALITY OF BAUAN</div>
+            </div>
+            <div class="small-form-photo">
+              <img id="di-preview-photo" alt="Citizen photo" />
+              <div class="small-form-photo-fallback" id="di-preview-photo-fallback">--</div>
+            </div>
+            <div class="small-form-lines">
+              <div class="small-form-line"><strong>NAME:</strong><span id="di-preview-name">________________</span>
+              </div>
+              <div class="small-form-line"><strong>ADDRESS:</strong><span
+                  id="di-preview-address">________________</span></div>
+              <div class="small-form-line"><strong>DATE OF BIRTH:</strong><span
+                  id="di-preview-dob">________________</span></div>
+              <div class="small-form-line"><strong>SEX:</strong><span id="di-preview-sex">________________</span></div>
+              <div class="small-form-line"><strong>DATE ISSUED:</strong><span
+                  id="di-preview-date-issued">________________</span></div>
+              <div class="small-form-line"><strong>CONTROL NO.:</strong><span
+                  id="di-preview-control-no">________________</span></div>
+            </div>
+            <div class="small-form-foot">
+              <div class="small-form-sign-wrap">
+                <div class="small-form-sign-box">
+                  <img id="di-preview-signature" alt="Signature" />
+                  <div class="small-form-sign-fallback" id="di-preview-sign-fallback">No signature image</div>
+                </div>
+                <div class="small-form-sign-label">Signature</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal__footer" id="di-modal-footer"
+            style="display:none;border-top:1px solid var(--border);padding-top:14px;margin-top:6px">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+              <span class="small-pill" style="font-size:11px;color:var(--text-muted)"><i class="fi fi-rr-info"
+                  style="margin-right:4px"></i>Edit fields directly to correct typos before sending</span>
+              <button class="btn btn--primary" onclick="sendToIdMaker()" id="btn-send-idmaker">
+                <i class="fi fi-rr-paper-plane" style="margin-right:6px"></i>Send to ID Maker
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGOUT CONFIRMATION MODAL -->
+    <div class="modal-backdrop" id="logout-confirm-modal">
+      <div class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title">
+        <div class="confirm-hero">
+          <div class="confirm-icon"><i class="fi fi-rr-sign-out-alt"></i></div>
+          <div>
+            <div class="confirm-title" id="logout-confirm-title">Sign out of portal?</div>
+            <div class="confirm-desc">Your current session will end and protected pages will require login again.</div>
+          </div>
+        </div>
+        <div class="confirm-body">
+          <div class="confirm-user">
+            <div>
+              <div class="applicant-name" id="confirm-logout-user">Current user</div>
+              <div class="applicant-id" id="confirm-logout-role">Role</div>
+            </div>
+            <span class="small-pill">Secure logout</span>
+          </div>
+        </div>
+        <div class="confirm-actions">
+          <button class="btn btn--ghost" onclick="closeLogoutConfirm()">Cancel</button>
+          <button class="btn btn--danger" onclick="confirmLogout()">Yes, Sign Out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="app.js?v=14"></script>
+    <script src="staff.js?v=12"></script>
+
+    <script>
+      (function () {
+        'use strict';
+
+        var STATUS_LABELS = ['Pending', 'Under Review', 'In Process', 'Ready for Release', 'Completed', 'Rejected'];
+
+        function getRowStatus(row) {
+          var label = row.querySelector('.status-select__label');
+          return label ? label.textContent.trim() : '';
+        }
+
+        // Override app.js filterByStatus for the Applications table.
+        window.filterByStatus = function (btn, key) {
+          var tabs = btn.closest('.status-tabs');
+          if (tabs) tabs.querySelectorAll('.status-tab').forEach(function (t) { t.classList.remove('active'); });
+          btn.classList.add('active');
+
+          var keyMap = {
+            all: null,
+            pending: 'Pending',
+            review: 'Under Review',
+            process: 'In Process',
+            release: 'Ready for Release',
+            completed: 'Completed',
+            rejected: 'Rejected'
+          };
+          var target = keyMap[key] || null;
+
+          document.querySelectorAll('#applications-tbody tr').forEach(function (row) {
+            if (key === 'all') { row.style.display = ''; return; }
+            var rowStatus = getRowStatus(row);
+            row.style.display = rowStatus === target ? '' : 'none';
+          });
+
+          if (typeof showToast === 'function') {
+            var labelMap = { all: 'All', pending: 'Pending', review: 'Under Review', process: 'In Process', release: 'Ready for Release', completed: 'Completed', rejected: 'Rejected' };
+            showToast('Filtered: ' + (labelMap[key] || key), 'info');
+          }
+        };
+
+        // Override app.js filterApplicants to drive the Applications table search.
+        window.filterApplicationsTable = function (q) {
+          q = (q || '').trim().toLowerCase();
+          document.querySelectorAll('#applications-tbody tr').forEach(function (row) {
+            if (!q) { row.style.display = ''; return; }
+            var text = row.textContent.toLowerCase();
+            row.style.display = text.indexOf(q) !== -1 ? '' : 'none';
+          });
+        };
+
+        function selectedAppIds() {
+          var ids = [];
+          document.querySelectorAll('#applications-tbody .row-check:checked').forEach(function (cb) {
+            if (cb.dataset.appId) ids.push(cb.dataset.appId);
+          });
+          return ids;
+        }
+
+        window.toggleSelectAllApps = function (checked) {
+          document.querySelectorAll('#applications-tbody .row-check').forEach(function (cb) {
+            cb.checked = checked;
+          });
+          updateBatchState();
+        };
+
+        window.updateBatchState = function () {
+          var count = selectedAppIds().length;
+          var wrap = document.getElementById('batch-ops-wrap');
+          var trigger = document.getElementById('batch-ops-trigger');
+          var label = document.getElementById('batch-ops-label');
+          var items = document.querySelectorAll('#batch-ops-menu .batch-ops__item');
+          var selectAll = document.getElementById('select-all-apps');
+          var total = document.querySelectorAll('#applications-tbody .row-check').length;
+          var shown = 0;
+
+          document.querySelectorAll('#applications-tbody tr').forEach(function (row) {
+            if (row.style.display !== 'none') shown++;
+          });
+
+          if (selectAll) {
+            selectAll.checked = (total > 0 && count === total && count === shown);
+            selectAll.indeterminate = (count > 0 && count < total);
+          }
+
+          items.forEach(function (item) { item.disabled = count === 0; });
+          if (trigger) {
+            trigger.disabled = count === 0;
+            if (label) label.textContent = count > 0 ? 'Batch Operations (' + count + ')' : 'Batch Operations';
+          }
+          if (wrap && count === 0) wrap.classList.remove('open');
+        };
+
+        window.toggleBatchMenu = function (btn, event) {
+          if (event && event.stopPropagation) event.stopPropagation();
+          if (btn && btn.disabled) return;
+          var wrap = document.getElementById('batch-ops-wrap');
+          if (!wrap) return;
+          var willOpen = !wrap.classList.contains('open');
+          document.querySelectorAll('.batch-ops-wrap.open').forEach(function (w) {
+            if (w !== wrap) w.classList.remove('open');
+          });
+          if (willOpen) wrap.classList.add('open'); else wrap.classList.remove('open');
+        };
+
+        window.runBatchAction = function (action) {
+          var ids = selectedAppIds();
+          if (ids.length === 0) {
+            if (typeof showToast === 'function') showToast('Select at least one applicant first', 'error');
+            return;
+          }
+          document.getElementById('batch-ops-wrap').classList.remove('open');
+          if (action === 'export') {
+            if (typeof showToast === 'function') showToast('Exported ' + ids.length + ' selected applicant(s)', 'success');
+          } else if (action === 'reviewer') {
+            if (typeof showToast === 'function') showToast('Assign reviewer: ' + ids.length + ' applicant(s) selected', 'info');
+          } else if (action === 'approve') {
+            if (typeof showToast === 'function') showToast('Bulk approved ' + ids.length + ' applicant(s)', 'success');
+          }
+        };
+
+        function categoryFor(status) {
+          if (typeof mapStatusForDropdown === 'function') return mapStatusForDropdown(status);
+          var s = String(status || '').toLowerCase().replace(/_/g, ' ');
+          if (/reject/.test(s)) return 'Rejected';
+          if (/completed|issued/.test(s)) return 'Completed';
+          if (/release/.test(s)) return 'Ready for Release';
+          if (/under review|in review/.test(s)) return 'Under Review';
+          if (/pending|unverified/.test(s)) return 'Pending';
+          return 'In Process';
+        }
+
+        function syncApplicationCounts() {
+          var counts = { 'Pending': 0, 'Under Review': 0, 'In Process': 0, 'Ready for Release': 0, 'Completed': 0, 'Rejected': 0 };
+          var source = (typeof FULL_APPLICANTS !== 'undefined' && FULL_APPLICANTS) ? FULL_APPLICANTS : [];
+          source.forEach(function (a) {
+            var cat = categoryFor(a.status);
+            if (counts.hasOwnProperty(cat)) counts[cat]++;
+          });
+          var total = 0;
+          STATUS_LABELS.forEach(function (s) { total += counts[s]; });
+
+          var keys = { all: total, pending: counts['Pending'], review: counts['Under Review'], process: counts['In Process'], release: counts['Ready for Release'], completed: counts['Completed'], rejected: counts['Rejected'] };
+          Object.keys(keys).forEach(function (k) {
+            document.querySelectorAll('.chip-count[data-count-key="' + k + '"]').forEach(function (el) {
+              el.textContent = keys[k];
+            });
+            // Update data-count on status-tab for auto-hide CSS rule
+            document.querySelectorAll('.status-tab[data-key="' + k + '"]').forEach(function (tab) {
+              tab.setAttribute('data-count', keys[k]);
+            });
+          });
+
+          var totalEl = document.getElementById('apps-total');
+          if (totalEl) totalEl.textContent = total;
+          var shownEl = document.getElementById('apps-shown');
+          if (shownEl) shownEl.textContent = document.querySelectorAll('#applications-tbody tr').length;
+        }
+
+        document.addEventListener('click', function (event) {
+          document.querySelectorAll('.batch-ops-wrap.open').forEach(function (wrap) {
+            if (!wrap.contains(event.target)) wrap.classList.remove('open');
+          });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+          syncApplicationCounts();
+          updateBatchState();
+
+          /* Urgent alert dismiss — persisted in sessionStorage */
+          var KEY = 'staff_urgent_alert_dismissed';
+          var alertEl = document.getElementById('urgent-alert');
+          if (alertEl && sessionStorage.getItem(KEY) === '1') {
+            alertEl.style.display = 'none';
+          }
+
+          /* Restore auth session — populates welcome text, date, user name,
+             and applies the correct role-based UI (KPI strip, nav links, etc.) */
+          if (typeof restoreSession === 'function') {
+            restoreSession();
+          }
+
+        });
+      })();
+
+      /* Global dismiss handler so the inline onclick works */
+      function dismissUrgentAlert() {
+        var el = document.getElementById('urgent-alert');
+        if (!el) return;
+        el.style.transition = 'opacity .25s ease, transform .25s ease, margin .25s ease, padding .25s ease';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        el.style.overflow = 'hidden';
+        setTimeout(function () {
+          el.style.height = el.offsetHeight + 'px';
+          el.style.transition = 'height .2s ease, margin .2s ease, padding .2s ease';
+          requestAnimationFrame(function () {
+            el.style.height = '0';
+            el.style.margin = '0';
+            el.style.padding = '0';
+            el.style.border = 'none';
+          });
+        }, 250);
+        setTimeout(function () {
+          el.style.display = 'none';
+          sessionStorage.setItem('staff_urgent_alert_dismissed', '1');
+        }, 480);
+      }
+    </script>
+</body>
+
+</html>
