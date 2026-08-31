@@ -18,11 +18,9 @@ Run instantly on any HTTP server (no database or backend configuration required)
 Open [`http://localhost:5500/login.html`](http://localhost:5500/login.html) to access the system.
 
 Demo Credentials
-
-| Role      | Username | Password   |
-- Admin   |  admin   |  admin123  |
--  Staff   |  staff   |  staff123  |
-- ID Maker  |  idmaker |  idmaker123|
+- Admin   un: admin   | pw: admin123  
+- Staff   un: staff   | pw: staff123 
+- IDMaker un: idmaker | pw: idmaker123|
 
 
 Project Structure
