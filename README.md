@@ -20,9 +20,9 @@ Open [`http://localhost:5500/login.html`](http://localhost:5500/login.html) to a
 Demo Credentials
 
 | Role      | Username | Password   |
-|   Admin   |  admin   |  admin123  |
-|   Staff   |  staff   |  staff123  |
-| ID Maker  |  idmaker |  idmaker123|
+- Admin   |  admin   |  admin123  |
+-  Staff   |  staff   |  staff123  |
+- ID Maker  |  idmaker |  idmaker123|
 
 
 Project Structure
