@@ -24,19 +24,19 @@ Demo Credentials
 
 
 Project Structure
-├── login.html         Portal entry point & role authentication
-├── admin.html         Admin dashboard (users, settings, logs, backups)
-├── staff.html         Staff dashboard (application processing & intake)
-├── idmaker.html       ID Maker dashboard (production queue & card layout)
-├── app.js             Core architecture (auth, RBAC, modal control, state)
-├── admin.js           Admin logic (user lifecycle, backups, audit system)
-├── staff.js           Staff logic (KPI tracking, application evaluation)
-├── idmaker.js         ID Maker logic (print queue, card rendering, analytics)
-├── base.css           Global design tokens, layout grid, and shared UI components
-├── admin.css          Dedicated styling for Admin portal
-├── staff.css          Dedicated styling for Staff portal
-├── idmaker.css        Dedicated styling for ID Maker portal
-├── portal-logo.jpg    Official OSCA municipal logo
-└── local-server.js    Built-in Node.js development server
+- login.html         Portal entry point & role authentication
+- admin.html         Admin dashboard (users, settings, logs, backups)
+- staff.html         Staff dashboard (application processing & intake)
+- idmaker.html       ID Maker dashboard (production queue & card layout)
+- app.js             Core architecture (auth, RBAC, modal control, state)
+- admin.js           Admin logic (user lifecycle, backups, audit system)
+- staff.js           Staff logic (KPI tracking, application evaluation)
+- idmaker.js         ID Maker logic (print queue, card rendering, analytics)
+- base.css           Global design tokens, layout grid, and shared UI components
+- admin.css          Dedicated styling for Admin portal
+- staff.css          Dedicated styling for Staff portal
+- idmaker.css        Dedicated styling for ID Maker portal
+- portal-logo.jpg    Official OSCA municipal logo
+- local-server.js    Built-in Node.js development server
 
 Created by: Cindy B.
