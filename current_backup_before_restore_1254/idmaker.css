@@ -3,8 +3,6 @@
 .main-queue-header{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap}
 .main-queue-header__title{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
 .main-queue-header__controls{display:flex;flex-direction:row;align-items:center;gap:10px;flex-wrap:nowrap}
-/* .barangay-select-wrap (map-pin Barangay filter) lives in base.css so the
-   Staff portal renders the identical control. */
 @media (max-width:860px){
   .main-queue-header{flex-wrap:wrap}
   .main-queue-header__controls{flex-wrap:wrap}
@@ -191,8 +189,9 @@
 .ops-toolbar__label{font-size:12px;color:var(--text-muted);font-weight:600}
 
 .batch-export{
-  display:flex;align-items:center;gap:12px;padding:9px 18px;
-  background:var(--bg-alt,#f8fafc);border-bottom:1.5px solid var(--border)
+  display:flex;align-items:center;gap:12px;padding:10px 18px;
+  background:var(--surface);border-bottom:1.5px solid var(--border);
+  border-top:1.5px solid var(--border)
 }
 .batch-export__select-all{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
 .batch-export__select-all input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer}
@@ -212,13 +211,6 @@
 }
 .an-card--metric{background:linear-gradient(160deg,#FFF 0%,var(--warning-bg) 140%)}
 .sla-tracker{display:flex;flex-direction:column;gap:14px}
-.sla-segmented-bar{display:flex;gap:3px;width:100%;height:18px;padding:3px;background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden}
-.sla-segment{display:block;height:100%;min-width:0;border-radius:var(--r-pill);transition:width .25s ease}
-.sla-segment--on-time{background:#86EFAC}.sla-segment--24h{background:#FCD34D}.sla-segment--48h{background:#FDA4AF}
-.sla-segment-legend{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:10.5px;color:var(--text-muted)}
-.sla-segment-legend span{display:inline-flex;align-items:center;gap:5px}
-.sla-legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.sla-legend-dot--on-time{background:#22C55E}.sla-legend-dot--24h{background:#F59E0B}.sla-legend-dot--48h{background:#F43F5E}
-.chart-wrap--analytics{position:relative}.chart-empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--text-muted);font-size:12px;pointer-events:none;background:rgba(255,255,255,.72)}
 .sla-big{text-align:center}
 .sla-big__value{font-family:var(--font-display);font-weight:800;font-size:44px;line-height:1;color:var(--warning)}
 .sla-big__label{font-size:12.5px;color:var(--text-muted);margin-top:4px}
@@ -232,59 +224,3 @@
 .sla-row__box.sla-ok strong{color:var(--success)}
 .sla-row__box.sla-total{background:var(--bg-alt);border-color:var(--border)}
 .sla-note{font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;background:var(--bg-alt);padding:8px 10px;border-radius:var(--r-sm)}
-
-/* ═══ ID Maker Mobile Responsive ═══ */
-@media (max-width:768px){
-  /* Queue header stacks */
-  .main-queue-header{flex-direction:column;align-items:flex-start;gap:10px}
-  .main-queue-header__controls{width:100%;flex-wrap:wrap}
-
-  /* Queue filter dropdown full width */
-  .queue-filter-dropdown{width:100%}
-  .queue-filter-trigger{width:100%;justify-content:space-between}
-  .queue-filter-menu{width:100%;min-width:0}
-
-  /* Batch export wraps */
-  .batch-export{flex-wrap:wrap;gap:8px}
-  .batch-export__spacer{display:none}
-
-  /* Analytics cards mobile */
-  .sla-big__value{font-size:36px}
-  .sla-row{flex-wrap:wrap}
-  .sla-row__box{min-width:calc(50% - 4px)}
-  .sla-row__box.sla-total{min-width:100%}
-
-  /* ID card modal mobile */
-  .idcard-modal-wrap{width:100%;max-height:calc(100dvh - 24px)}
-  .idcard.cr80{width:100%;max-width:360px;height:auto;aspect-ratio:85.6/53.98}
-  .idcard__header{padding:10px 12px 6px}
-  .idcard__body{padding:8px 12px 6px;gap:8px}
-  .idcard__photo-area{width:56px;height:68px}
-  .idcard__fields{gap:3px}
-  .idcard__field{gap:4px}
-  .idcard__label{font-size:7.5px}
-  .idcard__value{font-size:9px}
-  .idcard__footer{padding:4px 12px 8px}
-  .idcard__id-row .idcard__field{gap:4px}
-
-  /* Row status select mobile */
-  .row-status-select{width:100%}
-  .qsd-trigger{width:100%;justify-content:space-between}
-  .qsd-menu{width:100%;min-width:0}
-
-  /* Alert banner mobile */
-  .alert-banner{flex-direction:column;gap:8px}
-  .alert-banner__list{flex-direction:column}
-
-  /* Ops toolbar mobile */
-  .ops-toolbar{flex-wrap:wrap;gap:6px}
-}
-
-@media (max-width:560px){
-  .main-queue-header__title{min-width:0}
-  .main-queue-header__title h1{font-size:18px}
-  .sla-big__value{font-size:28px}
-  .sla-row__box{min-width:100%}
-  .qsd-menu{min-width:150px}
-  .queue-filter-menu{min-width:0}
-}

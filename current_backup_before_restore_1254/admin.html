@@ -21,8 +21,8 @@
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css" />
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css" />
 
-  <link rel="stylesheet" href="base.css?v=27" />
-  <link rel="stylesheet" href="admin.css?v=23" />
+  <link rel="stylesheet" href="base.css?v=12" />
+  <link rel="stylesheet" href="admin.css?v=12" />
 </head>
 
 <body class="portal-mode">
@@ -88,7 +88,8 @@
       <div class="sidebar__footer">
         <div class="sidebar__user">
           <div class="sidebar__avatar">
-            <span class="sidebar__avatar-initials"></span>
+            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=128&q=80"
+              alt="Cindy" />
           </div>
           <div class="sidebar__user-info">
             <span class="sidebar__user-name" id="current-user-name">Cindy Bulanhagui</span>
@@ -102,20 +103,7 @@
           </button>
         </div>
 
-        <!-- ADDED: Quick role switcher (RBAC demo) -->
-        <div id="role-switcher" style="display:none;padding:6px 10px 10px">
-          <div
-            style="font-family:var(--font-data);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-placeholder);padding:6px 2px">
-            Quick Role Switch</div>
-          <select class="filter-select" style="width:100%" id="role-switch-select" onchange="setRole(this.value)">
-            <option value="Admin" selected>Admin</option>
-            <option value="Staff">Staff</option>
-            <option value="ID Maker">ID Maker</option>
-          </select>
-          <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;line-height:1.4">
-            Roles affect access to: approval, printing, user management, exports.
-          </div>
-        </div>
+
 
         <button class="sidebar__logout-btn" onclick="requestLogout()">
           <i class="fi fi-rr-sign-out-alt" style="font-size:14px;color:var(--text-muted)"></i>
@@ -127,18 +115,7 @@
     <!-- ═══════════════════════════════════
      MAIN
 ═══════════════════════════════════ -->
-    <!-- Off-canvas drawer backdrop -->
-    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebarDrawer()"></div>
-
     <main class="main-content">
-
-      <!-- Mobile top bar: hamburger trigger -->
-      <div class="mobile-topbar" style="display:none;align-items:center;gap:10px;margin-bottom:6px">
-        <button class="mobile-menu-btn" onclick="toggleSidebarDrawer()" aria-label="Open menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <strong style="font-family:var(--font-display);font-size:16px;color:var(--text-primary)" id="mobile-topbar-title">Admin Portal</strong>
-      </div>
 
       <!-- ══════════ DASHBOARD (unchanged content + ADDED AI panel + notifications log) ══════════ -->
       <div class="module active" id="mod-dashboard">
@@ -197,23 +174,6 @@
           </div>
         </header>
 
-        <!-- Quick Administrative Actions bar -->
-        <div class="quick-actions-bar">
-          <span class="quick-actions-bar__label">Quick Actions</span>
-          <button class="btn btn--primary" onclick="quickAddUser()">
-            <svg viewBox="0 0 16 16" fill="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-            Add New User
-          </button>
-          <button class="btn btn--secondary" onclick="quickBackup()">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:14px;height:14px;margin-right:4px"><path d="M8 12V4M5 8l3-4 3 4M3 13h10"/></svg>
-            Execute System Backup
-          </button>
-          <button class="btn btn--secondary" onclick="quickExportSecurityLogs()">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:14px;height:14px;margin-right:4px"><path d="M8 2v10M4 9l4 4 4-4M2 14h12"/></svg>
-            Export Security Logs
-          </button>
-        </div>
-
         <!-- Admin Executive Scorecards — 4 cards per spec (Module A) -->
         <div class="admin-kpi-strip">
 
@@ -224,13 +184,13 @@
                 <i class="fi fi-rr-users ic-blue"></i>
               </div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-up"></div>
-                <div class="stat-card__period"></div>
+                <div class="stat-card__trend trend-up">+12%</div>
+                <div class="stat-card__period">THIS MONTH</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Total Registered Citizens</div>
-              <div class="stat-card__value" id="kpi-citizens">0</div>
+              <div class="stat-card__value" id="kpi-citizens">12,482</div>
               <div class="stat-card__sub">Overall demographic volume</div>
             </div>
           </div>
@@ -242,13 +202,13 @@
                 <i class="fi fi-rr-shield-check ic-green"></i>
               </div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-good"></div>
-                <div class="stat-card__period"></div>
+                <div class="stat-card__trend trend-good">3 active</div>
+                <div class="stat-card__period">RBAC</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Active System Users</div>
-              <div class="stat-card__value" id="kpi-active-users">0</div>
+              <div class="stat-card__value" id="kpi-active-users">3</div>
               <div class="stat-card__sub">Staff &amp; ID Maker accounts</div>
             </div>
           </div>
@@ -257,16 +217,16 @@
           <div class="stat-card">
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-teal">
-                <i class="fi fi-rr-heart-rate ic-teal"></i>
+                <i class="fi fi-rr-monitor-heart-rate ic-teal"></i>
               </div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-good"></div>
-                <div class="stat-card__period"></div>
+                <div class="stat-card__trend trend-good">● Live</div>
+                <div class="stat-card__period">INFRASTRUCTURE</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">System Uptime &amp; Health</div>
-              <div class="stat-card__value" id="kpi-uptime">0</div>
+              <div class="stat-card__value" id="kpi-uptime">99.9%</div>
               <div class="stat-card__sub">Rolling 30-day availability</div>
             </div>
           </div>
@@ -278,13 +238,13 @@
                 <i class="fi fi-rr-exclamation ic-red"></i>
               </div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-up"></div>
-                <div class="stat-card__period"></div>
+                <div class="stat-card__trend trend-up">+3</div>
+                <div class="stat-card__period">SECURITY</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Security &amp; Audit Alerts</div>
-              <div class="stat-card__value" id="kpi-security-alerts">0</div>
+              <div class="stat-card__value" id="kpi-security-alerts">3</div>
               <div class="stat-card__sub">Suspicious &amp; failed logins</div>
             </div>
           </div>
@@ -293,16 +253,16 @@
           <div class="stat-card stat-card--warn">
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-warn">
-                <i class="fi fi-rr-database ic-warn"></i>
+                <i class="fi fi-rr-hard-drive ic-warn"></i>
               </div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-good"></div>
-                <div class="stat-card__period"></div>
+                <div class="stat-card__trend trend-good">✓</div>
+                <div class="stat-card__period">auto</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Backup Status</div>
-              <div class="stat-card__value" id="kpi-backup">0</div>
+              <div class="stat-card__value" id="kpi-backup">2 hrs ago</div>
               <div class="stat-card__sub">Automated snapshot OK</div>
             </div>
           </div>
@@ -321,26 +281,76 @@
           <div class="admin-metrics-grid">
             <div class="admin-metric-box">
               <div class="admin-metric-box__label">Applications Received</div>
-              <div class="admin-metric-box__value" id="metric-received">0</div>
-              <div class="admin-metric-box__sub"></div>
+              <div class="admin-metric-box__value" id="metric-received">1,142</div>
+              <div class="admin-metric-box__sub">This month</div>
             </div>
             <div class="admin-metric-box">
               <div class="admin-metric-box__label">Exported (Files)</div>
-              <div class="admin-metric-box__value" id="metric-printed">0</div>
-              <div class="admin-metric-box__sub"></div>
+              <div class="admin-metric-box__value" id="metric-printed">31</div>
+              <div class="admin-metric-box__sub">Files generated today</div>
             </div>
             <div class="admin-metric-box">
               <div class="admin-metric-box__label">Total Daily Actions</div>
-              <div class="admin-metric-box__value" id="metric-daily-actions">0</div>
-              <div class="admin-metric-box__sub"></div>
+              <div class="admin-metric-box__value">248</div>
+              <div class="admin-metric-box__sub">vs 212 yesterday</div>
             </div>
           </div>
         </section>
 
-        <!-- CONSOLIDATED: the redundant "Recent Admin Actions" ops card was removed.
-             The "Audit Log Summary" widget below shows the same sensitive actions with
-             period filters, export, and a link to the full audit log. -->
-        <!-- Audit Log Summary — dropdown range filter (persisted, see admin.js) -->
+        <!-- Infrastructure & Storage (sole location for DB / Export / capacity) + Recent Admin Actions -->
+        <section class="admin-ops-grid admin-ops-grid--balanced admin-only-panel" id="admin-ops-panel">
+          <article class="admin-op-card admin-op-card--narrow">
+            <div class="admin-op-card__top">
+              <div class="admin-op-card__icon"><i class="fi fi-rr-server"></i></div>
+              <span class="small-pill small-pill--warning">Degraded</span>
+            </div>
+            <div>
+              <div class="admin-op-card__title">Infrastructure &amp; Storage</div>
+              <div class="admin-op-card__desc">Core service health and database capacity.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:auto">
+              <div class="svc-grid">
+                <span class="svc-dot svc-dot--ok"></span>
+                <span class="svc-label">Database</span>
+                <span class="svc-value" style="color:var(--success)">Connected</span>
+                <span class="svc-dot svc-dot--warn"></span>
+                <span class="svc-label">Export service</span>
+                <span class="svc-value" style="color:var(--warning-dark)">Degraded</span>
+              </div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+                <span style="font-size:10.5px;color:var(--text-secondary)">Storage used</span>
+                <strong style="font-family:var(--font-data);font-size:10px;font-weight:700;color:var(--text-primary)">4.2 GB / 10 GB</strong>
+              </div>
+              <div class="storage-bar storage-bar--ok" title="42% of allocated capacity used">
+                <div class="storage-bar__fill" style="width:42%"></div>
+              </div>
+              <div class="admin-op-card__stat">42% of allocated capacity</div>
+            </div>
+          </article>
+
+          <article class="admin-op-card admin-op-card--wide">
+            <div class="admin-op-card__top">
+              <div class="admin-op-card__icon"><i class="fi fi-rr-shield-exclamation"></i></div>
+              <span class="small-pill small-pill--danger">High-risk log</span>
+            </div>
+            <div>
+              <div class="admin-op-card__title">Recent Admin Actions</div>
+              <div class="admin-op-card__desc">Latest sensitive actions, high-risk first.</div>
+            </div>
+            <div class="activity-list" id="admin-activity-list">
+              <!-- Activity rows populated by JS from audit log -->
+              <button class="actions-footer" onclick="navigate('audit-logs')">
+                View full audit log
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <!-- ADDED: Audit Log Summary - Last 5 sensitive actions -->
         <section class="log-card admin-only-panel">
           <div class="log-card__header">
             <div>
@@ -348,21 +358,10 @@
               <div class="log-card__sub" id="audit-summary-sub">Last 5 sensitive actions</div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
-              <div class="audit-range-filter" id="audit-summary-filter">
-                <svg class="audit-range-filter__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v5l3 2" />
-                </svg>
-                <select class="filter-select" id="audit-summary-range" onchange="filterAuditLog(this.value)"
-                  aria-label="Audit log summary time range">
-                  <option value="5">Last 5 actions</option>
-                  <option value="24h">Last 24 hours</option>
-                  <option value="7d">Last 7 days</option>
-                </select>
-                <button type="button" class="audit-range-filter__reset" id="audit-summary-reset"
-                  onclick="resetAuditLogFilter()" title="Reset to default range" aria-label="Reset filter"
-                  hidden>×</button>
+              <div class="filter-bar" style="padding: 0; background: none; border: none; gap: 4px;" data-period-bar>
+                <button class="filter-chip active" onclick="filterAuditLog('5')" data-period="5">Last 5</button>
+                <button class="filter-chip" onclick="filterAuditLog('24h')" data-period="24h">24h</button>
+                <button class="filter-chip" onclick="filterAuditLog('7d')" data-period="7d">7d</button>
               </div>
               <button class="btn btn--secondary" onclick="exportAuditLog()"
                 style="height: 34px; font-size: 12px; padding: 0 14px;">
@@ -385,15 +384,89 @@
                 </tr>
               </thead>
               <tbody id="audit-summary-tbody">
-                <tr><td colspan="3" class="table-empty"><i class="fi fi-rr-shield-check"></i> No data to display yet. It will appear here once connected to the live system.</td></tr>
+                <tr data-period="5,24h,7d">
+                  <td><span class="cell-text">Today, 10:32 AM</span></td>
+                  <td><span class="cell-text">Cindy B.</span></td>
+                  <td style="text-align:center"><span class="action-pill action-pill--blue">Admin changed Staff role</span></td>
+                </tr>
+                <tr data-period="5,24h,7d">
+                  <td><span class="cell-text">Today, 10:15 AM</span></td>
+                  <td><span class="cell-text">Cindy B.</span></td>
+                  <td style="text-align:center"><span class="action-pill action-pill--orange">Export of PII data (CSV)</span></td>
+                </tr>
+                <tr>
+                  <td><span class="cell-text">Today, 09:56 AM</span></td>
+                  <td><span class="cell-text">Ramon P.</span></td>
+                  <td style="text-align:center"><span class="action-pill action-pill--purple">Applicant record viewed (5x)</span></td>
+                </tr>
+                <tr>
+                  <td><span class="cell-text">Today, 09:42 AM</span></td>
+                  <td><span class="cell-text">System</span></td>
+                  <td style="text-align:center"><span class="action-pill action-pill--green">Encrypted backup completed</span></td>
+                </tr>
+                <tr data-period="5,7d">
+                  <td><span class="cell-text">Yesterday, 08:30 AM</span></td>
+                  <td><span class="cell-text">Ana D.</span></td>
+                  <td style="text-align:center"><span class="action-pill action-pill--teal">Application status updated</span></td>
+                </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <!-- REMOVED: "Notifications & Tracking Monitor" table (per content review).
-             addNotifyLog() in app.js is null-guarded, so notification events are
-             simply not rendered anywhere now. -->
+        <!-- ADDED: Notifications & Tracking Monitor (Admin visibility) -->
+        <section class="log-card">
+          <div class="log-card__header">
+            <div>
+              <div class="log-card__title">Notifications & Tracking Monitor</div>
+              <div class="log-card__sub">Outbound SMS/Email logs + applicant tracking views</div>
+            </div>
+            <span class="small-pill">DPA-aware log</span>
+          </div>
+          <div class="log-card__body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th onclick="sortTable('notify-log-body',0,this)">Date/Time <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('notify-log-body',1,this)">Applicant <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('notify-log-body',2,this)">Event <span class="sort-icon">↕</span></th>
+                  <th>Channel</th>
+                  <th>Result</th>
+                  <th style="text-align:right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="notify-log-body">
+                <tr>
+                  <td><span class="cell-text">Apr 8, 2026 10:18</span></td>
+                  <td><span class="cell-text">SCB-2026-00421</span></td>
+                  <td><span class="cell-text">Tracking Viewed (x3)</span></td>
+                  <td><span class="badge badge-review">Portal</span></td>
+                  <td><span class="badge badge-approved">OK</span></td>
+                  <td style="text-align:right"><button class="row-action always-visible"
+                      onclick="openApplicationDetail('SCB-2026-00421')">Open</button></td>
+                </tr>
+                <tr>
+                  <td><span class="cell-text">Apr 8, 2026 09:40</span></td>
+                  <td><span class="cell-text">SCB-2026-00410</span></td>
+                  <td><span class="cell-text">Missing Document Reminder</span></td>
+                  <td><span class="badge badge-issued">SMS</span></td>
+                  <td><span class="badge badge-approved">Sent</span></td>
+                  <td style="text-align:right"><button class="row-action always-visible"
+                      onclick="showToast('Resent SMS reminder (demo)','success')">Resend</button></td>
+                </tr>
+                <tr>
+                  <td><span class="cell-text">Apr 7, 2026 16:12</span></td>
+                  <td><span class="cell-text">SCB-2026-00418</span></td>
+                  <td><span class="cell-text">Status Updated</span></td>
+                  <td><span class="badge badge-review">Email</span></td>
+                  <td><span class="badge badge-approved">Delivered</span></td>
+                  <td style="text-align:right"><button class="row-action always-visible"
+                      onclick="openApplicationDetail('SCB-2026-00418')">Open</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
 
       </div>
@@ -434,18 +507,18 @@
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Total Personnel Accounts</span>
-          <span class="stat-card__value" id="users-total">0</span>
+          <span class="stat-card__value" id="users-total">8</span>
           <span class="stat-card__sub">Staff + ID Maker + Admin</span>
         </div>
       </article>
       <article class="stat-card stat-card--success">
         <div class="stat-card__top">
           <div class="stat-card__icon-wrap iwrap-green"><i class="fi fi-rr-shield-check ic-green"></i></div>
-          <div class="stat-card__meta"><span class="stat-card__trend trend-good">0</span></div>
+          <div class="stat-card__meta"><span class="stat-card__trend trend-good">Active</span></div>
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Active Accounts</span>
-          <span class="stat-card__value" id="users-active">0</span>
+          <span class="stat-card__value" id="users-active">3</span>
           <span class="stat-card__sub">Enabled for portal access</span>
         </div>
       </article>
@@ -456,7 +529,7 @@
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Deactivated Accounts</span>
-          <span class="stat-card__value" id="users-inactive">0</span>
+          <span class="stat-card__value" id="users-inactive">5</span>
           <span class="stat-card__sub">Resigned / reassigned (kept history)</span>
         </div>
       </article>
@@ -467,7 +540,7 @@
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">ID Maker Accounts</span>
-          <span class="stat-card__value" id="users-idmaker">0</span>
+          <span class="stat-card__value" id="users-idmaker">2</span>
           <span class="stat-card__sub">Locked to printing functions</span>
         </div>
       </article>
@@ -518,13 +591,13 @@
     </div>
   </div>
 
-  <!-- ══════════ MODULE C: AUDIT LOGS ══════════ -->
+  <!-- ══════════ MODULE C: AUDIT LOGS & ACTIVITY MONITOR (FR-19) ══════════ -->
   <div class="module" id="mod-audit-logs">
     <header class="page-header">
       <div class="page-header__left">
         <div class="page-header__eyebrow">
-          <h1 class="page-header__title">Audit Logs</h1><span
-            class="page-header__badge danger">Tamper-Proof</span>
+          <h1 class="page-header__title">Audit Logs &amp; Activity Monitor</h1><span
+            class="page-header__badge danger">FR-19 · Tamper-Proof</span>
         </div>
         <p class="page-header__sub">Timestamped system events across all roles — RA 10173 (DPA) compliant</p>
       </div>
@@ -550,11 +623,15 @@
               oninput="filterAuditLogs()" /></label>
           <select class="filter-select" id="audit-user-filter" onchange="filterAuditLogs()">
             <option value="">All Users</option>
+            <option value="Cindy Bulanhagui">Cindy Bulanhagui</option>
+            <option value="Ramon Punzalan">Ramon Punzalan</option>
+            <option value="Ana Dela Cruz">Ana Dela Cruz</option>
+            <option value="Jayrold">Jayrold</option>
+            <option value="System">System</option>
           </select>
           <select class="filter-select" id="audit-action-filter" onchange="filterAuditLogs()">
             <option value="">All Actions</option>
             <option value="approve">Approvals</option>
-            <option value="reject">Rejections</option>
             <option value="status">Status Updates</option>
             <option value="export">Exports</option>
             <option value="login">Login Attempts</option>
@@ -702,8 +779,51 @@
           <span class="small-pill">Live</span>
         </div>
         <div class="content-card__body">
-          <div class="admin-service-grid" id="service-status-grid">
-            <!-- Rendered by renderServiceStatus() from SERVICE_STATUS (admin.js) -->
+          <div class="admin-service-grid">
+            <article class="admin-service-card">
+              <div class="admin-service-card__head">
+                <div class="admin-service-card__icon"><i class="fi fi-brands-google"></i></div>
+                <div>
+                  <div class="admin-service-card__name">Google Gemini API</div>
+                  <div class="admin-service-card__desc">Analytics &amp; AI chatbot</div>
+                </div>
+              </div>
+              <div class="admin-service-card__status ok"><i class="fi fi-rr-check-circle"></i> Operational
+                <span class="badge badge-approved">120 ms</span></div>
+            </article>
+            <article class="admin-service-card">
+              <div class="admin-service-card__head">
+                <div class="admin-service-card__icon"><i class="fi fi-rr-cloud"></i></div>
+                <div>
+                  <div class="admin-service-card__name">Amazon Rekognition</div>
+                  <div class="admin-service-card__desc">Age &amp; duplicate checks</div>
+                </div>
+              </div>
+              <div class="admin-service-card__status ok"><i class="fi fi-rr-check-circle"></i> Operational
+                <span class="badge badge-approved">95 ms</span></div>
+            </article>
+            <article class="admin-service-card">
+              <div class="admin-service-card__head">
+                <div class="admin-service-card__icon"><i class="fi fi-rr-database"></i></div>
+                <div>
+                  <div class="admin-service-card__name">PostgreSQL Database</div>
+                  <div class="admin-service-card__desc">Primary data store</div>
+                </div>
+              </div>
+              <div class="admin-service-card__status ok"><i class="fi fi-rr-check-circle"></i> Operational
+                <span class="badge badge-approved">18 ms</span></div>
+            </article>
+            <article class="admin-service-card">
+              <div class="admin-service-card__head">
+                <div class="admin-service-card__icon"><i class="fi fi-rr-bell"></i></div>
+                <div>
+                  <div class="admin-service-card__name">SMS / Email Gateway</div>
+                  <div class="admin-service-card__desc">Applicant notifications</div>
+                </div>
+              </div>
+              <div class="admin-service-card__status warn"><i class="fi fi-rr-exclamation"></i> Degraded
+                <span class="badge badge-review">1.4s</span></div>
+            </article>
           </div>
         </div>
       </div>
@@ -795,13 +915,13 @@
     </div>
   </div>
 
-  <!-- ══════════ MODULE E: DATABASE BACKUP & RECOVERY ══════════ -->
+  <!-- ══════════ MODULE E: DATABASE BACKUP & RECOVERY (FR-20) ══════════ -->
   <div class="module" id="mod-backup">
     <header class="page-header">
       <div class="page-header__left">
         <div class="page-header__eyebrow">
           <h1 class="page-header__title">Database Backup &amp; Recovery</h1><span
-            class="page-header__badge green">Automated</span>
+            class="page-header__badge green">FR-20</span>
         </div>
         <p class="page-header__sub">Snapshot, schedule, and restore the PostgreSQL disaster recovery pipeline</p>
       </div>
@@ -810,45 +930,45 @@
     <div class="cards-grid">
       <article class="stat-card">
         <div class="stat-card__top">
-          <div class="stat-card__icon-wrap iwrap-green"><i class="fi fi-rr-shield-check ic-green"></i></div>
-          <div class="stat-card__meta"><span class="stat-card__trend trend-good"></span></div>
+          <div class="stat-card__icon-wrap iwrap-green"><i class="fi fi-rr-hard-drive ic-green"></i></div>
+          <div class="stat-card__meta"><span class="stat-card__trend trend-good">Healthy</span></div>
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Backup Health</span>
-          <span class="stat-card__value" id="bk-health">0</span>
+          <span class="stat-card__value" id="bk-health">100%</span>
           <span class="stat-card__sub">Last 7 snapshots succeeded</span>
         </div>
       </article>
       <article class="stat-card stat-card--warn">
         <div class="stat-card__top">
           <div class="stat-card__icon-wrap iwrap-warn"><i class="fi fi-rr-database ic-warn"></i></div>
-          <div class="stat-card__meta"><span class="stat-card__period"></span></div>
+          <div class="stat-card__meta"><span class="stat-card__period">Storage</span></div>
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Cloud Storage Used</span>
-          <span class="stat-card__value" id="bk-storage">0</span>
+          <span class="stat-card__value" id="bk-storage">18.4 GB</span>
           <span class="stat-card__sub">Government cloud (72%)</span>
         </div>
       </article>
       <article class="stat-card">
         <div class="stat-card__top">
           <div class="stat-card__icon-wrap iwrap-blue"><i class="fi fi-rr-calendar ic-blue"></i></div>
-          <div class="stat-card__meta"><span class="stat-card__period"></span></div>
+          <div class="stat-card__meta"><span class="stat-card__period">Next</span></div>
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Next Scheduled Backup</span>
-          <span class="stat-card__value" id="bk-next">0</span>
+          <span class="stat-card__value" id="bk-next">2:00 AM</span>
           <span class="stat-card__sub">Automatic daily snapshot</span>
         </div>
       </article>
       <article class="stat-card stat-card--danger">
         <div class="stat-card__top">
           <div class="stat-card__icon-wrap iwrap-red"><i class="fi fi-rr-life-ring ic-red"></i></div>
-          <div class="stat-card__meta"><span class="stat-card__period"></span></div>
+          <div class="stat-card__meta"><span class="stat-card__period">DR</span></div>
         </div>
         <div class="stat-card__body">
           <span class="stat-card__label">Restore Point Ready</span>
-          <span class="stat-card__value" id="bk-restore">0</span>
+          <span class="stat-card__value" id="bk-restore">Yes</span>
           <span class="stat-card__sub">Most recent verified snapshot</span>
         </div>
       </article>
@@ -963,7 +1083,10 @@
         </div>
         <div class="form-actions">
           <select class="filter-select" id="restore-point-select" style="height:36px;max-width:320px">
-            <!-- Options bound to BACKUP_HISTORY by renderRestorePoints() (admin.js) -->
+            <option>Latest restore point (Today 2:00 AM)</option>
+            <option>Yesterday 2:00 AM</option>
+            <option>Weekly archive — Apr 4, 2026</option>
+            <option>Manual snapshot — Apr 1, 2026</option>
           </select>
           <button class="btn btn--danger" onclick="initiateRestore()">Initiate Database Restoration</button>
           <button class="btn btn--ghost" onclick="verifyRestorePoint()">Verify Restore Point</button>
@@ -1048,7 +1171,7 @@
     <div class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ua-modal-title"
       style="width:min(480px,100%)">
       <div class="confirm-hero">
-        <div class="confirm-icon"><i class="fi fi-rr-shield-interrogation"></i></div>
+        <div class="confirm-icon"><i class="fi fi-rr-shield-keyhole"></i></div>
         <div>
           <div class="confirm-title" id="ua-modal-title">Security Credential Reset</div>
           <div class="confirm-desc" id="ua-modal-desc">Reset the login credentials for this account.</div>
@@ -1057,16 +1180,7 @@
       <div class="confirm-body">
         <div class="form-group">
           <label class="form-label">New Temporary Password</label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input class="form-input" type="password" id="ua-new-password" autocomplete="new-password"
-              style="flex:1;min-width:0;font-family:var(--font-data);letter-spacing:.5px" />
-            <button type="button" class="icon-btn" onclick="toggleResetPwVisibility()" title="Show / hide password"
-              aria-label="Show or hide password" id="ua-pw-reveal"><i class="fi fi-rr-eye"></i></button>
-            <button type="button" class="btn btn--secondary" onclick="regenerateResetPassword()"
-              style="height:38px;padding:0 12px;font-size:12px;white-space:nowrap">Generate</button>
-          </div>
-          <div style="font-size:11.5px;color:var(--text-muted);margin-top:6px">Auto-generated (16 chars) and masked by default.
-          </div>
+          <input class="form-input" type="text" id="ua-new-password" value="SCB@Reset2026" />
         </div>
         <div class="form-group">
           <label class="form-label">Force Password Change on Next Login</label>
@@ -1116,40 +1230,11 @@
     </div>
   </div>
 
-  <!-- ══════════ CONFIRMATION MODAL (destructive backup / restore) ══════════ -->
-  <div class="modal-backdrop" id="confirm-modal">
-    <div class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="cf-modal-title">
-      <div class="confirm-hero">
-        <div class="confirm-icon" id="cf-modal-icon"><i class="fi fi-rr-exclamation"></i></div>
-        <div>
-          <div class="confirm-title" id="cf-modal-title">Confirm action</div>
-          <div class="confirm-desc" id="cf-modal-desc"></div>
-        </div>
-      </div>
-      <div class="confirm-body">
-        <div class="alert alert-warn" style="margin:0">
-          <svg viewBox="0 0 16 16" fill="currentColor">
-            <path
-              d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-          </svg>
-          <div class="alert-content">
-            <div class="alert-title" id="cf-modal-alert-title"></div>
-            <div class="alert-desc" id="cf-modal-alert-desc"></div>
-          </div>
-        </div>
-      </div>
-      <div class="confirm-actions">
-        <button class="btn btn--ghost" onclick="closeConfirmModal()">Cancel</button>
-        <button class="btn btn--danger" id="cf-modal-confirm" onclick="runConfirmAction()">Confirm</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast container -->
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="app.js?v=24"></script>
-  <script src="admin.js?v=15"></script>
+  <script src="app.js?v=14"></script>
+  <script src="admin.js?v=12"></script>
 </body>
 
 </html>

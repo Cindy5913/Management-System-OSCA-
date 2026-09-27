@@ -35,86 +35,72 @@ if (typeof Chart !== 'undefined') {
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-/* ==========================================================
-   ANALYTICS_DATA — EMPTY bootstrap.
-   All demo figures have been removed. The field/role shape is
-   preserved so your team can map responses from the other
-   application system (e.g. a /analytics endpoint) onto these keys.
-   Each role exposes:
-     totalApplications, pending, inReview, pendingReview,
-     approved, rejected, idsIssued,
-     submitted[], approvedMonthly[], rejectedMonthly[],
-     barangayLabels[], barangayTotal[], barangayApproved[],
-     barangayPending[], statusDenominator, issuance[], processing[]
-   TODO(integration): populate from the live system, then call the
-   relevant init* chart functions to re-render.
-========================================================== */
 const ANALYTICS_DATA = {
   Admin: {
     scopeLabel: 'Admin Scope',
     title: 'Analytics',
     subtitle: 'Municipality-wide data visualizations and performance insights',
-    totalApplications: 0,
-    pending: 0,
-    inReview: 0,
-    pendingReview: 0,
-    approved: 0,
-    rejected: 0,
-    idsIssued: 0,
-    submitted: [],
-    approvedMonthly: [],
-    rejectedMonthly: [],
-    barangayLabels: [],
-    barangayTotal: [],
-    barangayApproved: [],
-    barangayPending: [],
-    statusDenominator: 0,
-    issuance: [],
-    processing: []
+    totalApplications: 12482,
+    pending: 612,
+    inReview: 231,
+    pendingReview: 843,
+    approved: 11204,
+    rejected: 435,
+    idsIssued: 7841,
+    submitted: [820, 940, 880, 1020, 1100, 980, 1060, 1140, 1020, 1200, 1180, 1142],
+    approvedMonthly: [740, 850, 790, 920, 990, 880, 950, 1020, 920, 1080, 1060, 1004],
+    rejectedMonthly: [26, 28, 30, 32, 34, 35, 36, 38, 39, 42, 45, 50],
+    barangayLabels: ['Aplaya', 'Santa Maria', 'Barangay I (Poblacion)', 'San Roque', 'San Diego', 'Manghinao Proper'],
+    barangayTotal: [2458, 2110, 1840, 1604, 1220, 760],
+    barangayApproved: [2204, 1892, 1650, 1440, 1094, 684],
+    barangayPending: [166, 142, 124, 108, 82, 51],
+    statusDenominator: 12482,
+    issuance: [620, 1290, 2140, 3080, 4010, 4870, 5620, 6310, 6890, 7300, 7600, 7841],
+    processing: [3.8, 3.4, 3.1, 2.9, 3.0, 2.8, 2.7, 2.6, 2.5, 2.5, 2.4, 2.4]
   },
   Staff: {
     scopeLabel: 'Staff Scope',
     title: 'Staff Analytics',
     subtitle: 'Assigned queue, review workload, and daily processing performance',
-    totalApplications: 0,
-    pending: 0,
-    inReview: 0,
-    pendingReview: 0,
-    approved: 0,
-    rejected: 0,
-    idsIssued: 0,
-    submitted: [],
-    approvedMonthly: [],
-    rejectedMonthly: [],
-    barangayLabels: [],
-    barangayTotal: [],
-    barangayApproved: [],
-    barangayPending: [],
-    statusDenominator: 0,
-    issuance: [],
-    processing: []
+    totalApplications: 147,
+    pending: 18,
+    inReview: 11,
+    pendingReview: 29,
+    approved: 102,
+    rejected: 16,
+    idsIssued: 64,
+    submitted: [8, 10, 9, 12, 13, 11, 12, 14, 13, 15, 15, 15],
+    approvedMonthly: [6, 7, 6, 8, 9, 8, 8, 9, 9, 10, 11, 11],
+    rejectedMonthly: [1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2],
+    barangayLabels: ['Aplaya', 'Santa Maria', 'Barangay I (Poblacion)', 'San Roque', 'San Diego', 'Manghinao Proper'],
+    barangayTotal: [39, 30, 26, 22, 17, 13],
+    barangayApproved: [28, 21, 18, 15, 11, 9],
+    barangayPending: [8, 6, 5, 4, 3, 3],
+    statusDenominator: 147,
+    issuance: [2, 6, 11, 17, 23, 28, 34, 41, 47, 53, 59, 64],
+    processing: [3.2, 3.0, 2.9, 2.7, 2.6, 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 2.0]
   },
   'ID Maker': {
     scopeLabel: 'ID Maker Scope',
     title: 'Print & Issuance Analytics',
     subtitle: 'Print queue, issuance throughput, and ID production insights',
-    totalApplications: 0,
-    pending: 0,
-    inReview: 0,
-    pendingReview: 0,
-    approved: 0,
-    rejected: 0,
-    idsIssued: 0,
-    submitted: [],
-    approvedMonthly: [],
-    rejectedMonthly: [],
-    barangayLabels: [],
-    barangayTotal: [],
-    barangayApproved: [],
-    barangayPending: [],
-    statusDenominator: 0,
-    issuance: [],
-    processing: []
+    totalApplications: 64,
+    pending: 11,
+    inReview: 9,
+    pendingReview: 20,
+    approved: 44,
+    rejected: 3,
+    idsIssued: 64,
+    submitted: [3, 5, 6, 8, 9, 8, 9, 10, 10, 12, 13, 13],
+    approvedMonthly: [2, 3, 4, 6, 7, 6, 7, 8, 8, 10, 11, 11],
+    rejectedMonthly: [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1],
+    barangayLabels: ['Aplaya', 'Santa Maria', 'Barangay I (Poblacion)', 'San Roque', 'San Diego', 'Manghinao Proper'],
+    barangayTotal: [18, 14, 12, 9, 7, 4],
+    barangayApproved: [12, 10, 8, 7, 5, 2],
+    barangayPending: [5, 3, 3, 2, 1, 1],
+    statusDenominator: 64,
+    issuance: [1, 3, 7, 12, 18, 24, 31, 38, 45, 52, 58, 64],
+    processing: [2.8, 2.6, 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 1.9, 1.8, 1.8, 1.7]
   }
 };
 const SUBMITTED = ANALYTICS_DATA.Admin.submitted;
@@ -132,7 +118,7 @@ function analyticsScope() {
 
 const SCALE = {
   x: { grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text } },
-  y: { grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text, precision: 0, stepSize: 1, callback: v => Number.isInteger(v) ? (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v) : null } }
+  y: { grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text, callback: v => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v } }
 };
 const TIP = { backgroundColor: C.tooltip, padding: 12, cornerRadius: 10, titleFont: { weight: '700', size: 12 }, bodyFont: { size: 11 } };
 
@@ -168,34 +154,13 @@ function initTrend() {
     options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString()}` } } }, scales: SCALE }
   });
 }
-function compactNum(n) {
-  const v = Number(n) || 0;
-  if (v >= 1000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-  return String(v);
-}
-
 function initStatus() {
   const ctx = mkCanvas('chart-status'); if (!ctx) return;
   const data = analyticsScope();
-  const setStat = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = compactNum(val); };
-  setStat('analytics-status-approved', data.approved);
-  setStat('analytics-status-pending', data.pending);
-  setStat('analytics-status-review', data.inReview);
-  setStat('analytics-status-rejected', data.rejected);
-  setStat('analytics-kpi-pending', data.pendingReview || data.pending);
-  setStat('analytics-kpi-review', data.inReview);
-  setStat('analytics-kpi-ready', data.approved);
-  setStat('analytics-kpi-rejected', data.rejected);
-  const statusTotal = data.statusDenominator || data.approved + data.pending + data.inReview + data.rejected || 1;
-  const allZero = !data.approved && !data.pending && !data.inReview && !data.rejected;
-  const emptyRing = document.getElementById('queue-mix-empty-ring');
-  const chartCanvas = document.getElementById('chart-status');
-  if (emptyRing) emptyRing.style.display = allZero ? 'flex' : 'none';
-  if (chartCanvas) chartCanvas.style.opacity = allZero ? '0' : '1';
   CHARTS['status'] = new Chart(ctx, {
     type: 'doughnut',
-    data: { labels: ['Approved', 'Pending', 'In Review', 'Rejected'], datasets: [{ data: [data.approved, data.pending, data.inReview, data.rejected], backgroundColor: [C.green, C.amber, C.primary, C.red], hoverOffset: 8, borderWidth: 0 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` ${c.label}: ${c.parsed.toLocaleString()} (${((c.parsed / statusTotal) * 100).toFixed(1)}%)` } } } }
+    data: { labels: ['Approved', 'Pending', 'In Review', 'Rejected'], datasets: [{ data: [data.approved, data.pending, data.inReview, data.rejected], backgroundColor: ['#FF9A9E', '#FF6B6B', '#FFB3B8', '#C41E3A'], hoverOffset: 8, borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` ${c.label}: ${c.parsed.toLocaleString()} (${((c.parsed / data.statusDenominator) * 100).toFixed(1)}%)` } } } }
   });
 }
 function initDashboardCardClick() {
@@ -299,45 +264,14 @@ function initBarangay(stacked = false) {
         { label: 'Pending Review', data: data.barangayPending, backgroundColor: 'rgba(192,122,10,0.6)', hoverBackgroundColor: C.amber, borderRadius: 5, borderSkipped: false },
       ]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString()}` } } }, scales: { x: { stacked, grid: { display: false }, ticks: { color: C.text } }, y: { stacked, grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text, precision: 0, stepSize: 1, callback: v => Number.isInteger(v) ? (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v) : null } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString()}` } } }, scales: { x: { stacked, grid: { display: false }, ticks: { color: C.text } }, y: { stacked, grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text, callback: v => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v } } } }
   });
 }
-function renderBarangayRegistrations() {
-  const list = document.getElementById('brgy-registrations-list');
-  if (!list) return;
-  const year = document.getElementById('brgy-period-filter')?.value || '2026';
-  const top = document.getElementById('brgy-top-filter')?.value || '6';
-  const data = analyticsScope();
-  const labels = data.barangayLabels || [];
-  const totals = data.barangayTotal || [];
-  if (!labels.length) {
-    list.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:140px;color:var(--text-muted);font-size:13px;text-align:center">No registration data to display yet. It will appear here once connected to the live system.<br/>Filters: ' + year + ' · Top ' + top + '</div>';
-    return;
-  }
-  const rows = labels.map((l, i) => ({ label: l, value: totals[i] || 0 }));
-  const sorted = rows.slice().sort((a, b) => b.value - a.value);
-  const shown = top === 'all' ? sorted : sorted.slice(0, parseInt(top, 10) || 6);
-  const max = Math.max.apply(null, shown.map(r => r.value)) || 1;
-  list.innerHTML = shown.map(r => {
-    const pct = Math.max(3, Math.round((r.value / max) * 100));
-    return `<div style="display:flex;flex-direction:column;gap:4px">
-      <div style="display:flex;justify-content:space-between;font-size:12.5px">
-        <span style="color:var(--text-primary)">${r.label}</span>
-        <span style="color:var(--text-muted)">${fmt(r.value)}</span>
-      </div>
-      <div style="height:8px;border-radius:6px;background:var(--bg-2, rgba(0,0,0,0.06))">
-        <div style="height:100%;width:${pct}%;border-radius:6px;background:var(--primary)"></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 function initAge() {
   const ctx = mkCanvas('chart-age'); if (!ctx) return;
   CHARTS['age'] = new Chart(ctx, {
     type: 'doughnut',
-    // TODO(integration): populate age distribution from the live system.
-    data: { labels: ['60–64', '65–69', '70–74', '75–79', '80–84', '85+'], datasets: [{ data: [0, 0, 0, 0, 0, 0], backgroundColor: ['#BFDBFE', '#60A5FA', '#2563EB', '#1A4FBA', '#1E3A8A', '#0F1F4D'], hoverOffset: 6, borderWidth: 0 }] },
+    data: { labels: ['60–64', '65–69', '70–74', '75–79', '80–84', '85+'], datasets: [{ data: [18, 24, 21, 19, 11, 7], backgroundColor: ['#BFDBFE', '#60A5FA', '#2563EB', '#1A4FBA', '#1E3A8A', '#0F1F4D'], hoverOffset: 6, borderWidth: 0 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` Age ${c.label}: ${c.parsed}%` } } } }
   });
 }
@@ -356,7 +290,7 @@ function initProcessing() {
   CHARTS['processing'] = new Chart(ctx, {
     type: 'bar',
     data: { labels: MONTHS, datasets: [{ label: 'Avg Days', data: vals, backgroundColor: vals.map((v, i) => i >= 10 ? 'rgba(11,158,108,0.7)' : 'rgba(26,79,186,0.22)'), hoverBackgroundColor: vals.map((v, i) => i >= 10 ? C.green : C.primary), borderRadius: 4, borderSkipped: false }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` Avg: ${c.parsed.y} days` } } }, scales: { x: { grid: { display: false }, ticks: { color: C.text, font: { size: 10 } } }, y: { min: 0, grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text, font: { size: 10 }, precision: 0, stepSize: 1, callback: v => Number.isInteger(v) ? v + 'd' : null } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { ...TIP, callbacks: { label: c => ` Avg: ${c.parsed.y} days` } } }, scales: { x: { grid: { display: false }, ticks: { color: C.text, font: { size: 10 } } }, y: { min: 0, max: 5, grid: { color: C.grid, drawBorder: false }, ticks: { color: C.text, font: { size: 10 }, callback: v => v + 'd' } } } }
   });
 }
 function initRadar() {
@@ -365,21 +299,22 @@ function initRadar() {
     type: 'radar',
     data: {
       labels: ['Speed', 'Approval', 'ID Issuance', 'Coverage', 'Accuracy', 'Turnaround'], datasets: [
-        // TODO(integration): populate radar metrics from the live system.
-        { label: 'Q2 2026', data: [0, 0, 0, 0, 0, 0], borderColor: C.primary, backgroundColor: 'rgba(26,79,186,0.12)', borderWidth: 2.5, pointBackgroundColor: C.primary, pointRadius: 4 },
-        { label: 'Q1 2026', data: [0, 0, 0, 0, 0, 0], borderColor: C.purple, backgroundColor: 'rgba(113,64,216,0.08)', borderWidth: 2, borderDash: [4, 3], pointBackgroundColor: C.purple, pointRadius: 3 }
+        { label: 'Q2 2026', data: [88, 90, 78, 92, 85, 82], borderColor: C.primary, backgroundColor: 'rgba(26,79,186,0.12)', borderWidth: 2.5, pointBackgroundColor: C.primary, pointRadius: 4 },
+        { label: 'Q1 2026', data: [72, 86, 70, 88, 80, 74], borderColor: C.purple, backgroundColor: 'rgba(113,64,216,0.08)', borderWidth: 2, borderDash: [4, 3], pointBackgroundColor: C.purple, pointRadius: 3 }
       ]
     },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 10, padding: 14, font: { size: 11 } } }, tooltip: { ...TIP } }, scales: { r: { min: 0, max: 100, ticks: { display: false }, grid: { color: C.grid }, angleLines: { color: C.grid }, pointLabels: { color: C.text, font: { size: 10, weight: '600' } } } } }
   });
 }
+
 /* ── ID Maker Operational Analytics ── */
+
+
 
 
 let chartsReady = false;
 function initAllCharts() {
   initTrend(); initStatus(); initBarangay(false); initAge(); initIssuance(); initProcessing(); initRadar();
-  renderBarangayRegistrations();
   chartsReady = true;
 }
 function switchTrendView(btn, view) {
@@ -498,108 +433,26 @@ function setStatusTrigger(root, iconKey, color, label) {
   if (labelEl) labelEl.textContent = label;
 }
 
-function positionStatusMenu(trigger, menu) {
-  const rect = trigger.getBoundingClientRect();
-  menu.style.left = rect.left + 'px';
-  menu.style.top = (rect.bottom + 2) + 'px';
-  menu.style.width = rect.width + 'px';
-  // Flip up if overflowing bottom of viewport
-  requestAnimationFrame(() => {
-    const menuRect = menu.getBoundingClientRect();
-    if (menuRect.bottom > window.innerHeight - 8) {
-      menu.style.top = (rect.top - menuRect.height - 2) + 'px';
-    }
-    if (menuRect.right > window.innerWidth - 8) {
-      menu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
-    }
-  });
-}
-
-function getStatusMenuRoot(menu) {
-  return menu?.__statusRoot || (menu?.dataset?.statusOwnerId
-    ? document.querySelector('.status-select[data-app-id="' + menu.dataset.statusOwnerId + '"]')
-    : null);
-}
-
-function restoreStatusMenu(menu) {
-  const root = getStatusMenuRoot(menu);
-  if (root && menu.parentElement !== root) root.appendChild(menu);
-}
-
-function closeAllStatusMenus(except) {
-  document.querySelectorAll('.status-select__menu.show').forEach(m => {
-    if (m !== except) {
-      m.classList.remove('show');
-      m.style.left = '';
-      m.style.top = '';
-      m.style.width = '';
-      restoreStatusMenu(m);
-    }
-  });
-}
-
 function toggleStatusSelect(btn, event) {
-  if (event && event.__statusHandled) return;
-  if (event) event.__statusHandled = true;
-  event?.preventDefault();
-  event?.stopPropagation();
+  event.stopPropagation();
   const root = btn.closest('.status-select');
-  if (!root) return;
   const menu = root.querySelector('.status-select__menu');
-  if (!menu) return;
-  const wasOpen = menu.classList.contains('show');
-  closeAllStatusMenus(menu);
-  if (wasOpen) {
-    menu.classList.remove('show');
-    menu.style.left = '';
-    menu.style.top = '';
-    menu.style.width = '';
-    restoreStatusMenu(menu);
-  } else {
-    menu.__statusRoot = root;
-    menu.dataset.statusOwnerId = root.dataset.appId || '';
-    document.body.appendChild(menu);
-    menu.classList.add('show');
-    positionStatusMenu(btn, menu);
-  }
+  document.querySelectorAll('.status-select__menu.show').forEach(m => { if (m !== menu) m.classList.remove('show'); });
+  menu.classList.toggle('show');
 }
 
 function selectStatusOption(btn, event) {
-  if (event && event.__statusHandled) return;
-  if (event) event.__statusHandled = true;
-  event?.preventDefault();
-  event?.stopPropagation();
-  const menu = btn.closest('.status-select__menu');
-  const root = btn.closest('.status-select') || getStatusMenuRoot(menu);
-  if (!root) return;
+  event.stopPropagation();
+  const root = btn.closest('.status-select');
   const status = btn.dataset.status;
   const icon = btn.dataset.icon;
   const color = btn.dataset.color;
   root.querySelectorAll('.status-select__option').forEach(o => o.classList.toggle('active', o === btn));
   setStatusTrigger(root, icon, color, status);
   updateTableStatus(root.dataset.appId, status);
-  closeAllStatusMenus();
-  // Re-apply any active table filters (status tab / search / barangay) so the
-  // row's visibility matches its new status. No-op when no page defines it.
-  if (typeof applyApplicationsFilters === 'function') applyApplicationsFilters();
 }
 
-window.toggleStatusSelect = toggleStatusSelect;
-window.selectStatusOption = selectStatusOption;
-
-document.addEventListener('click', (e) => {
-  const trigger = e.target.closest('#applications-tbody .status-select__trigger');
-  if (trigger && !e.__statusHandled) {
-    toggleStatusSelect(trigger, e);
-    return;
-  }
-  const option = e.target.closest('#applications-tbody .status-select__option');
-  if (option && !e.__statusHandled) {
-    selectStatusOption(option, e);
-    return;
-  }
-  if (!e.target.closest('.status-select')) closeAllStatusMenus();
-});
+document.addEventListener('click', () => document.querySelectorAll('.status-select__menu.show').forEach(m => m.classList.remove('show')));
 
 function filterApplicants(q) {
   document.querySelectorAll('#applicants-tbody tr').forEach(r => {
@@ -632,24 +485,12 @@ function filterRecentSubmissions() {
   }
 }
 
-function filterBarangayYear(year) {
-  const chart = document.querySelector('.chart-card');
-  if (chart) chart.dataset.year = year;
-  const note = document.getElementById('barangay-empty-note');
-  if (note) note.textContent = `No registration data available for ${year} yet. Connect the live system to populate this chart.`;
-}
-
 /* ───────────────────────────────────────────────────────────
    NEW: RBAC (Demo)
 ─────────────────────────────────────────────────────────── */
 let CURRENT_ROLE = 'Staff';
 let CURRENT_USER = null;
-
-// ── Dev-only role switcher (sidebar "Quick Role Switch") ──
-// Set to true ONLY in development builds. When false the trigger button,
-// the switcher panel, and any user-initiated setRole() call are all gated
-// off, so a live build cannot be used to escalate role client-side.
-const ENABLE_DEV_ROLE_SWITCHER = false;
+let LOGIN_ROLE = 'admin';
 
 function readAuthSession() {
   try {
@@ -660,10 +501,7 @@ function readAuthSession() {
     const localValue = window.localStorage.getItem('senioridAuth');
     if (localValue) return localValue;
   } catch (_err) { }
-  // NOTE: the old window.name fallback was removed — window.name survives
-  // cross-page navigations and is readable by any script on the page, so it
-  // is not an acceptable session channel. Web Storage only.
-  return null;
+  return window.name.startsWith('senioridAuth=') ? window.name.slice(14) : null;
 }
 
 function writeAuthSession(value) {
@@ -671,7 +509,8 @@ function writeAuthSession(value) {
   catch (_err) { }
   try { window.localStorage.setItem('senioridAuth', value); return true; }
   catch (_err) { }
-  return false;
+  window.name = 'senioridAuth=' + value;
+  return true;
 }
 
 function clearAuthSession() {
@@ -679,20 +518,13 @@ function clearAuthSession() {
   catch (_err) { }
   try { window.localStorage.removeItem('senioridAuth'); }
   catch (_err) { }
+  if (window.name.startsWith('senioridAuth=')) window.name = '';
 }
 
-/* ==========================================================
-   AUTH — BOOTSTRAP credentials only.
-   These are temporary logins so the team can reach the portals
-   during integration. They are NOT real personnel and must be
-   replaced by the other application system's authentication
-   (e.g. verify against the live user API / OAuth).
-   TODO(integration): replace with real auth against the other system.
-========================================================== */
 const DEMO_USERS = {
   admin: { password: 'admin123', role: 'Admin', displayName: 'System Administrator', email: 'admin@scb.gov.ph', status: 'Active' },
   staff: { password: 'staff123', role: 'Staff', displayName: 'Frontline Staff', email: 'staff@scb.gov.ph', status: 'Active' },
-  idmaker: { password: 'idmaker123', role: 'ID Maker', displayName: 'ID Maker', email: 'idmaker@scb.gov.ph', status: 'Active' }
+  idmaker: { password: 'idmaker123', role: 'ID Maker', displayName: 'Jayrold', email: 'jayrold@scb.gov.ph', status: 'Active' }
 };
 
 const ROLE_PERMS = {
@@ -746,6 +578,7 @@ function showLoginPage() {
     document.body.classList.add('auth-mode');
     showScreen('login-page');
     document.getElementById('login-form')?.reset();
+    selectLoginRole(LOGIN_ROLE || 'admin', false);
     return;
   }
   // On a portal page there is no login screen — bounce back to login.html.
@@ -810,14 +643,6 @@ function applySessionContext() {
   const userLabel = document.getElementById('current-user-name');
   const welcome = document.getElementById('dashboard-welcome');
   if (userLabel) userLabel.textContent = displayName;
-  // Sidebar avatar — always render the account's initials (no photos).
-  const avatar = document.querySelector('.sidebar__avatar');
-  if (avatar) {
-    const initials = displayName.split(/\s+/)
-      .map(w => (w.replace(/[^A-Za-z0-9]/g, '')[0] || ''))
-      .filter(Boolean).join('').slice(0, 2).toUpperCase();
-    avatar.innerHTML = `<span class="sidebar__avatar-initials">${initials || '—'}</span>`;
-  }
   const today = new Date();
   if (welcome) {
     const longDate = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -901,19 +726,13 @@ function applyAnalyticsRoleView() {
   if (subtitle) subtitle.textContent = data.subtitle;
   if (badge) badge.textContent = data.scopeLabel;
 
-  const analyticsValues = {
-    'analytics-status-approved': data.approved,
-    'analytics-status-pending': data.pending,
-    'analytics-status-review': data.inReview,
-    'analytics-status-rejected': data.rejected,
-    'analytics-kpi-pending': data.pendingReview || data.pending,
-    'analytics-kpi-review': data.inReview,
-    'analytics-kpi-ready': data.approved,
-    'analytics-kpi-rejected': data.rejected
-  };
-  Object.keys(analyticsValues).forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = fmt(analyticsValues[id]);
+  document.querySelectorAll('#mod-analytics strong').forEach(strong => {
+    const value = strong.parentElement?.querySelector('span');
+    if (!value) return;
+    if (strong.textContent === 'Approved') value.textContent = fmt(data.approved);
+    if (strong.textContent === 'Pending') value.textContent = fmt(data.pending);
+    if (strong.textContent === 'In Review') value.textContent = fmt(data.inReview);
+    if (strong.textContent === 'Rejected') value.textContent = fmt(data.rejected);
   });
 
   document.querySelectorAll('#mod-analytics .report-controls .mini-btn').forEach(btn => {
@@ -930,7 +749,6 @@ function applyAnalyticsRoleView() {
 }
 
 function toggleRoleSwitcher() {
-  if (!ENABLE_DEV_ROLE_SWITCHER) return;
   if (CURRENT_ROLE !== 'Admin') return;
   const rs = document.getElementById('role-switcher');
   if (!rs) return;
@@ -938,12 +756,6 @@ function toggleRoleSwitcher() {
 }
 
 function setRole(role, silent = false) {
-  // User-initiated role changes are dev-only; internal bootstrap calls pass
-  // silent=true with the role resolved from the authenticated session.
-  if (!ENABLE_DEV_ROLE_SWITCHER && !silent) {
-    showToast('Role switching is disabled in this build.', 'error');
-    return;
-  }
   const roleMap = { 'Admin': 'Admin', 'Staff': 'Staff', 'ID Maker': 'ID Maker' };
   CURRENT_ROLE = roleMap[normalizeRole(role)] || 'Staff';
   if (CURRENT_USER) CURRENT_USER.role = CURRENT_ROLE;
@@ -1039,9 +851,8 @@ function applyRoleToUI() {
 
   const roleSwitchTrigger = document.getElementById('role-switch-trigger');
   const roleSwitcher = document.getElementById('role-switcher');
-  const devSwitcherAllowed = ENABLE_DEV_ROLE_SWITCHER && p.settings;
-  if (roleSwitchTrigger) roleSwitchTrigger.style.display = devSwitcherAllowed ? '' : 'none';
-  if (roleSwitcher && !devSwitcherAllowed) roleSwitcher.style.display = 'none';
+  if (roleSwitchTrigger) roleSwitchTrigger.style.display = p.settings ? '' : 'none';
+  if (roleSwitcher && !p.settings) roleSwitcher.style.display = 'none';
 }
 
 function authenticateUser(username, password) {
@@ -1050,110 +861,57 @@ function authenticateUser(username, password) {
   return { username, role: normalizeRole(record.role), displayName: record.displayName };
 }
 
+function selectLoginRole(role, focusPassword = true) {
+  LOGIN_ROLE = (role === 'staff' || role === 'id-maker') ? role : 'admin';
+  document.querySelectorAll('.login-role-card').forEach(card => {
+    card.classList.toggle('active', card.dataset.loginRole === LOGIN_ROLE);
+  });
+
+  const usernameInput = document.getElementById('login-username');
+  const passwordInput = document.getElementById('login-password');
+  const title = document.getElementById('login-title');
+  const subtitle = document.getElementById('login-subtitle');
+
+  if (usernameInput) usernameInput.value = LOGIN_ROLE === 'id-maker' ? 'idmaker' : LOGIN_ROLE;
+  if (passwordInput) passwordInput.value = '';
+  if (title) title.textContent = LOGIN_ROLE === 'admin'
+    ? 'Welcome back, Admin User!'
+    : (LOGIN_ROLE === 'id-maker' ? 'Welcome back, Jayrold!' : 'Welcome back, Staff User!');
+  if (subtitle) {
+    subtitle.textContent = LOGIN_ROLE === 'admin'
+      ? 'Sign in to manage users, settings, logs, and backups'
+      : (LOGIN_ROLE === 'id-maker'
+        ? 'Sign in to review applications, update status, and manage ID printing'
+        : 'Sign in to manage applicants and daily processing work');
+  }
+  if (focusPassword && passwordInput) passwordInput.focus();
+}
+
 function handleLogin(event) {
   event.preventDefault();
-  const usernameEl = document.getElementById('login-username');
-  const passwordEl = document.getElementById('login-password');
-  const username = usernameEl.value.trim().toLowerCase();
-  const password = passwordEl.value;
-
-  // Clear previous errors
-  clearFieldError('login-username');
-  clearFieldError('login-password');
-
-  // Basic field validation
-  let hasError = false;
-  if (!username) { showFieldError('login-username', 'Username is required.'); hasError = true; }
-  if (!password) { showFieldError('login-password', 'Password is required.'); hasError = true; }
-  if (hasError) return;
-
-  // Show spinner
-  const btn = document.getElementById('login-submit-btn');
-  if (btn) btn.classList.add('loading');
-
-  setTimeout(() => {
-    const authUser = authenticateUser(username, password);
-    if (!authUser) {
-      if (btn) btn.classList.remove('loading');
-      showFieldError('login-password', 'Incorrect username or password. Please try again.');
-      if (passwordEl) passwordEl.focus();
-      return;
-    }
-
-    CURRENT_USER = authUser;
-    setRole(authUser.role, true);
-    applySessionContext();
-    writeAuthSession(JSON.stringify({ username: authUser.username, role: authUser.role, displayName: authUser.displayName }));
-
-    if (PAGE === 'login') {
-      location.href = portalFileForRole(authUser.role);
-      return;
-    }
-
-    if (btn) btn.classList.remove('loading');
-    showPortalPage();
-    navigate(authUser.role === 'ID Maker' ? 'id-maker-dashboard' : 'dashboard');
-    showToast(`Signed in as ${authUser.role}.`, 'success');
-  }, 520);
-}
-
-/* ── Login page helpers ── */
-function showFieldError(inputId, message) {
-  const input = document.getElementById(inputId);
-  const errId = 'err-' + inputId.replace('login-', '');
-  const err = document.getElementById(errId);
-  if (input) input.classList.add('field-invalid');
-  if (err) { err.textContent = message; err.classList.add('visible'); }
-}
-
-function clearFieldError(inputId) {
-  const input = document.getElementById(inputId);
-  const errId = 'err-' + inputId.replace('login-', '');
-  const err = document.getElementById(errId);
-  if (input) input.classList.remove('field-invalid');
-  if (err) { err.textContent = ''; err.classList.remove('visible'); }
-}
-
-function checkCapsLock(event) {
-  const warn = document.getElementById('caps-warn');
-  if (!warn) return;
-  const isOn = event.getModifierState && event.getModifierState('CapsLock');
-  warn.classList.toggle('visible', isOn);
-}
-
-function togglePwVis(btn) {
-  const wrap = btn.closest('.auth-input-wrap');
-  const input = wrap && wrap.querySelector('input');
-  if (!input) return;
-  const isText = input.type === 'text';
-  input.type = isText ? 'password' : 'text';
-  const icon = btn.querySelector('i');
-  if (icon) { icon.classList.toggle('fi-rr-eye', isText); icon.classList.toggle('fi-rr-eye-crossed', !isText); }
-}
-
-function showForgotPanel() {
-  const panel = document.getElementById('forgot-panel');
-  if (panel) panel.classList.add('visible');
-}
-
-function hideForgotPanel() {
-  const panel = document.getElementById('forgot-panel');
-  if (panel) panel.classList.remove('visible');
-}
-
-/* ── Live hero clock ── */
-(function initHeroClock() {
-  const el = document.getElementById('auth-hero-clock');
-  if (!el) return;
-  function tick() {
-    const now = new Date();
-    const date = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    el.textContent = date + ' · ' + time;
+  const username = (document.getElementById('login-username').value.trim().toLowerCase() || (LOGIN_ROLE === 'id-maker' ? 'idmaker' : LOGIN_ROLE));
+  const password = document.getElementById('login-password').value;
+  const authUser = authenticateUser(username, password);
+  if (!authUser) {
+    showToast('Invalid login credentials. Please try again.', 'error');
+    return;
   }
-  tick();
-  setInterval(tick, 1000);
-})();
+
+  CURRENT_USER = authUser;
+  setRole(authUser.role, true);
+  applySessionContext();
+  writeAuthSession(JSON.stringify({ username: authUser.username, role: authUser.role, displayName: authUser.displayName }));
+
+  if (PAGE === 'login') {
+    // Standalone login page — send the user to their role-specific portal.
+    location.href = portalFileForRole(authUser.role);
+    return;
+  }
+
+  showPortalPage();
+  navigate(authUser.role === 'ID Maker' ? 'id-maker-dashboard' : 'dashboard');
+  showToast(`Signed in as ${authUser.role}.`, 'success');
+}
 
 function restoreSession() {
   const raw = readAuthSession();
@@ -1244,7 +1002,6 @@ function ensureExampleData(app) {
   if (app.religion === undefined) app.religion = 'Roman Catholic';
   if (app.occupation === undefined) app.occupation = 'Retired';
   if (app.contactNumber === undefined) app.contactNumber = '09' + String(Math.floor(Math.random() * 900000000 + 100000000));
-  if (app.applicationType === undefined) app.applicationType = Math.random() > 0.3 ? 'First-Time' : 'Replacement';
   if (app.idOsca === undefined) app.idOsca = '';
   if (app.idSss === undefined) app.idSss = '34-0000000-0';
   if (app.idPhilhealth === undefined) app.idPhilhealth = '12-000000000-0';
@@ -1285,22 +1042,20 @@ function ensureExampleData(app) {
   }
   if (app.confirmations === undefined) app.confirmations = { consentAll: true, assistedBy: '', relationToRegistrant: '' };
   if (app.documents === undefined) {
-    // TODO(integration): populated from the live system's uploaded documents.
-    // Placeholder fields are empty until real document URLs are provided.
     app.documents = {
-      idFront: '',
-      idBack: '',
+      idFront: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400&fit=crop',
+      idBack: 'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=400&fit=crop',
       photo: app.photo ? app.photo.replace('w=128', 'w=400') : '',
-      bc: '',
-      cedula: '',
-      signature: ''
+      bc: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400&fit=crop',
+      cedula: 'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=400&fit=crop',
+      signature: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=400&fit=crop'
     };
   }
   return app;
 }
 
 function openApplicationDetail(appId) {
-  const app = ensureExampleData(APP_DB[appId] || FULL_APPLICANTS.find(a => a.id === appId) || { id: appId, name: 'Unknown', barangay: '—', status: 'Pending', daysPending: 0, duplicate: null });
+  const app = ensureExampleData(APP_DB[appId] || FULL_APPLICANTS.find(a => a.id === appId) || { id: appId, name: 'Unknown', barangay: '—', status: 'Pending', reviewer: 'Unassigned', daysPending: 0, duplicate: null });
   CURRENT_APP_ID = appId;
 
   setText('modal-title', `Application Detail — ${app.name}`);
@@ -1336,9 +1091,12 @@ function openApplicationDetail(appId) {
     }
   }
 
-  // Set status select
+  // Set status select + reviewer
   const statusSelect = document.getElementById('status-select');
   if (statusSelect) statusSelect.value = app.status;
+  setText('assigned-reviewer', `Reviewer: ${app.reviewer || 'Unassigned'}`);
+  const reviewerSelect = document.getElementById('reviewer-select');
+  if (reviewerSelect) reviewerSelect.value = app.reviewer === 'Unassigned' || !app.reviewer ? 'Unassigned' : app.reviewer;
 
   // Update workflow UI
   renderWorkflow(app.status);
@@ -1544,12 +1302,9 @@ function updateStatus(newStatus) {
 
 function updateTableStatus(appId, newStatus) {
   // Update the application status in the data
-  const app = APP_DB[appId] || { id: appId };
-  app.status = newStatus;
-  APP_DB[appId] = app;
-  const row = document.querySelector('#applications-tbody tr[data-app-id="' + appId + '"]');
-  const statusLabel = row?.querySelector('.status-select__label');
-  if (statusLabel) statusLabel.textContent = newStatus;
+  if (APP_DB[appId]) {
+    APP_DB[appId].status = newStatus;
+  }
   // Keep the ID Maker production queue badge in sync
   const queueRow = document.querySelector('#id-maker-queue-tbody tr[data-app-id="' + appId + '"]');
   const queueBadge = queueRow ? queueRow.querySelector('.queue-status-badge') : null;
@@ -1800,6 +1555,15 @@ function downloadDigitalIssuanceDocs() {
 }
 
 
+
+function assignReviewer(name) {
+  if (!CURRENT_APP_ID) return;
+  if (name === 'Assign Reviewer') return;
+  APP_DB[CURRENT_APP_ID].reviewer = name;
+  document.getElementById('assigned-reviewer').textContent = `Reviewer: ${name}`;
+  appendAudit('Cindy B.', `Assigned reviewer: ${name}`, 'Admin');
+  showToast('Reviewer assigned: ' + name, 'success');
+}
 
 /* Rule-based validation (3.1) demo */
 function runValidation() {
@@ -2060,9 +1824,9 @@ function appendAudit(user, action, source) {
   const badge = source === 'System' ? 'badge-issued' : 'badge-review';
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td data-label="Time"><span class="cell-text">${ts}</span></td>
-    <td data-label="User"><span class="cell-text">${user}</span></td>
-    <td data-label="Action"><span class="cell-text">${action}</span></td>
+    <td><span class="cell-text">${ts}</span></td>
+    <td><span class="cell-text">${user}</span></td>
+    <td><span class="cell-text">${action}</span></td>
     <td style="text-align:right"><span class="badge ${badge}">${source}</span></td>
   `;
   tbody.prepend(tr);
@@ -2072,17 +1836,15 @@ function appendAudit(user, action, source) {
 function addNotifyLog(appId, event, channel, result) {
   const tbody = document.getElementById('notify-log-body');
   if (!tbody) return;
-  const emptyRow = tbody.querySelector('.table-empty');
-  if (emptyRow) emptyRow.closest('tr').remove();
   const now = new Date();
   const ts = now.toLocaleString('en-US', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td data-label="Time"><span class="cell-text">${ts}</span></td>
-    <td data-label="Application"><span class="cell-text">${appId || '—'}</span></td>
-    <td data-label="Event"><span class="cell-text">${event}</span></td>
-    <td data-label="Channel"><span class="badge badge-issued">${channel}</span></td>
-    <td data-label="Result"><span class="badge badge-approved">${result}</span></td>
+    <td><span class="cell-text">${ts}</span></td>
+    <td><span class="cell-text">${appId || '—'}</span></td>
+    <td><span class="cell-text">${event}</span></td>
+    <td><span class="badge badge-issued">${channel}</span></td>
+    <td><span class="badge badge-approved">${result}</span></td>
     <td style="text-align:right"><button class="row-action always-visible" onclick="openApplicationDetail('${appId}')">Open</button></td>
   `;
   tbody.prepend(tr);
@@ -2434,18 +2196,6 @@ function logout() {
   }
 }
 
-/* ── Mobile sidebar drawer toggle (shared by all portals) ── */
-function toggleSidebarDrawer() {
-  document.body.classList.toggle('sidebar-open');
-  const backdrop = document.getElementById('sidebar-backdrop');
-  if (backdrop) backdrop.classList.toggle('show', document.body.classList.contains('sidebar-open'));
-}
-function closeSidebarDrawer() {
-  document.body.classList.remove('sidebar-open');
-  const backdrop = document.getElementById('sidebar-backdrop');
-  if (backdrop) backdrop.classList.remove('show');
-}
-
 /* ── Toast (kept from your design language) ── */
 function showToast(msg, type = 'info') {
   const c = document.getElementById('toast-container');
@@ -2475,6 +2225,55 @@ function togglePwVis(btn) {
     icon.className = 'fi fi-rr-eye';
   }
 }
+
+function syncLoginPanel(role) {
+  const shell = document.querySelector('#login-page .auth-shell');
+  const title = document.getElementById('auth-panel-title');
+  const desc = document.getElementById('auth-panel-desc');
+  const action = document.getElementById('auth-panel-action');
+  const loginTitle = document.getElementById('login-title');
+  const loginSub = document.getElementById('login-subtitle');
+  const isStaff = role === 'staff';
+  const isIdMaker = role === 'id-maker';
+  const isAdmin = !isStaff && !isIdMaker;
+  shell?.classList.toggle('staff-mode', isStaff);
+
+  // Hero panel (cross-navigation prompt)
+  if (title) title.textContent = isStaff ? 'Admin account?' : (isIdMaker ? 'Staff or Admin account?' : 'Staff account?');
+  if (desc) desc.textContent = isStaff
+    ? 'Return to administrator access for user control, reports, audit logs, and system settings.'
+    : (isIdMaker
+      ? 'ID Maker access: review applications, update status, and manage ID printing.'
+      : 'Switch to staff access for daily operations, application review, and ID release tasks.');
+  if (action) {
+    action.setAttribute('onclick', `selectLoginRole('${isStaff ? 'admin' : 'staff'}')`);
+    action.querySelector('span').textContent = isStaff ? 'Admin Login' : 'Staff Login';
+    action.querySelector('i').className = isStaff ? 'fi fi-sr-shield-check' : 'fi fi-rr-user';
+  }
+
+  // Login form title/subtitle — switch the visible form to the selected role so the
+  // staff/admin/id-maker login forms clearly swap on the same screen.
+  if (loginTitle) loginTitle.textContent = isAdmin ? 'Welcome back, Admin User!' : (isIdMaker ? 'Welcome back, Jayrold!' : 'Welcome back, Staff User!');
+  if (loginSub) loginSub.textContent = isAdmin
+    ? 'Sign in to manage users, settings, logs, and backups'
+    : (isIdMaker
+      ? 'Sign in to review applications, update status, and manage ID printing'
+      : 'Sign in to manage applicants and daily processing work');
+}
+
+const baseSelectLoginRole = window.selectLoginRole;
+window.selectLoginRole = function (role) {
+  if (typeof baseSelectLoginRole === 'function') baseSelectLoginRole(role);
+  syncLoginPanel(role);
+};
+
+const baseShowLoginPage = window.showLoginPage;
+window.showLoginPage = function () {
+  if (typeof baseShowLoginPage === 'function') baseShowLoginPage();
+  requestAnimationFrame(() => {
+    syncLoginPanel(document.querySelector('.login-role-card.active')?.dataset.loginRole || 'admin');
+  });
+};
 
 /* ═══════════════════════════════════
    SESSION TIMEOUT (30 min inactivity)
@@ -2549,40 +2348,6 @@ function appRegDate(id) {
     if (!isNaN(d)) return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
   return '—';
-}
-
-/* ── Application Type pill (First-Time / Replacement) ── */
-function buildApplicationTypePill(app) {
-  const type = (app.applicationType || 'First-Time').trim();
-  const isReplacement = type === 'Replacement';
-  const cls = isReplacement ? 'app-type-pill app-type-pill--replacement' : 'app-type-pill app-type-pill--first';
-  const icon = isReplacement ? '↻' : '★';
-  const tip = isReplacement ? 'Replacement — ₱50 fee required upon claiming' : 'First-Time — no fee required';
-  return '<span class="' + cls + '" title="' + tip + '">' + icon + ' ' + type + '</span>';
-}
-
-/* ── Documents status pill ── */
-const DOC_FIELDS = ['photo', 'bc', 'cedula'];
-function getDocsStatus(app) {
-  const docs = app.documents || {};
-  const uploaded = DOC_FIELDS.filter(f => docs[f] && String(docs[f]).trim() !== '');
-  const missing = DOC_FIELDS.filter(f => !docs[f] || String(docs[f]).trim() === '');
-  return { total: DOC_FIELDS.length, uploaded: uploaded.length, missing: missing };
-}
-function buildDocsStatusPill(app) {
-  const s = getDocsStatus(app);
-  const allDone = s.uploaded === s.total;
-  if (allDone) {
-    return '<span class="docs-pill docs-pill--complete" title="All documents uploaded">✓ ' + s.uploaded + '/' + s.total + ' Uploaded</span>';
-  }
-  const missingLabel = s.missing.map(f => DOC_LABELS[f] || f).join(', ');
-  return '<span class="docs-pill docs-pill--incomplete" title="Missing: ' + missingLabel + '">⚠ ' + s.uploaded + '/' + s.total + ' Uploaded</span>';
-}
-
-function buildViewAction(appId) {
-  return '<button type="button" class="row-action always-visible row-action--icon" data-tooltip="View applicant" aria-label="View applicant" onclick="event.stopPropagation();openApplicationDetail(\'' + appId + '\')">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.75"/></svg>' +
-    '</button>';
 }
 
 function mapStatusForDropdown(status) {
@@ -2674,126 +2439,25 @@ function updateStatusTabCounts() {
   if (allTab) allTab.dataset.count = counts.all;
 }
 
-/* ---------- Add Applicant ---------- */
-function openAddApplicantModal() {
-  const modal = document.getElementById('add-applicant-modal');
-  if (!modal) return;
-  ['add-app-name', 'add-app-barangay', 'add-app-dob', 'add-app-sex', 'add-app-civil', 'add-app-occupation', 'add-app-contact'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const name = document.getElementById('add-app-name');
-  if (name) { name.style.borderColor = ''; name.focus(); }
-  modal.style.display = 'flex';
-}
-
-function closeAddApplicantModal() {
-  const modal = document.getElementById('add-applicant-modal');
-  if (modal) modal.style.display = 'none';
-}
-
-function saveApplicant() {
-  const name = (document.getElementById('add-app-name')?.value || '').trim();
-  const barangay = (document.getElementById('add-app-barangay')?.value || '').trim();
-  const dob = (document.getElementById('add-app-dob')?.value || '').trim();
-  const sex = (document.getElementById('add-app-sex')?.value || '').trim();
-  const civil = (document.getElementById('add-app-civil')?.value || '').trim();
-  const occupation = (document.getElementById('add-app-occupation')?.value || '').trim();
-  const contact = (document.getElementById('add-app-contact')?.value || '').trim();
-
-  const nameEl = document.getElementById('add-app-name');
-  if (!name) {
-    if (nameEl) nameEl.style.borderColor = '#D9233A';
-    showToast('Full name is required', 'error');
-    return;
-  }
-
-  const id = 'SCB-' + Date.now().toString(36).toUpperCase();
-  const app = {
-    id,
-    name,
-    surname: name.split(/\s+/).slice(-1)[0] || name,
-    firstName: name.split(/\s+/).slice(0, -1).join(' ') || name,
-    middleName: '',
-    barangay: barangay || '—',
-    age: 70,
-    occupation: occupation || 'Retired',
-    regDate: dob || new Date().toISOString().slice(0, 10),
-    status: 'Pending',
-    daysPending: 0,
-    duplicate: null,
-    sex,
-    civilStatus: civil,
-    contactNumber: contact
-  };
-  FULL_APPLICANTS.unshift(app);
-  APP_DB[id] = app;
-  closeAddApplicantModal();
-  renderApplicationsTable();
-  renderApplicantsTable();
-  showToast('Applicant added: ' + name, 'success');
-}
-
-function renderApplicantsTable() {
-  const tbody = document.getElementById('applicants-tbody');
-  if (!tbody) return;
-  const totalEl = document.getElementById('applicants-total');
-  if (totalEl) totalEl.textContent = fmt(FULL_APPLICANTS.length) + ' Total';
-  const rows = FULL_APPLICANTS.map(a => {
-    const badgeClass = a.status === 'Verified' ? 'badge-approved' : a.status === 'ID Issued' ? 'badge-issued' : a.status === 'Rejected' ? 'badge-rejected' : 'badge-pending';
-    return '<tr onclick="openApplicationDetail(\'' + a.id + '\')" style="cursor:pointer">' +
-      '<td data-label="Name"><span class="cell-text applicant-name-cell">' + (a.name || '—') + '</span></td>' +
-      '<td data-label="ID Number"><span class="cell-text">' + (a.id || '—') + '</span></td>' +
-      '<td data-label="Barangay"><span class="cell-text">' + (a.barangay || '—') + '</span></td>' +
-      '<td data-label="Civil Status"><span class="cell-text">' + (a.civilStatus || '—') + '</span></td>' +
-      '<td data-label="Occupation"><span class="cell-text">' + (a.occupation || '—') + '</span></td>' +
-      '<td data-label="Type">' + buildApplicationTypePill(a) + '</td>' +
-      '<td data-label="Docs">' + buildDocsStatusPill(a) + '</td>' +
-      '<td data-label="Status"><span class="badge ' + badgeClass + '">' + (a.status || 'Pending') + '</span></td>' +
-      '<td data-label="Action" style="text-align:right">' + buildViewAction(a.id) + '</td>' +
-      '</tr>';
-  }).join('');
-  tbody.innerHTML = rows || '<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--text-muted)">No applicants yet.</td></tr>';
-  const footerInfo = document.querySelector('#mod-applicants .table-footer__info');
-  if (footerInfo) footerInfo.textContent = 'Showing ' + FULL_APPLICANTS.length + ' of ' + fmt(FULL_APPLICANTS.length) + ' applicants';
-}
-
 function renderApplicationsTable() {
   const tbody = document.getElementById('applications-tbody');
   if (!tbody) return;
-  const totalEl = document.getElementById('applicants-total');
-  if (totalEl) totalEl.textContent = fmt(FULL_APPLICANTS.length) + ' Total';
-  const urgentCount = FULL_APPLICANTS.filter(a => (a.daysPending || 0) > 5).length;
-  const urgentEl = document.getElementById('urgent-count');
-  if (urgentEl) urgentEl.textContent = urgentCount + ' Urgent';
-  const urgentAlert = document.getElementById('urgent-alert');
-  const urgentTitle = document.getElementById('urgent-alert-title');
-  const urgentDesc = document.getElementById('urgent-alert-desc');
-  if (urgentAlert) {
-    urgentAlert.style.display = urgentCount > 0 ? '' : 'none';
-    if (urgentTitle) urgentTitle.textContent = urgentCount + ' application' + (urgentCount === 1 ? '' : 's') + ' require urgent review';
-    if (urgentDesc) urgentDesc.textContent = urgentCount > 0 ? 'These applications have been pending for more than 5 days and need immediate attention.' : '';
-  }
-  
   const rows = FULL_APPLICANTS.map((a, i) => {
     const grad = APPL_AVATAR_GRADIENTS[i % APPL_AVATAR_GRADIENTS.length];
     return '<tr data-app-id="' + a.id + '">' +
       '<td style="width:40px"><input type="checkbox" class="row-check" data-app-id="' + a.id + '" aria-label="Select ' + (a.name || '') + '" onchange="updateBatchState()" /></td>' +
-      '<td data-label="Applicant"><div class="applicant-cell">' +
+      '<td><div class="applicant-cell">' +
       '<div class="applicant-avatar" style="background:' + grad + '">' + appInitials(a.name) + '</div>' +
       '<div class="applicant-info"><span class="applicant-name">' + a.name + '</span><span class="applicant-id">' + a.id + '</span></div>' +
       '</div></td>' +
-      '<td data-label="Date"><span class="cell-text">' + appRegDate(a.id) + '</span></td>' +
-      '<td data-label="Type">' + buildApplicationTypePill(a) + '</td>' +
-      '<td data-label="Barangay"><span class="cell-text">' + (a.barangay || '—') + '</span></td>' +
-      '<td data-label="Docs">' + buildDocsStatusPill(a) + '</td>' +
-      '<td data-label="Status">' + buildStatusSelect(a.id, a.status) + '</td>' +
-      '<td style="text-align:right">' + buildViewAction(a.id) + '</td>' +
+      '<td><span class="cell-text">' + appRegDate(a.id) + '</span></td>' +
+      '<td><span class="cell-text">' + (a.barangay || '—') + '</span></td>' +
+      '<td>' + buildStatusSelect(a.id, a.status) + '</td>' +
+      '<td><span class="cell-text">' + (a.reviewer || 'Unassigned') + '</span></td>' +
+      '<td style="text-align:right"><button class="row-action always-visible" onclick="openApplicationDetail(\'' + a.id + '\')">View →</button></td>' +
       '</tr>';
   }).join('');
   tbody.innerHTML = rows;
-  const footerInfo = document.querySelector('#mod-applicants .table-footer__info');
-  if (footerInfo) footerInfo.textContent = 'Showing ' + rows.length + ' of ' + fmt(FULL_APPLICANTS.length) + ' applicants';
   // Update the status tab counts after rendering
   updateStatusTabCounts();
 }
@@ -2808,6 +2472,7 @@ function runOptionalInit(label, fn) {
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('login-form')?.addEventListener('submit', handleLogin);
+  syncLoginPanel(document.querySelector('.login-role-card.active')?.dataset.loginRole || 'admin');
 
   // Standalone login page: session restore decides whether to show the login
   // screen, the logout confirmation, or to bounce an active session to its portal.
@@ -2829,9 +2494,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ID Maker production queue initialization (only present in the ID Maker portal)
   runOptionalInit('ID Maker queue init', typeof initIdMakerQueue === 'function' ? initIdMakerQueue : null);
 
-  // Role switcher toggle (sidebar) — dev builds only; the guarded top-level
-  // toggleRoleSwitcher() handles every portal (this override previously
-  // re-enabled it for all roles).
+  // Role switcher toggle (sidebar) — available to all roles in the demo
+  window.toggleRoleSwitcher = function () {
+    const switcher = document.getElementById('role-switcher');
+    if (!switcher) return;
+    switcher.style.display = switcher.style.display === 'none' ? 'block' : 'none';
+  };
 
   applyRoleToUI();
   applySessionContext();
@@ -2867,7 +2535,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render the full applications table from the dataset so every record is viewable
   runOptionalInit('Applications table render', renderApplicationsTable);
-  runOptionalInit('Applicants table render', renderApplicantsTable);
 });
 
 /* ── Table Sort ── */
@@ -2905,7 +2572,7 @@ function sortTable(tbodyId, colIdx, thEl) {
       return asc ? aNum - bNum : bNum - aNum;
     }
 
-    // Detect dates ("Apr 7, 2026" style)
+n    // Detect dates ("Apr 7, 2026" style)
     const aDate = Date.parse(aVal);
     const bDate = Date.parse(bVal);
     if (!isNaN(aDate) && !isNaN(bDate)) {
@@ -2918,7 +2585,7 @@ function sortTable(tbodyId, colIdx, thEl) {
     return 0;
   });
 
-  // Re-append rows in sorted order
+n  // Re-append rows in sorted order
   rows.forEach(function (row) { tbody.appendChild(row); });
 
   // Update sort arrows: reset all <th> in this table, then set active one
@@ -2935,3 +2602,4 @@ function sortTable(tbodyId, colIdx, thEl) {
     activeIcon.style.opacity = '1';
   }
 }
+

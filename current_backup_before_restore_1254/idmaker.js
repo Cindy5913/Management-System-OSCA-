@@ -5,81 +5,38 @@
 // cross-file calls from the core resolve at runtime.
 // ============================================================
 
-/* ==========================================================
-   ID_MAKER_QUEUE — EMPTY bootstrap.
-   All demo queue items have been removed. This array holds the
-   ID production queue (print status per applicant). Each item
-   keeps the shape built below (fields from the applicant plus
-   printStatus and controlNo) so your team can push queue items
-   received from the other application system.
-   TODO(integration): load/populate the queue from the live system.
-========================================================== */
 const ID_MAKER_QUEUE = (function(){
   var stages = ['Queued','In Production','Printed','In Transit'];
-  // NOTE(staff): previously seeded from FULL_APPLICANTS. Now empty until
-  // the live system pushes sent-to-ID-Maker applications into the queue.
-  var items = [];
-  // Keep the queue in sync when the live system sends a new item.
-  window.__pushIdMakerQueue = function(app, printStatus){
-    var idx = -1;
-    for (var i = 0; i < items.length; i++) { if (items[i].id === app.id) { idx = i; break; } }
-    var entry = Object.assign({}, app, {
-      printStatus: printStatus || stages[0],
-      photo: app.photo || fallbackMedia(app.name),
-      controlNo: 'CTL-' + String(app.id || '').replace('SCB-','')
+  // Seed demo queue with pre-sent applications (status already 'In Process' from prior staff action)
+  return FULL_APPLICANTS
+    .filter(function(a){ return a.status === 'In Process' || a.status === 'Verified' || a.status === 'ID Issued'; })
+    .slice(0, 8)
+    .map(function(a, i){
+      return Object.assign({}, a, {
+        printStatus: stages[i % stages.length],
+        photo: a.photo || fallbackMedia(a.name),
+        controlNo: 'CTL-' + a.id.replace('SCB-','')
+      });
     });
-    if (idx >= 0) items[idx] = entry; else items.push(entry);
-    return entry;
-  };
-  return items;
 })();
 
 function closeQueueFilter(){
   document.getElementById('queue-filter-wrap')?.classList.remove('open');
 }
 
-/* ── Main Queue List: search + status + barangay filters, applied together ── */
-const QUEUE_FILTER_STATE = { search:'', status:'all', barangay:'all' };
-
-function applyQueueFilters(){
-  const st = QUEUE_FILTER_STATE;
-  let visible = 0, total = 0;
-  document.querySelectorAll('#id-maker-queue-tbody tr').forEach(r=>{
-    if(!r.dataset.appId) return; // keep the empty-state placeholder row visible
-    total++;
-    const matchesSearch = !st.search || r.textContent.toLowerCase().includes(st.search);
-    const matchesStatus = st.status === 'all' || (r.dataset.printStatus || '') === st.status;
-    const matchesBrgy = st.barangay === 'all' || r.dataset.brgy === st.barangay;
-    const show = matchesSearch && matchesStatus && matchesBrgy;
-    r.style.display = show ? '' : 'none';
-    if(show) visible++;
-  });
-  updateQueueCheckedDisabled();
-  updateQueueFooterCount(visible, total);
-  updateBatchSelection();
-}
-
-function updateQueueFooterCount(visible, total){
-  const footer = document.getElementById('queue-footer');
-  const footerCount = document.getElementById('queue-footer-count');
-  if(!footer || !footerCount) return;
-  if(!total){ footer.style.display = 'none'; return; }
-  footer.style.display = '';
-  footerCount.textContent = visible === total
-    ? 'Showing ' + total + ' print-ready application' + (total !== 1 ? 's' : '')
-    : 'Showing ' + visible + ' of ' + total + ' print-ready application' + (total !== 1 ? 's' : '');
-}
-
 function filterIdMakerQueue(q){
-  QUEUE_FILTER_STATE.search = (q || '').trim().toLowerCase();
-  applyQueueFilters();
+  document.querySelectorAll('#id-maker-queue-tbody tr').forEach(r=>{
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
 }
 
 function filterQueueChip(btn,status){
-  btn.closest('.filter-bar')?.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.closest('.filter-bar').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
-  QUEUE_FILTER_STATE.status = status || 'all';
-  applyQueueFilters();
+  document.querySelectorAll('#id-maker-queue-tbody tr').forEach(r=>{
+    const st = r.dataset.printStatus || r.querySelector('.queue-status-badge')?.textContent || '';
+    r.style.display = (status === 'all' || st === status) ? '' : 'none';
+  });
 }
 
 function initIdMakerCharts(){
@@ -93,14 +50,13 @@ function initIdMakerCharts(){
 
 function initIdMakerDailyChart(){
   var ctx = mkCanvas('chart-idmaker-daily'); if(!ctx)return;
-  var dailyData = []; // TODO(integration): populate from live system
-  var labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; // default labels for axis skeleton
-  var empty = document.getElementById('empty-idmaker-daily'); if(empty) empty.style.display = dailyData.length ? 'none' : 'flex';
+  var dailyData = [5, 8, 7, 9, 6, 4, 8];
+  var labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   if(CHARTS['idmaker-daily']) CHARTS['idmaker-daily'].destroy();
   CHARTS['idmaker-daily'] = new Chart(ctx,{
     type:'bar',
-    data:{labels:labels,datasets:[{type:'bar',label:'Files Exported',data:dailyData,backgroundColor:'rgba(37,99,235,0.62)',borderRadius:6,borderSkipped:false,yAxisID:'y'},{type:'line',label:'Peak-hour index',data:[],borderColor:C.green,backgroundColor:'rgba(5,150,105,0.12)',fill:true,tension:.35,pointRadius:3,yAxisID:'y1'}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,padding:12,font:{size:10}}},tooltip:{...TIP}},scales:{x:{grid:{display:false},ticks:{color:C.text,font:{size:11}},display:true},y:{beginAtZero:true,position:'left',grid:{color:C.grid,drawBorder:false},ticks:{color:C.text,font:{size:10},stepSize:1,precision:0},display:true,min:0,max:10},y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{color:C.green,font:{size:10},stepSize:1,precision:0},display:true,min:0,max:10}}}
+    data:{labels:labels,datasets:[{label:'Files Exported',data:dailyData,backgroundColor:'rgba(37,99,235,0.65)',hoverBackgroundColor:C.primary,borderRadius:6,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TIP,callbacks:{label:c=>{return ' '+c.parsed.y+' files exported';}}}},scales:{x:{grid:{display:false},ticks:{color:C.text,font:{size:11}},barPercentage:0.6,categoryPercentage:0.6},y:{beginAtZero:true,grid:{color:C.grid,drawBorder:false},ticks:{color:C.text,font:{size:10},stepSize:2}}}}
   });
 }
 
@@ -109,9 +65,6 @@ function initIdMakerQueue(){
   if(!tbody) return;
   tbody.innerHTML = '';
   const statuses = ['Queued','In Production','Printed','In Transit'];
-  if (!ID_MAKER_QUEUE.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">No cards in the production queue yet. They will appear here once connected to the live system.</td></tr>';
-  }
   ID_MAKER_QUEUE.forEach(app=>{
     const tr = document.createElement('tr');
     tr.dataset.appId = app.id;
@@ -133,7 +86,7 @@ function initIdMakerQueue(){
       '<div class="qsd-menu">' + menuItems + '</div>';
     tr.innerHTML = [
       '<td class="col-check"><input type="checkbox" class="queue-check" data-id="' + app.id + '" onchange="updateBatchSelection()"></td>',
-      '<td data-label="Applicant">',
+      '<td>',
       '  <div class="applicant-cell">',
       '    <span class="applicant-avatar" style="background:linear-gradient(135deg,#7140D8,#5C51E0)">' + (app.name||'--').slice(0,2).toUpperCase() + '</span>',
       '    <div class="applicant-info">',
@@ -142,9 +95,9 @@ function initIdMakerQueue(){
       '    </div>',
       '  </div>',
       '</td>',
-      '<td data-label="Control No."><span class="cell-text" style="font-family:var(--font-data);font-size:12px;letter-spacing:.3px">' + (app.controlNo || '—') + '</span></td>',
-      '<td data-label="Barangay"><span class="cell-text">' + app.barangay + '</span></td>',
-      '<td data-label="Status"><div class="row-status-select" data-app-id="' + app.id + '">' + triggerHTML + '</div></td>',
+      '<td><span class="cell-text" style="font-family:var(--font-data);font-size:12px;letter-spacing:.3px">' + (app.controlNo || '—') + '</span></td>',
+      '<td><span class="cell-text">' + app.barangay + '</span></td>',
+      '<td><div class="row-status-select" data-app-id="' + app.id + '">' + triggerHTML + '</div></td>',
       '<td style="text-align:right;white-space:nowrap">',
       '  <button class="row-action always-visible btn--primary" style="font-size:12px;padding:5px 12px" onclick="openDigitalIssuance(\'' + app.id + '\')">View Form</button>',
       '</td>'
@@ -156,9 +109,6 @@ function initIdMakerQueue(){
   updateQueueTagCounts();
   updateFilterCounts();
   updateAlertCounts();
-
-  // Re-apply any active search/status/barangay filters and refresh the footer count
-  applyQueueFilters();
 }
 
 function initIdMakerStatusChart(){
@@ -193,7 +143,15 @@ function inlineStatusChange(appId, newStatus){
   appendAudit(CURRENT_USER?.displayName || 'ID Maker', 'Status set to: ' + newStatus, CURRENT_ROLE);
   showToast('Status updated to "' + newStatus + '" for ' + (queueItem?.name || appId), 'success');
 
-  applyQueueFilters();
+  const activeOpt = document.querySelector('.queue-filter-option.active');
+  if(activeOpt){
+    const filterStatus = activeOpt.dataset.filter;
+    if(filterStatus !== 'all'){
+      document.querySelectorAll('#id-maker-queue-tbody tr').forEach(r=>{
+        r.style.display = (r.dataset.printStatus === filterStatus) ? '' : 'none';
+      });
+    }
+  }
 }
 
 function queueBadgeClass(status){
@@ -211,10 +169,10 @@ function queueBadgeClass(status){
 function selectQueueFilter(btn,status){
   document.querySelectorAll('.queue-filter-option').forEach(o=>o.classList.remove('active'));
   btn.classList.add('active');
-  const label = document.getElementById('queue-filter-label');
-  if(label) label.textContent = btn.querySelector('.qfo-label').textContent;
-  QUEUE_FILTER_STATE.status = status || 'all';
-  applyQueueFilters();
+  document.getElementById('queue-filter-label').textContent = btn.querySelector('.qfo-label').textContent;
+  document.querySelectorAll('#id-maker-queue-tbody tr').forEach(r=>{
+    r.style.display = (status === 'all' || r.dataset.printStatus === status) ? '' : 'none';
+  });
   closeQueueFilter();
 }
 
@@ -260,26 +218,21 @@ function updateFilterCounts(){
 function populateQueueFilters(){
   const sel = document.getElementById('queue-barangay-filter');
   if(!sel) return;
-  const current = sel.value;
-  // Keep the full static barangay list from the page, then merge in any
-  // queue barangays that are not listed yet (so live data never loses options).
   const brgys = [];
-  Array.prototype.forEach.call(sel.options, o => {
-    if(o.value && o.value !== 'all' && brgys.indexOf(o.value) === -1) brgys.push(o.value);
-  });
   ID_MAKER_QUEUE.forEach(a => { if(a.barangay && brgys.indexOf(a.barangay) === -1) brgys.push(a.barangay); });
-  brgys.sort((a, b) => a.localeCompare(b));
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const allLabel = (sel.options[0] && sel.options[0].value === 'all') ? sel.options[0].textContent : 'Barangay: All';
-  sel.innerHTML = '<option value="all">' + esc(allLabel) + '</option>' +
-    brgys.map(b => '<option value="' + esc(b) + '">Barangay: ' + esc(b) + '</option>').join('');
-  sel.value = (current && brgys.indexOf(current) !== -1) ? current : 'all';
-  QUEUE_FILTER_STATE.barangay = sel.value;
+  brgys.sort();
+  sel.innerHTML = '<option value="all">All Barangays / Districts</option>' +
+    brgys.map(b => '<option value="' + b + '">' + b + '</option>').join('');
 }
 
 function filterQueueByBarangay(value){
-  QUEUE_FILTER_STATE.barangay = value || 'all';
-  applyQueueFilters();
+  document.querySelectorAll('#id-maker-queue-tbody tr').forEach(function(r){
+    const brgyFilterVisible = (value === 'all' || r.dataset.brgy === value);
+    const tagFilterVisible = r.style.display !== 'none';
+    r.style.display = (brgyFilterVisible && tagFilterVisible) ? '' : 'none';
+  });
+  updateQueueCheckedDisabled();
+  updateBatchSelection();
 }
 
 function updateQueueTagCounts(){
@@ -296,8 +249,14 @@ function filterQueueByStatusTag(btn, status){
   const bar = btn.closest('.ops-toolbar');
   if(bar) bar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
-  QUEUE_FILTER_STATE.status = status || 'all';
-  applyQueueFilters();
+  document.querySelectorAll('#id-maker-queue-tbody tr').forEach(function(r){
+    const tagOk = (status === 'all' || r.dataset.printStatus === status);
+    const brgy = document.getElementById('queue-barangay-filter');
+    const brgyOk = (!brgy || brgy.value === 'all' || r.dataset.brgy === brgy.value);
+    r.style.display = (tagOk && brgyOk) ? '' : 'none';
+  });
+  updateQueueCheckedDisabled();
+  updateBatchSelection();
 }
 
 function toggleSelectAllQueue(checked){
@@ -374,23 +333,21 @@ function initIdMakerInsightCharts(){
 
 function initIdMakerPeakChart(){
   var ctx = mkCanvas('chart-idmaker-peak'); if(!ctx)return;
-  var labels = ['6AM','8AM','10AM','12PM','2PM','4PM','6PM','8PM']; // default labels for axis skeleton
-  var data = []; // TODO(integration): populate from live system
-  var empty = document.getElementById('empty-idmaker-peak'); if(empty) empty.style.display = data.length ? 'none' : 'flex';
+  var labels = ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'];
+  var data = [2,5,9,14,18,12,7,10,16,21,15,8,5,3,1];
   if(CHARTS['idmaker-peak']) CHARTS['idmaker-peak'].destroy();
   CHARTS['idmaker-peak'] = new Chart(ctx,{
-    type:'bar',
-    data:{labels:labels,datasets:[{type:'bar',label:'Files Generated',data:data,backgroundColor:'rgba(37,99,235,0.58)',borderRadius:5,yAxisID:'y'},{type:'line',label:'Peak intensity',data:[],borderColor:C.amber,backgroundColor:'rgba(245,158,11,0.14)',fill:true,tension:.35,pointRadius:3,yAxisID:'y1'}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,padding:12,font:{size:10}}},tooltip:{...TIP}},scales:{x:{grid:{display:false},ticks:{color:C.text,font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:8},display:true},y:{beginAtZero:true,position:'left',grid:{color:C.grid,drawBorder:false},ticks:{color:C.text,font:{size:10},stepSize:1,precision:0},display:true,min:0,max:10},y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{color:C.amber,font:{size:10},stepSize:1,precision:0},display:true,min:0,max:10}}}
+    type:'line',
+    data:{labels:labels,datasets:[{label:'Files Generated',data:data,borderColor:C.primary,backgroundColor:'rgba(37,99,235,0.12)',fill:true,tension:.35,pointRadius:2,pointHoverRadius:4,borderWidth:2.5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TIP,callbacks:{label:c=>{return ' '+c.parsed.y+' files';}}}},scales:{x:{grid:{display:false},ticks:{color:C.text,font:{size:10},maxRotation:0,autoSkip:true,maxTicksLimit:8}},y:{beginAtZero:true,grid:{color:C.grid,drawBorder:false},ticks:{color:C.text,font:{size:10},stepSize:5}}}}
   });
 }
 
 function initIdMakerErrorBreakdownChart(){
   var ctx = mkCanvas('chart-idmaker-errors'); if(!ctx)return;
-  var labels = ['Template Missing','Data Mismatch','Font Error','Timeout']; // default labels for axis skeleton
-  var data = [0,0,0,0]; // TODO(integration): populate errors from live system
-  var colors = ['#F43F5E','#F97316','#EAB308','#22C55E'];
-  var empty = document.getElementById('empty-idmaker-errors'); if(empty) empty.style.display = data.some(function(v){return v>0;}) ? 'none' : 'flex';
+  var labels = ['Address Overflow','Missing Photo','Data Mismatch'];
+  var data = [1,1,2];
+  var colors = ['#F43F5E', '#BE123C', '#9F1239'];
   if(CHARTS['idmaker-errors']) CHARTS['idmaker-errors'].destroy();
   CHARTS['idmaker-errors'] = new Chart(ctx,{
     type:'doughnut',
@@ -410,9 +367,8 @@ function initIdMakerErrorBreakdownChart(){
 
 function initIdMakerBrgySpeedChart(){
   var ctx = mkCanvas('chart-idmaker-brgy-speed'); if(!ctx)return;
-  var brgys = []; // TODO(integration): populate from live system
-  var mins = []; // TODO(integration): populate from live system
-  var empty = document.getElementById('empty-idmaker-brgy-speed'); if(empty) empty.style.display = brgys.length ? 'none' : 'flex';
+  var brgys = ['Barangay I (Poblacion)','Manghinao Proper','Santa Maria','San Diego','Aplaya','San Roque'];
+  var mins = [1.6, 2.4, 3.1, 2.0, 1.9, 2.8];
   if(CHARTS['idmaker-brgy']) CHARTS['idmaker-brgy'].destroy();
   CHARTS['idmaker-brgy'] = new Chart(ctx,{
     type:'bar',
@@ -432,23 +388,16 @@ function initIdMakerSLA(){
   setText('sla-48h', over48);
   setText('sla-on-time', onTime);
   setText('sla-total', total);
-  var denominator = total || 1;
-  var onTimeBar = document.getElementById('sla-bar-on-time');
-  var over24Bar = document.getElementById('sla-bar-24h');
-  var over48Bar = document.getElementById('sla-bar-48h');
-  if(onTimeBar) onTimeBar.style.width = (onTime / denominator * 100) + '%';
-  if(over24Bar) over24Bar.style.width = (Math.max(0, over24 - over48) / denominator * 100) + '%';
-  if(over48Bar) over48Bar.style.width = (over48 / denominator * 100) + '%';
 }
 
 function initIdMakerProductivity(){
   const list = document.getElementById('productivity-list');
   if(!list) return;
-  const rows = []; // TODO(integration): populate from live system
-  if(!rows.length){
-    list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">No productivity data yet. Data will appear once connected to the live system.</div>';
-    return;
-  }
+  const rows = [
+    { name:'Barangay I (Poblacion)', count:18, pct:100 },
+    { name:'Manghinao Proper', count:12, pct:67 },
+    { name:'Santa Maria', count:8, pct:44 }
+  ];
   const total = rows.reduce(function(a,r){ return a + r.count; }, 0);
   list.innerHTML = rows.map(function(r){
     return '<div style="display:flex;align-items:center;gap:10px;padding:8px 6px">' +
@@ -463,7 +412,7 @@ function initIdMakerProductivity(){
     '</div>';
   }).join('') +
     '<div style="margin-top:10px;padding:10px 12px;background:var(--bg-alt);border-radius:8px;font-size:12px;color:var(--text-muted);line-height:1.5">' +
-      '<strong style="color:var(--text-primary)">Total Shift Output:</strong> '+total+' files generated' +
+      '<strong style="color:var(--text-primary)">Total Shift Output:</strong> '+total+' files generated by Jayrold' +
     '</div>';
 }
 
@@ -488,21 +437,6 @@ function updateIdMakerAnalytics(){
   initIdMakerStatusChart();
   initIdMakerDailyChart();
   initIdMakerSLA();
-  initIdMakerDocFormat();
-}
-
-function initIdMakerDocFormat(){
-  var total = 0, wordCount = 0, pdfCount = 0;
-  // TODO(integration): populate from live system export history
-  setText('idm-doc-total', total);
-  setText('idm-doc-word', wordCount);
-  setText('idm-doc-pdf', pdfCount);
-  var wordPct = total ? Math.round(wordCount / total * 100) : 0;
-  var pdfPct = total ? 100 - wordPct : 0;
-  var barWord = document.getElementById('idm-doc-bar-word');
-  var barPdf = document.getElementById('idm-doc-bar-pdf');
-  if(barWord) barWord.style.width = wordPct + '%';
-  if(barPdf) barPdf.style.width = pdfPct + '%';
 }
 
 function updateIdMakerKPIs(){

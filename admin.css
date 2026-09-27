@@ -3,6 +3,7 @@
 /* ── Ops grid ── */
 .admin-ops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .admin-ops-grid--balanced{grid-template-columns:1fr 2fr}
+.admin-ops-grid--single{grid-template-columns:1fr}
 @media(max-width:820px){.admin-ops-grid{grid-template-columns:1fr}}
 
 /* ── Op card: flat, compact, shadow-none ── */
@@ -32,32 +33,138 @@
 .admin-op-card__meta{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto;border-top:1px solid var(--bg-alt);padding-top:8px}
 .admin-op-card__stat{font-family:var(--font-data);font-size:11px;font-weight:600;color:var(--text-placeholder)}
 
-/* ── Storage bar: ultra-thin 4px ── */
-.storage-bar{height:4px;background:var(--bg-deep);border-radius:var(--r-sm);overflow:hidden;border:none}
-.storage-bar__fill{height:100%;border-radius:var(--r-sm);transition:width .6s cubic-bezier(0.4,0,0.2,1),background .4s ease}
-.storage-bar--ok .storage-bar__fill{background:#10B981}
-.storage-bar--warn .storage-bar__fill{background:#F59E0B}
-
-/* ── Service status grid (Infrastructure key-value) ── */
-.svc-grid{display:grid;grid-template-columns:auto 1fr auto;gap:5px 8px;align-items:center;font-size:12px}
-.svc-dot{width:6px;height:6px;border-radius:var(--r-pill);flex-shrink:0}
-.svc-dot--ok{background:#10B981}.svc-dot--warn{background:var(--warning)}
-.svc-label{color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.svc-value{font-family:var(--font-data);font-weight:700;font-size:12px;text-align:right;white-space:nowrap}
-
-/* ── Compact activity list (flush to card edges) ── */
+/* ── Activity list (flush to card edges) ── */
 .activity-list{display:flex;flex-direction:column;margin:auto -12px -12px}
 .activity-list .activity-row:first-child{border-top:1px solid var(--bg-alt)}
-.actions-footer{
-  display:flex;align-items:center;justify-content:center;gap:4px;width:100%;
-  padding:8px 10px;border:0;border-top:1px solid var(--bg-alt);border-radius:0;
-  font-family:var(--font-data);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.5px;
-  color:var(--text-muted);background:transparent;cursor:pointer;
-  transition:color var(--tf),background var(--tf);
+
+/* ── Admin Actions data table ── */
+.admin-actions-table-wrap{
+  border-top:1px solid var(--bg-alt);
+  margin:0 -12px -12px;
+  background:#FFFFFF;
+  border-radius:0 0 var(--r-md) var(--r-md);
+  overflow:hidden;
 }
-.actions-footer:hover{color:var(--text-primary);background:var(--bg-alt)}
-.actions-footer svg{width:11px;height:11px;transition:transform var(--tf)}
-.actions-footer:hover svg{transform:translateX(2px)}
+.admin-actions-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#FFFFFF;
+  table-layout:auto;
+}
+.admin-actions-table th{
+  text-align:left;
+  font-family:var(--font-data);
+  font-weight:700;font-size:11px;
+  letter-spacing:.6px;text-transform:uppercase;
+  color:var(--text-placeholder);
+  padding:8px 14px;
+  border-bottom:1px solid var(--bg-alt);
+  background:#F8FAFC;
+  white-space:nowrap;
+}
+.admin-actions-table td{
+  padding:9px 14px;
+  vertical-align:middle;
+  line-height:1.4;
+  border-bottom:1px solid var(--bg-alt);
+  font-size:13px;
+  color:var(--text-primary);
+}
+.admin-actions-table tbody tr:last-child td{border-bottom:none}
+.admin-actions-table tbody tr:hover td{background:var(--bg-alt)}
+
+/* High-risk alert row: pure white + bold left accent strip */
+.admin-actions-table .admin-actions-row--alert td{
+  background:#FFFFFF;
+}
+.admin-actions-table .admin-actions-row--alert td:first-child{border-left:3px solid #E11D48}
+.admin-actions-table .admin-actions-row--alert:hover td{background:var(--bg-alt)}
+.admin-actions-table .admin-actions-row--alert .admin-actions-action{color:var(--text-primary)}
+
+/* Cell content helpers */
+.admin-actions-action{font-weight:600;color:var(--text-primary)}
+.admin-actions-detail{font-size:12.5px;color:var(--text-muted)}
+.admin-actions-detail strong{color:var(--text-secondary);font-weight:700}
+.admin-actions-time{font-family:var(--font-data);font-size:12px;color:var(--text-placeholder);white-space:nowrap}
+
+/* Empty state message */
+.admin-actions-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:18px 14px;
+  color:var(--text-placeholder);
+  font-size:12.5px;
+  font-weight:400;
+  letter-spacing:.3px;
+  text-align:left;
+}
+.admin-actions-empty i{
+  font-size:13px;
+  color:var(--text-placeholder);
+}
+
+/* Shared empty state for data tables */
+.table-empty{
+  text-align:center;
+  padding:32px 16px !important;
+  color:var(--text-muted) !important;
+  font-size:13px;
+}
+.table-empty i{margin-right:8px;vertical-align:-1px}
+
+/* Mobile: table transforms into stacked cards */
+@media (max-width:768px){
+  .admin-actions-table thead{display:none}
+  .admin-actions-table,
+  .admin-actions-table tbody,
+  .admin-actions-table tr,
+  .admin-actions-table td{display:block;width:100%}
+  .admin-actions-table tr{
+    padding:0;
+    border-bottom:1px solid var(--bg-alt);
+  }
+  .admin-actions-table tr:last-child{border-bottom:none}
+  .admin-actions-table td{
+    padding:9px 16px;
+    border:none;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+  }
+  .admin-actions-table td::before{
+    content:attr(data-label);
+    flex-shrink:0;
+    width:38%;
+    font-family:var(--font-data);
+    font-weight:700;font-size:10.5px;
+    letter-spacing:.5px;text-transform:uppercase;
+    color:var(--text-placeholder);
+  }
+  .admin-actions-table td[data-label="Timestamp"]{padding-bottom:14px}
+  .admin-actions-table .admin-actions-row--alert td{border-left:none}
+  .admin-actions-table .admin-actions-row--alert td[data-label="Action Performed"]{
+    border-left:3px solid #E11D48;
+    padding-left:13px;
+  }
+  .admin-actions-empty{justify-content:flex-start}
+}
+
+/* Footer button: clean full-width secondary with soft gray border */
+.actions-footer{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:11px 14px;margin:0;
+  border:0;border-top:1px solid #E2E8F0;border-radius:0;
+  font-family:var(--font-data);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--text-primary);background:#FFFFFF;
+  cursor:pointer;
+  transition:background var(--tf),color var(--tf),border-color var(--tf);
+}
+.actions-footer:hover{background:var(--bg-alt);color:var(--primary)}
+.actions-footer:active{transform:translateY(1px)}
+.actions-footer svg{width:13px;height:13px;transition:transform var(--tf)}
+.actions-footer:hover svg{transform:translateX(4px)}
 
 /* ── System Activity & Throughput panel ── */
 .admin-metrics-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:none;padding:12px 14px;margin-bottom:10px}
@@ -157,9 +264,36 @@
   #mod-user-mgmt .cards-grid .stat-card__value{font-size:22px}
 }
 
-/* ── Admin KPI strip: allow wrapping ── */
-@media (max-width:1100px){.admin-kpi-strip{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:760px){.admin-kpi-strip{grid-template-columns:1fr}}
+/* ── Admin KPI strip: all stat cards kept on a single row ── */
+.admin-kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  width:100%;
+}
+.admin-kpi-strip .stat-card{min-width:0;padding:14px 16px;gap:11px}
+.admin-kpi-strip .stat-card__label{font-size:12px}
+.admin-kpi-strip .stat-card__body{gap:5px}
+.admin-kpi-strip .stat-card__sub{margin-top:3px;font-size:11px}
+
+/* Mobile: horizontal swipe deck with scroll-snap */
+@media (max-width:768px){
+  /* Admin KPI strip: 2-column grid, no horizontal scroll squeeze */
+  .admin-kpi-strip{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    padding:0;
+    margin:0;
+    width:100%;
+  }
+  .admin-kpi-strip .stat-card{
+    min-width:0;
+    padding:14px;
+  }
+  .admin-kpi-strip .stat-card__value{font-size:24px}
+  .admin-kpi-strip .stat-card__label{font-size:12px}
+}
 
 /* ── Admin config row ── */
 .admin-config-row{display:grid;grid-template-columns:1fr;gap:20px;align-items:stretch;margin-top:14px}
@@ -183,3 +317,153 @@
 .content-card--tpl .tpl-counter.over{color:var(--warning-dark)}
 .content-card--tpl .tpl-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 .content-card--tpl .tpl-toggle{border-bottom:none;border-top:1px solid var(--bg-alt);padding:10px 0 2px;margin:0}
+
+/* Skeleton loaders */
+.skeleton-loader{
+  display:inline-block;height:1em;min-width:60px;border-radius:4px;
+  background:linear-gradient(90deg,rgba(200,211,240,0.5) 25%,rgba(228,235,250,0.9) 50%,rgba(200,211,240,0.5) 75%);
+  background-size:200% 100%;
+  animation:skeleton-shimmer 1.4s ease infinite;
+}
+@keyframes skeleton-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Elevated visual hierarchy for high-risk card
+   (clean white surface; state conveyed via border/tinting only) */
+.admin-op-card--highrisk{
+  background:#FFFFFF;
+  border:1px solid rgba(225,29,72,0.3);
+  box-shadow:none;
+}
+.admin-op-card__tint{font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+.admin-op-card--highrisk .admin-op-card__tint{color:var(--danger-dark)}
+
+/* Quick administrative actions bar */
+.quick-actions-bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 14px;margin-bottom:2px;
+  background:linear-gradient(145deg,#FFFFFF,#F4F8FF);
+  border:1.5px solid rgba(26,79,186,0.14);
+  border-radius:var(--r-lg);
+  box-shadow:0 2px 14px rgba(26,79,186,0.06);
+}
+.quick-actions-bar__label{
+  font-family:var(--font-data);font-weight:700;font-size:11px;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--text-placeholder);
+  margin-right:auto;
+}
+.quick-actions-bar .btn{height:36px;font-size:12.5px;padding:0 14px;white-space:nowrap}
+@media (max-width:768px){
+  .quick-actions-bar{flex-direction:column;align-items:stretch}
+  .quick-actions-bar__label{margin-right:0;margin-bottom:2px}
+  .quick-actions-bar .btn{justify-content:center}
+}
+
+/* ── Admin-mobile overrides (desktop unaffected) ── */
+@media (max-width:768px){
+  /* User management: 4-col cards grid collapses, search full width */
+  #mod-user-mgmt .cards-grid{grid-template-columns:repeat(2,1fr)}
+  #mod-user-mgmt .table-search{min-width:0;width:100%}
+  #mod-user-mgmt .table-actions{flex-wrap:wrap}
+}
+@media (max-width:480px){
+  #mod-user-mgmt .cards-grid{grid-template-columns:1fr}
+}
+
+/* ═══ Admin Additional Mobile Responsive ═══ */
+@media (max-width:768px){
+  /* Admin ops grid stacks */
+  .admin-ops-grid{grid-template-columns:1fr}
+  .admin-ops-grid--balanced{grid-template-columns:1fr}
+
+  /* Admin metrics grid stacks */
+  .admin-metrics-grid{grid-template-columns:1fr}
+  .admin-metrics-grid--two{grid-template-columns:1fr}
+
+  /* Admin config grid stacks */
+  .admin-config-grid{grid-template-columns:1fr}
+  .admin-config-row{grid-template-columns:1fr}
+
+  /* Admin service grid stacks */
+  .admin-service-grid{grid-template-columns:1fr}
+
+  /* Audit filter bar stacks */
+  .audit-filter-bar{flex-direction:column;align-items:stretch}
+  .audit-filter-bar .form-input{width:100%}
+
+  /* Admin actions table mobile */
+  .admin-actions-table-wrap{margin:0 -12px -12px}
+
+  /* User management mobile improvements */
+  #mod-user-mgmt .cards-grid{grid-template-columns:repeat(2,1fr)}
+  #mod-user-mgmt .table-search{min-width:0;width:100%}
+  #mod-user-mgmt .table-actions{flex-wrap:wrap}
+  #mod-user-mgmt .page-header__controls{flex-direction:column;align-items:stretch}
+
+  /* Quick actions bar mobile */
+  .quick-actions-bar{flex-direction:column;align-items:stretch}
+  .quick-actions-bar__label{margin-right:0;margin-bottom:2px}
+  .quick-actions-bar .btn{justify-content:center}
+}
+
+@media (max-width:560px){
+  /* Admin KPI strip single column — generous padding */
+  .admin-kpi-strip{grid-template-columns:1fr;gap:8px}
+  .admin-kpi-strip .stat-card{min-width:0;padding:14px 16px}
+  .admin-kpi-strip .stat-card__value{font-size:26px}
+  .admin-kpi-strip .stat-card__label{font-size:12px}
+
+  /* Admin ops card mobile */
+  .admin-op-card{min-height:120px;padding:10px}
+  .admin-op-card__title{font-size:12px}
+
+  /* Admin metrics mobile */
+  .admin-metric-box__value{font-size:20px}
+
+  /* User management single column */
+  #mod-user-mgmt .cards-grid{grid-template-columns:1fr}
+  #mod-user-mgmt .stat-card{padding:14px 16px}
+  #mod-user-mgmt .stat-card__value{font-size:24px}
+
+  /* Config grid mobile */
+  .admin-config-grid{grid-template-columns:1fr}
+  .admin-config-row{grid-template-columns:1fr}
+}
+
+@media (max-width:400px){
+  .admin-ops-grid{grid-template-columns:1fr}
+  .admin-metrics-grid{grid-template-columns:1fr}
+  .admin-service-grid{grid-template-columns:1fr}
+  #mod-user-mgmt .cards-grid{grid-template-columns:1fr}
+}
+
+/* ── Audit Log Summary: range dropdown filter ── */
+.audit-range-filter{
+  position:relative;display:inline-flex;align-items:center;gap:6px;
+  padding:2px 8px;border:1.5px solid transparent;border-radius:var(--r-md);
+  transition:border-color var(--tf),background var(--tf);
+}
+.audit-range-filter__icon{width:13px;height:13px;color:var(--text-muted);flex-shrink:0;transition:color var(--tf)}
+.audit-range-filter select.filter-select{
+  height:34px;min-width:148px;padding:0 12px 0 4px;
+  font-family:var(--font-data);font-size:12px;font-weight:600;
+}
+.audit-range-filter__reset{
+  width:20px;height:20px;flex-shrink:0;border:none;background:transparent;cursor:pointer;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);font-size:15px;line-height:1;transition:all var(--tf);
+}
+.audit-range-filter__reset:hover{background:var(--danger-bg);color:var(--danger-dark)}
+.audit-range-filter__reset[hidden]{display:none}
+/* Visual cue: a non-default range is active */
+.audit-range-filter.is-filtered{border-color:var(--primary-light);background:var(--primary-muted)}
+.audit-range-filter.is-filtered .audit-range-filter__icon{color:var(--primary)}
+.audit-range-filter.is-loading select{opacity:.55;pointer-events:none}
+
+/* Fade micro-state while the summary swaps filters */
+.log-card__body{transition:opacity .18s ease}
+.log-card__body.is-updating{opacity:.4;pointer-events:none}
+@media (prefers-reduced-motion:reduce){
+  .log-card__body{transition:none}
+  .log-card__body.is-updating{opacity:1}
+  .audit-range-filter select.filter-select{opacity:1 !important}
+}

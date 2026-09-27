@@ -21,8 +21,8 @@
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css" />
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css" />
 
-  <link rel="stylesheet" href="base.css?v=12" />
-  <link rel="stylesheet" href="staff.css?v=12" />
+  <link rel="stylesheet" href="base.css?v=28" />
+  <link rel="stylesheet" href="staff.css?v=22" />
 </head>
 
 <body>
@@ -31,26 +31,8 @@
 
       <!-- Left hero panel -->
       <div class="auth-hero">
-        <div class="auth-hero-top">
-          <div class="auth-hero-logo">
-            <div class="auth-hero-logo-icon">
-              <img src="portal-logo.jpg" alt="Senior Citizens Bureau logo" />
-            </div>
-            <div class="auth-hero-logo-text">
-              <s`pan class="auth-hero-logo-name">Office of the Senior Citizens Affairs</span>
-                <span class="auth-hero-logo-sub">Municipality of Bauan</span>
-            </div>
-          </div>
-        </div>
-
         <div class="auth-hero-mid">
-          <h2 class="auth-hero-title" id="auth-panel-title">Staff account?</h2>
-          <p class="auth-hero-desc" id="auth-panel-desc">Switch to staff access for daily operations, application
-            review, and ID release tasks.</p>
-          <button type="button" class="auth-hero-action" id="auth-panel-action" onclick="selectLoginRole('staff')">
-            <i class="fi fi-rr-user"></i>
-            <span>Staff Login</span>
-          </button>
+          <img src="Bauan Municipal hall.jpg" alt="Bauan Municipal Hall" class="auth-hero-illustration" />
         </div>
       </div>
 
@@ -69,53 +51,20 @@
               <i class="fi fi-rr-lock"></i>
               <span>Secure Access</span>
             </div>
-            <h1 class="auth-card-title" id="login-title">Welcome back, Admin User!</h1>
-            <p class="auth-card-sub" id="login-subtitle">Sign in to manage users, logs, system settings, and backups</p>
+            <h1 class="auth-card-title" id="login-title">Welcome back!</h1>
+            <p class="auth-card-sub" id="login-subtitle">We’re glad to see you again! Sign in to manage your workspace.
+            </p>
           </div>
 
-          <div class="login-role-grid" aria-label="Choose login role">
-            <button type="button" class="login-role-card active" data-login-role="admin"
-              onclick="selectLoginRole('admin')">
-              <span class="login-role-head">
-                <span class="login-role-icon"><i class="fi fi-sr-shield-check"></i></span>
-                <span class="login-role-chip">Full Access</span>
-              </span>
-              <span class="login-role-copy">
-                <span class="login-role-title">Login as Admin</span>
-                <span class="login-role-sub">Manage users, logs, and system controls</span>
-              </span>
-            </button>
-            <button type="button" class="login-role-card" data-login-role="staff" onclick="selectLoginRole('staff')">
-              <span class="login-role-head">
-                <span class="login-role-icon"><i class="fi fi-rr-user"></i></span>
-                <span class="login-role-chip">Daily Work</span>
-              </span>
-              <span class="login-role-copy">
-                <span class="login-role-title">Login as Staff</span>
-                <span class="login-role-sub">Review applications and issue forms</span>
-              </span>
-            </button>
-            <button type="button" class="login-role-card" data-login-role="id-maker"
-              onclick="selectLoginRole('id-maker')">
-              <span class="login-role-head">
-                <span class="login-role-icon"><i class="fi fi-rr-id-card-clip-alt"></i></span>
-                <span class="login-role-chip">Print Ops</span>
-              </span>
-              <span class="login-role-copy">
-                <span class="login-role-title">Login as ID Maker</span>
-                <span class="login-role-sub">Review applications, update status, and print</span>
-              </span>
-            </button>
-          </div>
-
-          <form class="auth-form" id="login-form">
+          <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
             <div class="auth-field">
               <label class="auth-field-label" for="login-username">Username</label>
               <div class="auth-input-wrap">
                 <i class="fi fi-rr-user"></i>
                 <input class="auth-input" id="login-username" type="text" placeholder="Enter your username"
-                  autocomplete="username" required />
+                  autocomplete="username" required oninput="clearFieldError('login-username')" />
               </div>
+              <span class="auth-field-error" id="err-username" aria-live="polite"></span>
             </div>
 
             <div class="auth-field">
@@ -123,25 +72,51 @@
               <div class="auth-input-wrap">
                 <i class="fi fi-rr-lock"></i>
                 <input class="auth-input has-right-icon" id="login-password" type="password"
-                  placeholder="Enter your password" autocomplete="current-password" required />
+                  placeholder="Enter your password" autocomplete="current-password" required
+                  onkeyup="checkCapsLock(event)" oninput="clearFieldError('login-password')" />
                 <button type="button" class="auth-input-icon-right" onclick="togglePwVis(this)" tabindex="-1">
                   <i class="fi fi-rr-eye"></i>
                 </button>
               </div>
+              <!-- Caps Lock warning -->
+              <span class="auth-caps-warn" id="caps-warn" aria-live="polite">
+                <i class="fi fi-rr-lock"></i> Caps Lock is ON
+              </span>
+              <span class="auth-field-error" id="err-password" aria-live="polite"></span>
             </div>
 
             <div class="auth-row">
-              <label class="auth-check-label">
-                <input type="checkbox" id="login-remember" />
-                Remember me
+              <label class="auth-checkbox-label" for="login-remember">
+                <input type="checkbox" id="login-remember" class="auth-checkbox" />
+                <span class="auth-checkbox-text">Remember me</span>
               </label>
-              <span class="auth-forgot">Forgot password?</span>
+              <span class="auth-forgot" id="forgot-btn" onclick="showForgotPanel()">Forgot password?</span>
             </div>
 
-            <button type="submit" class="auth-submit">
-              <i class="fi fi-sr-sign-in-alt"></i>
-              Sign In
+            <!-- Forgot password info panel -->
+            <div class="auth-forgot-panel" id="forgot-panel" role="alert">
+              <div class="auth-forgot-panel__icon"><i class="fi fi-rr-info"></i></div>
+              <div class="auth-forgot-panel__body">
+                <strong>Need help?</strong>
+                <p>Contact your System Administrator to reset your password. Do not share your credentials with anyone.
+                </p>
+              </div>
+              <button type="button" class="auth-forgot-panel__close" onclick="hideForgotPanel()"
+                aria-label="Dismiss">&times;</button>
+            </div>
+
+            <button type="submit" class="auth-submit" id="login-submit-btn">
+              <span class="auth-submit-content">
+                <i class="fi fi-sr-sign-in-alt"></i>
+                Sign In
+              </span>
+              <span class="auth-submit-spinner" aria-hidden="true"></span>
             </button>
+
+            <p class="auth-security-notice">
+              <i class="fi fi-rr-shield-check" aria-hidden="true"></i>
+              Protected by Office of the Senior Citizen Affairs Bauan
+            </p>
           </form>
 
         </div>
@@ -152,7 +127,7 @@
 
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="app.js?v=14"></script>
+  <script src="app.js?v=24"></script>
 </body>
 
 </html>

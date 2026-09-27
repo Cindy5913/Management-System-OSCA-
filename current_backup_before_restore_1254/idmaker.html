@@ -21,8 +21,8 @@
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css" />
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css" />
 
-  <link rel="stylesheet" href="base.css?v=27" />
-  <link rel="stylesheet" href="idmaker.css?v=24" />
+  <link rel="stylesheet" href="base.css?v=12" />
+  <link rel="stylesheet" href="idmaker.css?v=12" />
 </head>
 
 <body class="portal-mode">
@@ -50,7 +50,7 @@
           <span class="nav-link__icon-wrap">
             <i class="fi fi-rr-id-card-clip-alt"></i>
           </span>
-          <span class="nav-link__label">Dashboard</span>
+          <span class="nav-link__label">ID Maker Dashboard</span>
         </button>
 
         <button class="nav-link" data-module="id-maker-analytics">
@@ -64,7 +64,8 @@
       <div class="sidebar__footer">
         <div class="sidebar__user">
           <div class="sidebar__avatar">
-            <span class="sidebar__avatar-initials"></span>
+            <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=128&q=80"
+              alt="Cindy" />
           </div>
           <div class="sidebar__user-info">
             <span class="sidebar__user-name" id="current-user-name">Cindy Bulanhagui</span>
@@ -78,45 +79,19 @@
           </button>
         </div>
 
-        <!-- ADDED: Quick role switcher (RBAC demo) -->
-        <div id="role-switcher" style="display:none;padding:6px 10px 10px">
-          <div
-            style="font-family:var(--font-data);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--text-placeholder);padding:6px 2px">
-            Quick Role Switch</div>
-          <select class="filter-select" style="width:100%" id="role-switch-select" onchange="setRole(this.value)">
-            <option value="Admin">Admin</option>
-            <option value="Staff">Staff</option>
-            <option value="ID Maker" selected>ID Maker</option>
-          </select>
-          <div style="font-size:11.5px;color:var(--text-muted);margin-top:8px;line-height:1.4">
-            Roles affect access to: approval, printing, user management, exports.
-          </div>
-        </div>
+
 
         <button class="sidebar__logout-btn" onclick="requestLogout()">
           <i class="fi fi-rr-sign-out-alt" style="font-size:14px;color:var(--text-muted)"></i>
           Sign Out
         </button>
       </div>
-</aside>
-
-    <!-- Mobile sidebar backdrop -->
-    <div class="sidebar-backdrop" onclick="closeSidebarDrawer()"></div>
+    </aside>
 
     <!-- -----------------------------------
      MAIN
----------------------------------- -->
+----------------------------------- -->
     <main class="main-content">
-
-      <!-- Mobile top bar -->
-      <div class="mobile-topbar" style="display:none;align-items:center;gap:10px;margin-bottom:6px">
-        <button class="mobile-menu-btn" onclick="toggleSidebarDrawer()" aria-label="Open menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <div style="font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--text-primary)">ID Maker Portal</div>
-      </div>
 
       <!-- ---------- DASHBOARD (unchanged content + ADDED AI panel + notifications log) ---------- -->
       <div class="module" id="mod-id-maker-dashboard">
@@ -134,9 +109,12 @@
         <div class="alert-banner" id="system-alert-banner" style="margin-bottom:18px">
           <div class="alert-banner__icon"><i class="fi fi-rr-triangle-warning"></i></div>
           <div class="alert-banner__content">
-            <strong class="alert-banner__title">Operational blockers</strong>
+            <strong class="alert-banner__title">3 operational blockers need attention</strong>
             <ul class="alert-banner__list">
-              <li style="list-style:none;padding:4px 0;color:var(--text-muted)">No alerts to display yet. They will appear once connected to the live system.</li>
+              <li><span class="ab-dot"></span><b>Missing photo</b> • 2 applications flagged
+                (SCB-2026-00410, SCB-2026-00408)</li>
+              <li><span class="ab-dot"></span><b>Incomplete birth date</b> • 1 application requires data entry</li>
+              <li><span class="ab-dot"></span><b>Blocked export</b> • Document template missing for 2 pending files</li>
             </ul>
           </div>
           <button class="alert-banner__dismiss" onclick="dismissSystemAlert()" aria-label="Dismiss alerts">
@@ -151,12 +129,12 @@
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-warn"><i class="fi fi-rr-clock ic-warn"></i></div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-up">0</div>
+                <div class="stat-card__trend trend-up">+2.1%</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Pending Export</div>
-              <div class="stat-card__value">0</div>
+              <div class="stat-card__value">64</div>
               <div class="stat-card__sub">Awaiting File Generation</div>
             </div>
           </div>
@@ -164,12 +142,12 @@
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-blue"><i class="fi fi-rr-document ic-blue"></i></div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-neutral">0</div>
+                <div class="stat-card__trend trend-neutral">8 active</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">In Production</div>
-              <div class="stat-card__value">0</div>
+              <div class="stat-card__value">8</div>
               <div class="stat-card__sub">Generating Documents</div>
             </div>
           </div>
@@ -177,12 +155,12 @@
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-green"><i class="fi fi-rr-check-double ic-green"></i></div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-good">0</div>
+                <div class="stat-card__trend trend-good">+11.8%</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Exported</div>
-              <div class="stat-card__value">0</div>
+              <div class="stat-card__value">31</div>
               <div class="stat-card__sub">Files Created Today</div>
             </div>
           </div>
@@ -190,12 +168,12 @@
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-purple"><i class="fi fi-rr-id-card-clip-alt ic-purple"></i></div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-good">0</div>
+                <div class="stat-card__trend trend-good">+6.4%</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Ready for Release</div>
-              <div class="stat-card__value">0</div>
+              <div class="stat-card__value">44</div>
               <div class="stat-card__sub">Available for Distribution</div>
             </div>
           </div>
@@ -203,12 +181,12 @@
             <div class="stat-card__top">
               <div class="stat-card__icon-wrap iwrap-red"><i class="fi fi-rr-x ic-red"></i></div>
               <div class="stat-card__meta">
-                <div class="stat-card__trend trend-down">0</div>
+                <div class="stat-card__trend trend-down">-0.8%</div>
               </div>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__label">Export Errors</div>
-              <div class="stat-card__value">0</div>
+              <div class="stat-card__value">3</div>
                 <div class="stat-card__sub">Failed Exports &amp; Data Fix</div>
             </div>
           </div>
@@ -219,6 +197,8 @@
           <div class="table-header main-queue-header">
             <div class="main-queue-header__title">
               <div class="table-header__title">Main Queue List</div>
+              <div class="table-header__desc">Pre-approved applications ready for document export — click "View
+                Form" to update status.</div>
             </div>
             <div class="table-header__actions main-queue-header__controls">
               <div class="table-search">
@@ -227,57 +207,6 @@
                   <path d="M11 11l3 3" />
                 </svg>
                 <input type="search" placeholder="Search queue…" oninput="filterIdMakerQueue(this.value)" />
-              </div>
-              <div class="barangay-select-wrap">
-                <svg class="barangay-select-wrap__pin" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <select class="filter-select" id="queue-barangay-filter" style="height:36px"
-                  onchange="filterQueueByBarangay(this.value)" aria-label="Filter queue by barangay">
-                  <option value="all">Barangay: All</option>
-                  <option value="Alagao">Barangay: Alagao</option>
-                  <option value="Aplaya">Barangay: Aplaya</option>
-                  <option value="As-Is">Barangay: As-Is</option>
-                  <option value="Bagong Silang">Barangay: Bagong Silang</option>
-                  <option value="Baguilawa">Barangay: Baguilawa</option>
-                  <option value="Balayong">Barangay: Balayong</option>
-                  <option value="Barangay I (Poblacion)">Barangay: Barangay I (Poblacion)</option>
-                  <option value="Barangay II (Poblacion)">Barangay: Barangay II (Poblacion)</option>
-                  <option value="Barangay III (Poblacion)">Barangay: Barangay III (Poblacion)</option>
-                  <option value="Barangay IV (Poblacion)">Barangay: Barangay IV (Poblacion)</option>
-                  <option value="Bolo">Barangay: Bolo</option>
-                  <option value="Colvo">Barangay: Colvo</option>
-                  <option value="Cupang">Barangay: Cupang</option>
-                  <option value="Durungao">Barangay: Durungao</option>
-                  <option value="Gulibay">Barangay: Gulibay</option>
-                  <option value="Inicbulan">Barangay: Inicbulan</option>
-                  <option value="Locloc">Barangay: Locloc</option>
-                  <option value="Magalang-Galang">Barangay: Magalang-Galang</option>
-                  <option value="Malindig">Barangay: Malindig</option>
-                  <option value="Manalupang">Barangay: Manalupang</option>
-                  <option value="Manghinao Proper">Barangay: Manghinao Proper</option>
-                  <option value="Manghinao Uno">Barangay: Manghinao Uno</option>
-                  <option value="New Danglayan">Barangay: New Danglayan</option>
-                  <option value="Orense">Barangay: Orense</option>
-                  <option value="Pitugo">Barangay: Pitugo</option>
-                  <option value="Rizal">Barangay: Rizal</option>
-                  <option value="Sampaguita">Barangay: Sampaguita</option>
-                  <option value="San Agustin">Barangay: San Agustin</option>
-                  <option value="San Andres Proper">Barangay: San Andres Proper</option>
-                  <option value="San Andres Uno">Barangay: San Andres Uno</option>
-                  <option value="San Diego">Barangay: San Diego</option>
-                  <option value="San Miguel">Barangay: San Miguel</option>
-                  <option value="San Pablo">Barangay: San Pablo</option>
-                  <option value="San Pedro">Barangay: San Pedro</option>
-                  <option value="San Roque">Barangay: San Roque</option>
-                  <option value="San Teodoro">Barangay: San Teodoro</option>
-                  <option value="San Vicente">Barangay: San Vicente</option>
-                  <option value="Santa Maria">Barangay: Santa Maria</option>
-                  <option value="Santo Domingo">Barangay: Santo Domingo</option>
-                  <option value="Sinala">Barangay: Sinala</option>
-                </select>
               </div>
               <div class="queue-filter-dropdown" id="queue-filter-wrap">
                 <button class="queue-filter-trigger" onclick="toggleQueueFilter()">
@@ -295,29 +224,29 @@
                   <button class="queue-filter-option active" data-filter="all" onclick="selectQueueFilter(this,'all')">
                     <span class="qfo-dot" style="background:var(--text-muted)"></span>
                     <span class="qfo-label">All</span>
-                    <span class="qfo-count" id="qf-count-all">0</span>
+                    <span class="qfo-count" id="qf-count-all">8</span>
                   </button>
                   <button class="queue-filter-option" data-filter="Queued" onclick="selectQueueFilter(this,'Queued')">
                     <span class="qfo-dot" style="background:var(--warning)"></span>
                     <span class="qfo-label">Queued</span>
-                    <span class="qfo-count" id="qf-count-queued">0</span>
+                    <span class="qfo-count" id="qf-count-queued">2</span>
                   </button>
                   <button class="queue-filter-option" data-filter="In Production"
                     onclick="selectQueueFilter(this,'In Production')">
                     <span class="qfo-dot" style="background:var(--primary)"></span>
                     <span class="qfo-label">In Production</span>
-                    <span class="qfo-count" id="qf-count-production">0</span>
+                    <span class="qfo-count" id="qf-count-production">2</span>
                   </button>
                   <button class="queue-filter-option" data-filter="Printed" onclick="selectQueueFilter(this,'Printed')">
                     <span class="qfo-dot" style="background:var(--purple)"></span>
                     <span class="qfo-label">Printed</span>
-                    <span class="qfo-count" id="qf-count-printed">0</span>
+                    <span class="qfo-count" id="qf-count-printed">2</span>
                   </button>
                   <button class="queue-filter-option" data-filter="In Transit"
                     onclick="selectQueueFilter(this,'In Transit')">
                     <span class="qfo-dot" style="background:var(--success)"></span>
                     <span class="qfo-label">In Transit</span>
-                    <span class="qfo-count" id="qf-count-transit">0</span>
+                    <span class="qfo-count" id="qf-count-transit">2</span>
                   </button>
                 </div>
               </div>
@@ -326,7 +255,25 @@
             </div>
           </div>
 
-          <!-- Bulk action bar — sits flush above table header -->
+          <!-- Barangay / District filter + Quick-search status tags -->
+          <div class="filter-bar ops-toolbar">
+            <select class="filter-select" id="queue-barangay-filter" onchange="filterQueueByBarangay(this.value)">
+              <option value="all">All Barangays / Districts</option>
+            </select>
+            <span class="ops-toolbar__sep"></span>
+            <span class="ops-toolbar__label">Quick Filter:</span>
+            <button class="filter-chip active" onclick="filterQueueByStatusTag(this,'all')">All</button>
+            <button class="filter-chip" data-qtag="Queued" onclick="filterQueueByStatusTag(this,'Queued')">Pending Export
+              (<span id="qt-queued">0</span>)</button>
+            <button class="filter-chip" data-qtag="In Production" onclick="filterQueueByStatusTag(this,'In Production')">In
+              Production (<span id="qt-production">0</span>)</button>
+            <button class="filter-chip" data-qtag="Printed" onclick="filterQueueByStatusTag(this,'Printed')">Exported
+              (<span id="qt-printed">0</span>)</button>
+            <button class="filter-chip" data-qtag="In Transit" onclick="filterQueueByStatusTag(this,'In Transit')">Ready
+              (<span id="qt-transit">0</span>)</button>
+          </div>
+
+          <!-- Batch Export toolbar -->
           <div class="batch-export" id="batch-export-bar">
             <label class="batch-export__select-all">
               <input type="checkbox" id="select-all-queue" onchange="toggleSelectAllQueue(this.checked)" />
@@ -358,8 +305,8 @@
               <!-- populated by initIdMakerQueue() -->
             </tbody>
           </table>
-          <div class="table-footer" id="queue-footer" style="display:none">
-            <span class="table-footer__info" id="queue-footer-count"></span>
+          <div class="table-footer">
+            <span class="table-footer__info">Showing 8 of 64 print-ready applications</span>
           </div>
         </div>
       </div>
@@ -383,9 +330,9 @@
             <div class="an-card__sub">Current distribution across production stages</div>
           </div>
         </div>
-        <div class="an-card__body" style="flex-direction:row;align-items:center;justify-content:space-between;gap:24px;padding:16px 18px">
+        <div class="an-card__body" style="flex-direction:row;align-items:center;justify-content:space-around;gap:20px;padding:16px 18px">
           <div class="chart-wrap" style="height:160px;width:160px;flex-shrink:0"><canvas id="chart-idmaker-status"></canvas></div>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px;align-items:center;min-width:0">
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
             <div style="display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.3">
               <span style="width:10px;height:10px;border-radius:50%;background:#FDA4AF;flex-shrink:0"></span>
               <span><strong style="font-size:13px">Awaiting</strong><br /><span style="color:var(--text-muted);font-size:12px" id="idm-awaiting-count">0</span></span>
@@ -410,7 +357,7 @@
         <div class="an-card__header">
           <div>
             <div class="an-card__title">Avg Crafting Time</div>
-            <div class="an-card__sub">Average processing duration per active batch</div>
+            <div class="an-card__sub">Minutes per file (In Production ? Exported)</div>
           </div>
         </div>
         <div class="an-card__body" style="flex-direction:column;align-items:center;justify-content:center;padding:16px 18px">
@@ -433,14 +380,7 @@
           </div>
         </div>
         <div class="an-card__body--nop" style="padding:0 20px 20px">
-          <div class="chart-wrap chart-wrap--analytics" style="height:240px;position:relative">
-            <canvas id="chart-idmaker-daily"></canvas>
-            <div class="chart-empty-state" id="empty-idmaker-daily" style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;top:0;left:0;right:0;bottom:0;color:var(--text-muted);font-size:13px;text-align:center;padding:20px;pointer-events:none;background:rgba(255,255,255,0.85);border-radius:8px">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="margin-bottom:12px;opacity:0.4"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12"/></svg>
-              <span style="font-weight:600;color:var(--text-secondary);margin-bottom:4px">No Export Data</span>
-              <span style="font-size:12px">Live export data will appear here once connected</span>
-            </div>
-          </div>
+          <div class="chart-wrap" style="height:240px"><canvas id="chart-idmaker-daily"></canvas></div>
         </div>
       </div>
       <div class="an-card">
@@ -451,14 +391,7 @@
           </div>
         </div>
         <div class="an-card__body--nop" style="padding:0 20px 20px">
-          <div class="chart-wrap chart-wrap--analytics" style="height:240px;position:relative">
-            <canvas id="chart-idmaker-peak"></canvas>
-            <div class="chart-empty-state" id="empty-idmaker-peak" style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;top:0;left:0;right:0;bottom:0;color:var(--text-muted);font-size:13px;text-align:center;padding:20px;pointer-events:none;background:rgba(255,255,255,0.85);border-radius:8px">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="margin-bottom:12px;opacity:0.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span style="font-weight:600;color:var(--text-secondary);margin-bottom:4px">No Generation Data</span>
-              <span style="font-size:12px">Live generation-hour data will appear here once connected</span>
-            </div>
-          </div>
+          <div class="chart-wrap" style="height:240px"><canvas id="chart-idmaker-peak"></canvas></div>
         </div>
       </div>
     </div>
@@ -478,16 +411,6 @@
               <div class="sla-big__value" id="sla-24h">0</div>
               <div class="sla-big__label">waiting &gt; 24h</div>
             </div>
-            <div class="sla-segmented-bar" role="img" aria-label="Queue aging distribution">
-              <span class="sla-segment sla-segment--on-time" id="sla-bar-on-time"></span>
-              <span class="sla-segment sla-segment--24h" id="sla-bar-24h"></span>
-              <span class="sla-segment sla-segment--48h" id="sla-bar-48h"></span>
-            </div>
-            <div class="sla-segment-legend">
-              <span><i class="sla-legend-dot sla-legend-dot--on-time"></i>On time</span>
-              <span><i class="sla-legend-dot sla-legend-dot--24h"></i>&gt;24h</span>
-              <span><i class="sla-legend-dot sla-legend-dot--48h"></i>&gt;48h breach</span>
-            </div>
             <div class="sla-row">
               <div class="sla-row__box sla-warn"><strong id="sla-48h">0</strong><span>over 48h</span></div>
               <div class="sla-row__box sla-ok"><strong id="sla-on-time">0</strong><span>on time</span></div>
@@ -505,15 +428,8 @@
             <div class="an-card__sub">Causes affecting file generation</div>
           </div>
         </div>
-        <div class="an-card__body" style="flex-direction:row;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;position:relative">
-          <div class="chart-wrap" style="height:150px;width:150px;flex-shrink:0;position:relative">
-            <canvas id="chart-idmaker-errors"></canvas>
-            <div class="chart-empty-state" id="empty-idmaker-errors" style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;top:0;left:0;right:0;bottom:0;color:var(--text-muted);font-size:13px;text-align:center;padding:20px;pointer-events:none;background:rgba(255,255,255,0.85);border-radius:8px">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="margin-bottom:10px;opacity:0.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span style="font-weight:600;color:var(--text-secondary);margin-bottom:4px">No Error Data</span>
-              <span style="font-size:12px">Error breakdown will appear here once connected</span>
-            </div>
-          </div>
+        <div class="an-card__body" style="flex-direction:row;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+          <div class="chart-wrap" style="height:150px;width:150px;flex-shrink:0"><canvas id="chart-idmaker-errors"></canvas></div>
           <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:150px" id="error-breakdown-legend"></div>
         </div>
       </div>
@@ -528,25 +444,27 @@
         <div class="an-card__body" style="gap:12px">
           <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:8px">
             <div>
-              <div style="font-size:42px;font-weight:800;font-family:var(--font-display);color:var(--text-primary);line-height:1" id="idm-doc-total">0</div>
+              <div style="font-size:42px;font-weight:800;font-family:var(--font-display);color:var(--text-primary);line-height:1" id="idm-doc-total">38</div>
               <div style="font-size:12px;color:var(--text-muted);margin-top:4px">documents exported</div>
             </div>
             <div style="flex:1">
               <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:4px">
                 <span style="width:8px;height:8px;border-radius:50%;background:#3B82F6"></span> Word (.docx)
-                <strong style="margin-left:auto;color:var(--text-primary)" id="idm-doc-word">0</strong>
+                <strong style="margin-left:auto;color:var(--text-primary)">24</strong>
               </div>
               <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)">
                 <span style="width:8px;height:8px;border-radius:50%;background:#EF4444"></span> PDF (.pdf)
-                <strong style="margin-left:auto;color:var(--text-primary)" id="idm-doc-pdf">0</strong>
+                <strong style="margin-left:auto;color:var(--text-primary)">14</strong>
               </div>
             </div>
           </div>
           <div style="height:8px;background:var(--bg-alt);border-radius:var(--r-pill);overflow:hidden;display:flex">
-            <div id="idm-doc-bar-word" style="width:0%;background:#3B82F6"></div>
-            <div id="idm-doc-bar-pdf" style="width:0%;background:#EF4444"></div>
+            <div style="width:63%;background:#3B82F6"></div>
+            <div style="width:37%;background:#EF4444"></div>
           </div>
-          <p style="font-size:11px;color:var(--text-muted);margin:0;line-height:1.4">Word (.docx) for editable templates · PDF (.pdf) for final distribution</p>
+          <div style="background:var(--bg-alt);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text-muted);line-height:1.5">
+            <strong style="color:var(--text-primary)">Note:</strong> Documents are exported as Word (.docx) for editable templates and PDF (.pdf) for final distribution files.
+          </div>
         </div>
       </div>
 
@@ -558,10 +476,7 @@
           </div>
         </div>
         <div class="an-card__body--nop" style="padding:0 22px 22px">
-          <div class="chart-wrap chart-wrap--analytics" style="height:230px">
-            <canvas id="chart-idmaker-brgy-speed"></canvas>
-            <div class="chart-empty-state" id="empty-idmaker-brgy-speed">Live Barangay processing data will appear here.</div>
-          </div>
+          <div class="chart-wrap" style="height:230px"><canvas id="chart-idmaker-brgy-speed"></canvas></div>
         </div>
       </div>
 
@@ -870,8 +785,8 @@
   <!-- Toast container -->
   <div class="toast-container" id="toast-container"></div>
 
-<script src="app.js?v=24"></script>
-  <script src="idmaker.js?v=13"></script>
+<script src="app.js?v=14"></script>
+  <script src="idmaker.js?v=12"></script>
 </body>
 
 </html>
