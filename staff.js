@@ -128,3 +128,131 @@ document.addEventListener('DOMContentLoaded', () => {
     switchKPIs(CURRENT_ROLE);
   }
 });
+
+async function loadApplicationsFromDatabase() {
+  try {
+    const response = await fetch("http://localhost:5000/api/applications");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch applications");
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to load applications");
+    }
+
+    console.log("Applications loaded from database:", result.applications);
+
+    displayApplications(result.applications);
+
+  } catch (error) {
+    console.error("Error loading applications:", error);
+
+    if (typeof showToast === "function") {
+      showToast("Failed to load applications.", "error");
+    }
+  }
+}
+
+function displayApplications(applications) {
+  const tbody = document.getElementById("applications-tbody");
+
+  if (!tbody) {
+    console.error("applications-tbody not found.");
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  applications.forEach((application) => {
+
+    const fullName = [
+      application.first_name,
+      application.middle_name,
+      application.surname
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const date = application.created_at
+      ? new Date(application.created_at).toLocaleDateString()
+      : "—";
+
+    const barangay = application.barangay_district || "—";
+
+    const status = application.status || "Pending";
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>
+        <input
+          type="checkbox"
+          class="row-check"
+          data-app-id="${application.application_id}"
+        >
+      </td>
+
+      <td>
+        <div class="applicant-name">${fullName || "Unnamed Applicant"}</div>
+        <div class="applicant-id">${application.application_id || "—"}</div>
+      </td>
+
+      <td>${date}</td>
+
+      <td data-label="Barangay">
+        ${barangay}
+      </td>
+
+      <td>
+        <span class="status-select__label">
+          ${status}
+        </span>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  console.log(`${applications.length} applications displayed.`);
+}
+
+// Load complete application details when the existing Open button is used
+async function loadApplicationDetails(applicationId) {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/applications/${encodeURIComponent(applicationId)}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch application details");
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(
+        result.message || "Failed to load application details"
+      );
+    }
+
+    console.log("Complete application details:", result);
+
+    return result;
+
+  } catch (error) {
+    console.error("Error loading application details:", error);
+
+    if (typeof showToast === "function") {
+      showToast("Failed to load application details.", "error");
+    }
+
+    return null;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadApplicationsFromDatabase();
+});

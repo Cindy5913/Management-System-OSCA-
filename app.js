@@ -1368,8 +1368,252 @@ function ensureExampleData(app) {
   return app;
 }
 
-function openApplicationDetail(appId) {
-  const app = ensureExampleData(APP_DB[appId] || FULL_APPLICANTS.find(a => a.id === appId) || { id: appId, name: 'Unknown', barangay: '—', status: 'Pending', daysPending: 0, duplicate: null });
+async function openApplicationDetail(appId) {
+
+  // Get the complete application information from the database
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/applications/${encodeURIComponent(appId)}`
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+
+      if (result.success && result.application) {
+        const a = result.application;
+        const pb = result.personalBackground || {};
+        const pn = result.problemsNeeds || {};
+        const membership = result.membership || null;
+        const files = result.applicationFiles || null;
+
+        // Convert database data to the format already used by the modal
+        const liveApp = {
+          id: a.application_id,
+          name: [
+            a.first_name,
+            a.middle_name,
+            a.surname
+          ].filter(Boolean).join(' '),
+
+          firstName: a.first_name || '',
+          middleName: a.middle_name || '',
+          surname: a.surname || '',
+
+          dob: a.date_of_birth || '',
+          age: a.age,
+          gender: a.sex || '',
+          birthplace: a.place_of_birth || '',
+          civilStatus: a.civil_status || '',
+          address: a.house_street || '',
+          barangay: a.barangay_district || '',
+          education: a.educational_attainment || '',
+          religion: a.religion || '',
+          occupation: a.occupation || '',
+          contactNumber: a.contact_number || '',
+
+          idOsca: a.osca_id_number || '',
+          idSss: a.sss_id_number || '',
+          idPhilhealth: a.philhealth_id_number || '',
+          idGsis: a.gsis_id_number || '',
+          idTin: a.tin_id_number || '',
+
+          status: result.statusHistory?.[0]?.status || 'Pending',
+
+          // Family composition
+          familyComposition: (result.familyComposition || []).map(member => ({
+            name: member.name || '',
+            relationship: member.relationship || '',
+            age: member.age ?? '',
+            civilStatus: member.civil_status || '',
+            occupation: member.occupation || '',
+            income: Number(member.income) || 0
+          })),
+
+          // Membership
+          membership: membership ? {
+            associationName: membership.association_name || '',
+            associationAddress: membership.association_address || '',
+            associationDate: membership.association_date || '',
+            position: membership.position || ''
+          } : null,
+
+          // Personal background
+          personalBackground: {
+            incomeSources: [
+              ['income_own_earnings', 'Own Earnings'],
+              ['income_own_pension', 'Pension'],
+              ['income_stocks_dividends', 'Stocks / Dividends'],
+              ['income_dependent_children', 'Dependent of Children/Relatives'],
+              ['income_spouse_salary', 'Spouse Salary'],
+              ['income_insurance', 'Insurance'],
+              ['income_rentals_sharecroppings', 'Rentals / Sharecropping'],
+              ['income_savings', 'Savings'],
+              ['income_livestock_crop', 'Livestock / Crop'],
+              ['income_other', pb.income_other_specify || 'Other Income']
+            ]
+              .filter(([key]) => pb[key] === true)
+              .map(([, label]) => label),
+
+            assets: [
+              ['asset_house', 'House'],
+              ['asset_lot', 'Lot'],
+              ['asset_farmland', 'Farmland'],
+              ['asset_fishponds_resorts', 'Fishponds / Resorts'],
+              ['asset_commercial_building', 'Commercial Building'],
+              ['asset_other', pb.asset_other_specify || 'Other']
+            ]
+              .filter(([key]) => pb[key] === true)
+              .map(([, label]) => label),
+
+            monthlyIncome:
+              pb.monthly_income !== null &&
+              pb.monthly_income !== undefined &&
+              pb.monthly_income !== ''
+                ? `₱${Number(pb.monthly_income).toLocaleString()}`
+                : '—',
+
+            livingWith: [
+              ['living_alone', 'Alone'],
+              ['living_spouse', 'Spouse'],
+              ['living_care_institution', 'Care Institution'],
+              ['living_children', 'Children'],
+              ['living_friends', 'Friends'],
+              ['living_common_law_spouse', 'Common-Law Spouse'],
+              ['living_grandchildren', 'Grandchildren'],
+              ['living_households', 'Household'],
+              ['living_relatives', 'Relatives'],
+              ['living_in_laws', 'In-Laws'],
+              ['living_other', pb.living_other_specify || 'Other']
+            ]
+              .filter(([key]) => pb[key] === true)
+              .map(([, label]) => label),
+
+            skills: [
+              ['skill_medical', 'Medical'],
+              ['skill_dental', 'Dental'],
+              ['skill_farming', 'Farming'],
+              ['skill_arts', 'Arts'],
+              ['skill_teaching', 'Teaching'],
+              ['skill_counseling', 'Counseling'],
+              ['skill_fishing', 'Fishing'],
+              ['skill_engineering', 'Engineering'],
+              ['skill_legal_services', 'Legal Services'],
+              ['skill_evangelization', 'Evangelization'],
+              ['skill_cooking', 'Cooking'],
+              ['skill_vocational', 'Vocational'],
+              ['skill_other', pb.skill_other_specify || 'Other']
+            ]
+              .filter(([key]) => pb[key] === true)
+              .map(([, label]) => label),
+
+            involvement: [
+              ['involvement_medical', 'Medical'],
+              ['involvement_dental', 'Dental'],
+              ['involvement_religious', 'Religious'],
+              ['involvement_sportsmanship', 'Sportsmanship'],
+              ['involvement_resource_volunteer', 'Resource Volunteer'],
+              ['involvement_friendly_visits', 'Friendly Visits'],
+              ['involvement_counseling_referral', 'Counseling / Referral'],
+              ['involvement_legal_services', 'Legal Services'],
+              ['involvement_community_leader', 'Community Leader'],
+              ['involvement_other', pb.involvement_other_specify || 'Other']
+            ]
+              .filter(([key]) => pb[key] === true)
+              .map(([, label]) => label)
+          },
+
+          // Problems and needs
+          problemsNeeds: {
+            economic: [
+              ['economic_lack_income', 'Lack of Income'],
+              ['economic_skills_training', pn.economic_skills_training_specify || 'Skills Training'],
+              ['economic_livelihood', pn.economic_livelihood_specify || 'Livelihood'],
+              ['economic_other', pn.economic_other_specify || 'Other']
+            ]
+              .filter(([key]) => pn[key] === true)
+              .map(([, label]) => label),
+
+            social: [
+              ['social_neglect_rejection', 'Neglect / Rejection'],
+              ['social_helplessness', 'Feeling of Helplessness'],
+              ['social_loneliness', 'Feeling of Loneliness & Isolation'],
+              ['social_inadequate_recreation', 'Inadequate Recreation'],
+              ['social_senior_friendly_environment', 'Senior-Friendly Environment'],
+              ['social_other', pn.social_other_specify || 'Other']
+            ]
+              .filter(([key]) => pn[key] === true)
+              .map(([, label]) => label),
+
+            health: [
+              ['health_high_cost_medicine', 'High Cost of Medicines'],
+              ['health_lack_medical_professionals', 'Lack of Medical Professionals'],
+              ['health_no_sanitation', 'No Sanitation'],
+              ['health_no_insurance', 'Lack / No Health Insurance'],
+              ['health_lack_hospital', 'Lack of Hospital'],
+              ['health_problem', pn.health_problem_specify || 'Health Problem']
+            ]
+              .filter(([key]) => pn[key] === true)
+              .map(([, label]) => label),
+
+            housing: [
+              ['housing_overcrowding', 'Overcrowding'],
+              ['housing_no_permanent_home', 'No Permanent Home'],
+              ['housing_independent_living', 'Independent Living'],
+              ['housing_lost_privacy', 'Lost Privacy'],
+              ['housing_squatter_area', 'Squatter Area'],
+              ['housing_high_rental', 'High Rental Cost'],
+              ['housing_other', pn.housing_other_specify || 'Other']
+            ]
+              .filter(([key]) => pn[key] === true)
+              .map(([, label]) => label),
+
+            communityService: [
+              ['community_desire_participate', 'Desire to Participate'],
+              ['community_skills_to_share', 'Skills to Share'],
+              ['community_other', pn.community_other_specify || 'Other']
+            ]
+              .filter(([key]) => pn[key] === true)
+              .map(([, label]) => label),
+
+            otherNeeds: pn.other_specific_needs || ''
+          },
+
+          // Real signed document URLs from the backend
+          documents: {
+            idFront: files?.valid_id_signed_url || '',
+            idBack: files?.valid_id_back_signed_url || '',
+            photo: files?.latest_photo_signed_url || '',
+            bc: files?.birth_certificate_signed_url || '',
+            cedula: files?.community_tax_certificate_signed_url || '',
+            signature: files?.signature_signed_url || ''
+          },
+
+          confirmations: result.confirmations || null,
+          documentAuthentications: result.documentAuthentications || [],
+          statusHistory: result.statusHistory || []
+        };
+
+        // Store the real database record where the existing modal expects it
+        APP_DB[appId] = liveApp;
+      }
+    }
+  } catch (error) {
+    console.error('Unable to load complete application:', error);
+  }
+
+  // Existing modal logic continues from here
+  const app = ensureExampleData(
+    APP_DB[appId] ||
+    FULL_APPLICANTS.find(a => a.id === appId) ||
+    {
+      id: appId,
+      name: 'Unknown',
+      barangay: '—',
+      status: 'Pending',
+      daysPending: 0,
+      duplicate: null
+    }
+  );
   CURRENT_APP_ID = appId;
 
   setText('modal-title', `Application Detail — ${app.name}`);
