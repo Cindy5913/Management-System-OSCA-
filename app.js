@@ -1,4 +1,3 @@
-
 /* ============================================================
    Existing JS from your last file (kept) + NEW JS for features:
    - RBAC (role switching)
@@ -681,20 +680,6 @@ function clearAuthSession() {
   catch (_err) { }
 }
 
-/* ==========================================================
-   AUTH — BOOTSTRAP credentials only.
-   These are temporary logins so the team can reach the portals
-   during integration. They are NOT real personnel and must be
-   replaced by the other application system's authentication
-   (e.g. verify against the live user API / OAuth).
-   TODO(integration): replace with real auth against the other system.
-========================================================== */
-const DEMO_USERS = {
-  admin: { password: 'admin123', role: 'Admin', displayName: 'System Administrator', email: 'admin@scb.gov.ph', status: 'Active' },
-  staff: { password: 'staff123', role: 'Staff', displayName: 'Frontline Staff', email: 'staff@scb.gov.ph', status: 'Active' },
-  idmaker: { password: 'idmaker123', role: 'ID Maker', displayName: 'ID Maker', email: 'idmaker@scb.gov.ph', status: 'Active' }
-};
-
 const ROLE_PERMS = {
   Admin: { approve: true, reject: true, print: true, userMgmt: true, export: true, viewPII: true, settings: true, idMakerDashboard: true },
   Staff: { approve: true, reject: true, print: true, userMgmt: false, export: true, viewPII: true, settings: false, idMakerDashboard: false },
@@ -1044,16 +1029,12 @@ function applyRoleToUI() {
   if (roleSwitcher && !devSwitcherAllowed) roleSwitcher.style.display = 'none';
 }
 
-function authenticateUser(username, password) {
-  const record = DEMO_USERS[username];
-  if (!record || record.password !== password) return null;
-  return { username, role: normalizeRole(record.role), displayName: record.displayName };
-}
-
-function handleLogin(event) {
+async function handleLogin(event) {
   event.preventDefault();
+
   const usernameEl = document.getElementById('login-username');
   const passwordEl = document.getElementById('login-password');
+
   const username = usernameEl.value.trim().toLowerCase();
   const password = passwordEl.value;
 
@@ -1063,27 +1044,95 @@ function handleLogin(event) {
 
   // Basic field validation
   let hasError = false;
-  if (!username) { showFieldError('login-username', 'Username is required.'); hasError = true; }
-  if (!password) { showFieldError('login-password', 'Password is required.'); hasError = true; }
+
+  if (!username) {
+    showFieldError('login-username', 'Username is required.');
+    hasError = true;
+  }
+
+  if (!password) {
+    showFieldError('login-password', 'Password is required.');
+    hasError = true;
+  }
+
   if (hasError) return;
 
   // Show spinner
   const btn = document.getElementById('login-submit-btn');
   if (btn) btn.classList.add('loading');
 
-  setTimeout(() => {
-    const authUser = authenticateUser(username, password);
-    if (!authUser) {
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
       if (btn) btn.classList.remove('loading');
-      showFieldError('login-password', 'Incorrect username or password. Please try again.');
+
+      showFieldError(
+        'login-password',
+        result.message || 'Incorrect username or password. Please try again.'
+      );
+
       if (passwordEl) passwordEl.focus();
       return;
     }
 
+    // User returned from Supabase
+    const user = result.user;
+
+    // Convert database role to the role names used by the frontend
+    let frontendRole;
+
+    if (user.role === 'admin') {
+      frontendRole = 'Admin';
+    } else if (user.role === 'staff') {
+      frontendRole = 'Staff';
+    } else if (user.role === 'idmaker') {
+      frontendRole = 'ID Maker';
+    } else {
+      if (btn) btn.classList.remove('loading');
+
+      showFieldError(
+        'login-password',
+        'Invalid user role.'
+      );
+
+      return;
+    }
+
+    // Create the user object used by the existing system
+    const authUser = {
+      id: user.id,
+      username: user.username,
+      role: frontendRole,
+      email: user.email,
+      displayName: user.username
+    };
+
     CURRENT_USER = authUser;
+
     setRole(authUser.role, true);
     applySessionContext();
-    writeAuthSession(JSON.stringify({ username: authUser.username, role: authUser.role, displayName: authUser.displayName }));
+
+    writeAuthSession(
+      JSON.stringify({
+        id: authUser.id,
+        username: authUser.username,
+        role: authUser.role,
+        email: authUser.email,
+        displayName: authUser.displayName
+      })
+    );
 
     if (PAGE === 'login') {
       location.href = portalFileForRole(authUser.role);
@@ -1091,10 +1140,30 @@ function handleLogin(event) {
     }
 
     if (btn) btn.classList.remove('loading');
+
     showPortalPage();
-    navigate(authUser.role === 'ID Maker' ? 'id-maker-dashboard' : 'dashboard');
-    showToast(`Signed in as ${authUser.role}.`, 'success');
-  }, 520);
+
+    navigate(
+      authUser.role === 'ID Maker'
+        ? 'id-maker-dashboard'
+        : 'dashboard'
+    );
+
+    showToast(
+      `Signed in as ${authUser.role}.`,
+      'success'
+    );
+
+  } catch (error) {
+    console.error('Login error:', error);
+
+    if (btn) btn.classList.remove('loading');
+
+    showFieldError(
+      'login-password',
+      'Unable to connect to the login server. Please try again.'
+    );
+  }
 }
 
 /* ── Login page helpers ── */
