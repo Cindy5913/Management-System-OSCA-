@@ -631,6 +631,103 @@ const saveApplicationValidation = async (req, res) => {
 
 };
 
+// =============================================================
+// UPDATE APPLICATION STATUS
+// =============================================================
+const updateApplicationStatus = async (req, res) => {
+  try {
+    const applicationId = req.params.applicationId;
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "Pending",
+      "Under Review",
+      "In Process",
+      "Ready for Release",
+      "Completed",
+      "Rejected"
+    ];
+
+    if (!applicationId) {
+      return res.status(400).json({
+        success: false,
+        message: "Application ID is required."
+      });
+    }
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: "Status is required."
+      });
+    }
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid application status."
+      });
+    }
+
+    // Check that the application actually exists
+    const {
+      data: application,
+      error: applicationError
+    } = await supabase
+      .from("applications")
+      .select("application_id")
+      .eq("application_id", applicationId)
+      .maybeSingle();
+
+    if (applicationError) {
+      throw applicationError;
+    }
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found."
+      });
+    }
+
+    // Update the existing status record
+    const {
+      data: statusRecord,
+      error: statusError
+    } = await supabase
+      .from("application_status_history")
+      .update({
+        status: status,
+        updated_at: new Date().toISOString()
+      })
+      .eq("application_id", applicationId)
+      .select()
+      .single();
+
+    if (statusError) {
+      throw statusError;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Application status updated successfully.",
+      status: status,
+      statusHistory: statusRecord
+    });
+
+  } catch (error) {
+    console.error(
+      "Error updating application status:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update application status.",
+      error: error.message
+    });
+  }
+};
 
 // =============================================================
 // EXPORT
@@ -638,5 +735,6 @@ const saveApplicationValidation = async (req, res) => {
 module.exports = {
   getApplications,
   getApplicationById,
-  saveApplicationValidation
+  saveApplicationValidation,
+  updateApplicationStatus
 };

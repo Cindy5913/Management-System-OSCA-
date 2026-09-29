@@ -565,22 +565,56 @@ function toggleStatusSelect(btn, event) {
 
 function selectStatusOption(btn, event) {
   if (event && event.__statusHandled) return;
-  if (event) event.__statusHandled = true;
-  event?.preventDefault();
-  event?.stopPropagation();
+
+  if (event) {
+    event.__statusHandled = true;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   const menu = btn.closest('.status-select__menu');
-  const root = btn.closest('.status-select') || getStatusMenuRoot(menu);
+  const root =
+    btn.closest('.status-select') ||
+    getStatusMenuRoot(menu);
+
   if (!root) return;
+
+  // Save the previous status in case the database update fails
+  const previousStatus =
+    root.querySelector('.status-select__label')?.textContent.trim() ||
+    'Pending';
+
   const status = btn.dataset.status;
   const icon = btn.dataset.icon;
   const color = btn.dataset.color;
-  root.querySelectorAll('.status-select__option').forEach(o => o.classList.toggle('active', o === btn));
-  setStatusTrigger(root, icon, color, status);
-  updateTableStatus(root.dataset.appId, status);
+
+  root
+    .querySelectorAll('.status-select__option')
+    .forEach(o => {
+      o.classList.toggle('active', o === btn);
+    });
+
+  setStatusTrigger(
+    root,
+    icon,
+    color,
+    status
+  );
+
+  updateTableStatus(
+    root.dataset.appId,
+    status,
+    previousStatus
+  );
+
   closeAllStatusMenus();
-  // Re-apply any active table filters (status tab / search / barangay) so the
-  // row's visibility matches its new status. No-op when no page defines it.
-  if (typeof applyApplicationsFilters === 'function') applyApplicationsFilters();
+
+  if (
+    typeof applyApplicationsFilters ===
+    'function'
+  ) {
+    applyApplicationsFilters();
+  }
 }
 
 window.toggleStatusSelect = toggleStatusSelect;
@@ -1861,25 +1895,208 @@ function updateStatus(newStatus) {
   showToast('Status updated: ' + newStatus, 'success');
 }
 
-function updateTableStatus(appId, newStatus) {
-  // Update the application status in the data
-  const app = APP_DB[appId] || { id: appId };
+async function updateTableStatus(
+  appId,
+  newStatus,
+  previousStatus = 'Pending'
+) {
+  const app =
+    APP_DB[appId] ||
+    { id: appId };
+
+  // Optimistic UI update
   app.status = newStatus;
   APP_DB[appId] = app;
-  const row = document.querySelector('#applications-tbody tr[data-app-id="' + appId + '"]');
-  const statusLabel = row?.querySelector('.status-select__label');
-  if (statusLabel) statusLabel.textContent = newStatus;
-  // Keep the ID Maker production queue badge in sync
-  const queueRow = document.querySelector('#id-maker-queue-tbody tr[data-app-id="' + appId + '"]');
-  const queueBadge = queueRow ? queueRow.querySelector('.queue-status-badge') : null;
-  if (queueBadge) {
-    queueBadge.className = 'badge queue-status-badge ' + queueBadgeClass(newStatus);
-    queueBadge.textContent = newStatus;
+
+  const row =
+    document.querySelector(
+      '#applications-tbody tr[data-app-id="' +
+      appId +
+      '"]'
+    );
+
+  const statusLabel =
+    row?.querySelector(
+      '.status-select__label'
+    );
+
+  if (statusLabel) {
+    statusLabel.textContent =
+      newStatus;
   }
-  // Update status tab counts after changing status
+
+  // Keep ID Maker queue in sync
+  const queueRow =
+    document.querySelector(
+      '#id-maker-queue-tbody tr[data-app-id="' +
+      appId +
+      '"]'
+    );
+
+  const queueBadge =
+    queueRow
+      ? queueRow.querySelector(
+          '.queue-status-badge'
+        )
+      : null;
+
+  if (queueBadge) {
+    queueBadge.className =
+      'badge queue-status-badge ' +
+      queueBadgeClass(newStatus);
+
+    queueBadge.textContent =
+      newStatus;
+  }
+
   updateStatusTabCounts();
-  // Show success message
-  showToast(`Status updated to ${newStatus} for ${appId}`, 'success');
+
+  try {
+    // ========================================================
+    // SAVE STATUS TO DATABASE
+    // ========================================================
+
+    const response =
+      await fetch(
+        `http://localhost:5000/api/applications/${encodeURIComponent(
+          appId
+        )}/status`,
+        {
+          method: 'PUT',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body: JSON.stringify({
+            status: newStatus
+          })
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !result.success
+    ) {
+      throw new Error(
+        result.message ||
+        'Failed to save application status.'
+      );
+    }
+
+    // ========================================================
+    // USE THE STATUS CONFIRMED BY THE DATABASE
+    // ========================================================
+
+    const savedStatus =
+      result.status ||
+      newStatus;
+
+    app.status =
+      savedStatus;
+
+    APP_DB[appId] = app;
+
+    console.log(
+      'Application status saved:',
+      {
+        applicationId: appId,
+        status: savedStatus,
+        databaseRecord:
+          result.statusHistory
+      }
+    );
+
+    showToast(
+      `Status saved as ${savedStatus} for ${appId}`,
+      'success'
+    );
+
+    // ========================================================
+    // RELOAD FROM DATABASE
+    // ========================================================
+    // This makes the database the source of truth.
+    // The table will now display whatever status the backend
+    // retrieves from application_status_history.
+
+    if (
+      typeof loadApplicationsFromDatabase ===
+      'function'
+    ) {
+      await loadApplicationsFromDatabase();
+    }
+
+  } catch (error) {
+
+    console.error(
+      'Failed to save application status:',
+      error
+    );
+
+    // ========================================================
+    // ROLLBACK UI IF DATABASE SAVE FAILED
+    // ========================================================
+
+    app.status =
+      previousStatus;
+
+    APP_DB[appId] =
+      app;
+
+    const oldConfig =
+      statusOptionCfg(
+        mapStatusForDropdown(
+          previousStatus
+        )
+      );
+
+    if (row) {
+      const statusRoot =
+        row.querySelector(
+          '.status-select'
+        );
+
+      if (statusRoot) {
+        setStatusTrigger(
+          statusRoot,
+          oldConfig[0],
+          oldConfig[1],
+          previousStatus
+        );
+
+        statusRoot
+          .querySelectorAll(
+            '.status-select__option'
+          )
+          .forEach(option => {
+            option.classList.toggle(
+              'active',
+              option.dataset.status ===
+              previousStatus
+            );
+          });
+      }
+    }
+
+    updateStatusTabCounts();
+
+    if (
+      typeof applyApplicationsFilters ===
+      'function'
+    ) {
+      applyApplicationsFilters();
+    }
+
+    showToast(
+      'Status was not saved to the database. ' +
+      (error.message || ''),
+      'error'
+    );
+  }
 }
 
 /* ═══════════════════════════════════
@@ -3555,18 +3772,22 @@ function buildViewAction(appId) {
 function mapStatusForDropdown(status) {
   const s = String(status || '').trim();
   // Return exact match if it's a known status
-  const known = ['Pending', 'Unverified', 'Under Review', 'Verified', 'In Process', 'Ready for Release', 'ID Issued', 'Completed', 'Rejected'];
+  const known = [
+    'Pending',
+    'Under Review',
+    'In Process',
+    'Ready for Release',
+    'Completed',
+    'Rejected'
+  ];
   if (known.includes(s)) return s;
   // Fallback mapping for legacy/variant strings
 
   const sl = s.toLowerCase();
   if (/reject/.test(sl)) return 'Rejected';
-  if (/id.issued|issued/.test(sl)) return 'ID Issued';
   if (/completed/.test(sl)) return 'Completed';
   if (/ready.for.release|release/.test(sl)) return 'Ready for Release';
-  if (/verified/.test(sl)) return 'Verified';
   if (/under.review/.test(sl)) return 'Under Review';
-  if (/unverified/.test(sl)) return 'Unverified';
   if (/pending/.test(sl)) return 'Pending';
   return 'In Process';
 }
@@ -3574,12 +3795,9 @@ function mapStatusForDropdown(status) {
 function statusOptionCfg(status) {
   const map = {
     'Pending': ['clock', '#C07A0A'],
-    'Unverified': ['document', '#D97706'],
     'Under Review': ['document', '#1A4FBA'],
-    'Verified': ['checkmark', '#059669'],
     'In Process': ['checkmark', '#0B9E6C'],
     'Ready for Release': ['truck', '#7C3AED'],
-    'ID Issued': ['check', '#6B5BD1'],
     'Completed': ['check', '#0B9E6C'],
     'Rejected': ['x', '#D9233A']
   };
@@ -3588,7 +3806,7 @@ function statusOptionCfg(status) {
 
 function buildStatusSelect(appId, status) {
   const current = mapStatusForDropdown(status);
-  const optionOrder = ['Pending', 'Under Review', 'Verified', 'In Process', 'Ready for Release', 'ID Issued', 'Completed', 'Rejected'];
+  const optionOrder = ['Pending', 'Under Review', 'In Process', 'Ready for Release', 'Completed', 'Rejected'];
   const opts = optionOrder.map(o => {
     const cfg = statusOptionCfg(o);
     const active = o === current ? ' active' : '';
@@ -3614,12 +3832,9 @@ function updateStatusTabCounts() {
   const counts = { all: 0, pending: 0, unverified: 0, review: 0, verified: 0, process: 0, release: 0, issued: 0, completed: 0, rejected: 0 };
   const labelToKey = {
     'Pending': 'pending',
-    'Unverified': 'unverified',
     'Under Review': 'review',
-    'Verified': 'verified',
     'In Process': 'process',
     'Ready for Release': 'release',
-    'ID Issued': 'issued',
     'Completed': 'completed',
     'Rejected': 'rejected'
   };

@@ -4,7 +4,8 @@ const router = express.Router();
 const {
   getApplications,
   getApplicationById,
-  saveApplicationValidation
+  saveApplicationValidation,
+  updateApplicationStatus
 } = require("../controllers/applicationController");
 
 
@@ -14,6 +15,13 @@ router.get("/", getApplications);
 
 // Get one application
 router.get("/:applicationId", getApplicationById);
+
+
+// Update application status
+router.put(
+  "/:applicationId/status",
+  updateApplicationStatus
+);
 
 
 // Save validation result
