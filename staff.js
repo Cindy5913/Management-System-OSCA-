@@ -366,6 +366,12 @@ function updateLiveAnalyticsData(applications) {
     }
   }
 
+  // ==========================================================
+  // UPDATE APPLICATION SUMMARY CARDS
+  // ==========================================================
+
+  updateApplicationSummaryCards(applications);
+
 
   // ==========================================================
   // UPDATE STAFF KPI STRIP
@@ -380,6 +386,151 @@ function updateLiveAnalyticsData(applications) {
   });
 }
 
+// ============================================================
+// UPDATE APPLICATION SUMMARY CARDS
+// ============================================================
+
+function updateApplicationSummaryCards(applications) {
+
+  if (!Array.isArray(applications)) {
+    return;
+  }
+
+  let pending = 0;
+  let underReview = 0;
+  let flaggedDuplicates = 0;
+  let incompleteDocs = 0;
+  let readyForIdMaker = 0;
+
+
+  applications.forEach(application => {
+
+    // ========================================================
+    // CURRENT STATUS
+    // ========================================================
+
+    const status = normalizeApplicationStatus(
+      application.status
+    );
+
+
+    // ========================================================
+    // 1. PENDING
+    // ========================================================
+
+    if (status === 'pending') {
+      pending++;
+    }
+
+
+    // ========================================================
+    // 2. UNDER REVIEW
+    // ========================================================
+
+    if (status === 'review') {
+      underReview++;
+    }
+
+
+    // ========================================================
+    // 3. FLAGGED DUPLICATES
+    // ========================================================
+
+    const duplicate =
+      application.duplicate;
+
+    const duplicateRisk =
+      application.duplicate_risk;
+
+    if (
+      duplicate === true ||
+      (
+        duplicate &&
+        typeof duplicate === 'object'
+      ) ||
+      (
+        duplicateRisk &&
+        Number(duplicateRisk.score || 0) >= 0.80
+      )
+    ) {
+      flaggedDuplicates++;
+    }
+
+
+    // ========================================================
+    // 4. INCOMPLETE DOCUMENTS
+    // ========================================================
+
+    const documents =
+      application.documents || {};
+
+    const hasPhoto =
+      Boolean(
+        documents.photo ||
+        documents.latest_photo_signed_url
+      );
+
+    const hasBirthCertificate =
+      Boolean(
+        documents.bc ||
+        documents.birth_certificate_signed_url
+      );
+
+    const hasCedula =
+      Boolean(
+        documents.cedula ||
+        documents.community_tax_certificate_signed_url
+      );
+
+
+    if (
+      !hasPhoto ||
+      !hasBirthCertificate ||
+      !hasCedula
+    ) {
+      incompleteDocs++;
+    }
+
+
+    // ========================================================
+    // 5. READY FOR ID MAKER
+    // ========================================================
+
+    if (status === 'ready') {
+      readyForIdMaker++;
+    }
+
+  });
+
+
+  // ==========================================================
+  // UPDATE THE FIVE APPLICATION SUMMARY CARDS
+  // ==========================================================
+
+  const values = {
+    'summary-pending': pending,
+    'summary-review': underReview,
+    'summary-duplicates': flaggedDuplicates,
+    'summary-incomplete': incompleteDocs,
+    'summary-ready': readyForIdMaker
+  };
+
+
+  Object.entries(values).forEach(
+    ([id, value]) => {
+
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.textContent =
+          Number(value).toLocaleString();
+      }
+
+    }
+  );
+
+}
 
 // ============================================================
 // UPDATE STAFF KPI CARDS
@@ -1164,110 +1315,93 @@ function escapeApplicationHtml(
 // ============================================================
 
 async function loadApplicationsFromDatabase() {
-
   try {
+    console.log("Loading applications from backend...");
 
-    const response =
-      await fetch(
-        "http://localhost:5000/api/applications"
-      );
+    const response = await fetch(
+      "http://localhost:5000/api/applications",
+      {
+        method: "GET",
+        headers: {
+          "Accept": "application/json"
+        }
+      }
+    );
 
+    console.log("API response status:", response.status);
 
     if (!response.ok) {
-
       throw new Error(
-        "Failed to fetch applications"
+        `API request failed with status ${response.status}`
       );
-
     }
 
+    const result = await response.json();
 
-    const result =
-      await response.json();
-
+    console.log("API result:", result);
 
     if (!result.success) {
-
       throw new Error(
-        result.message ||
-        "Failed to load applications"
+        result.message || "Backend returned success:false"
       );
-
     }
 
-
-    const applications =
-      Array.isArray(
-        result.applications
-      )
-        ? result.applications
-        : [];
-
+    const applications = Array.isArray(result.applications)
+      ? result.applications
+      : [];
 
     console.log(
-      "Applications loaded from database:",
+      "Applications loaded successfully:",
       applications.length
     );
 
+    // ============================================
+    // UPDATE LIVE ANALYTICS
+    // ============================================
 
-    // --------------------------------------------------------
-    // UPDATE DASHBOARD
-    // --------------------------------------------------------
-
-    updateLiveAnalyticsData(
-      applications
-    );
-
-
-    // --------------------------------------------------------
-    // UPDATE APPLICANTS TABLE
-    // --------------------------------------------------------
-
-    renderLiveApplicants(
-      applications
-    );
-
-
-    // --------------------------------------------------------
-    // UPDATE APPLICATIONS TABLE
-    // --------------------------------------------------------
-
-    if (
-      typeof displayApplications ===
-      'function'
-    ) {
-
-      displayApplications(
-        applications
-      );
-
+    if (typeof updateLiveAnalyticsData === "function") {
+      updateLiveAnalyticsData(applications);
     }
 
+    // ============================================
+    // UPDATE APPLICANTS TABLE
+    // ============================================
+
+    if (typeof renderLiveApplicants === "function") {
+      renderLiveApplicants(applications);
+    }
+
+    // ============================================
+    // UPDATE APPLICATIONS TABLE
+    // ============================================
+
+    if (typeof displayApplications === "function") {
+      displayApplications(applications);
+    }
 
     return applications;
 
   } catch (error) {
 
     console.error(
-      "Error loading applications:",
+      "ERROR LOADING APPLICATIONS:",
       error
     );
 
+    // Show the actual error in the browser console
+    console.error(
+      "Make sure the backend is running at:",
+      "http://localhost:5000"
+    );
 
-    if (
-      typeof showToast ===
-      "function"
-    ) {
-
+    if (typeof showToast === "function") {
       showToast(
-        "Failed to load applications.",
+        "Failed to load applications. Check the browser console.",
         "error"
       );
-
     }
 
     return [];
-
   }
 }
 
