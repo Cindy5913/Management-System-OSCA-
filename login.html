@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In — Senior Citizens Bureau</title>
 
+  <script
+    src="https://www.google.com/recaptcha/api.js"
+    async
+    defer>
+  </script>
+
   <!-- Fonts (unchanged) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -91,6 +97,22 @@
                 <span class="auth-checkbox-text">Remember me</span>
               </label>
               <span class="auth-forgot" id="forgot-btn" onclick="showForgotPanel()">Forgot password?</span>
+            </div>
+
+            <!-- reCAPTCHA -->
+            <div class="login-recaptcha">
+              <div
+                class="g-recaptcha"
+                data-sitekey="6LeDhRUtAAAAAEyAuvyRiP5XSRCLcRaIvF7YmH5f"
+                data-callback="handleLoginRecaptchaSuccess"
+                data-expired-callback="handleLoginRecaptchaExpired"
+              ></div>
+
+              <span
+                class="auth-field-error"
+                id="err-recaptcha"
+                aria-live="polite">
+              </span>
             </div>
 
             <!-- Forgot password info panel -->

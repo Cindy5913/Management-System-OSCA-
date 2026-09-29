@@ -1,16 +1,27 @@
-
 /* ============================================================
-   NOTE:
-   - Kept your existing design and layout.
-   - Only ADDED styles for: AI Insights, Workflow stages, Doc verification,
-     Export/Scheduling controls, RBAC UI, Audit log, Notifications log,
-     and minimal modal.
-============================================================ */
+   LOGIN RECAPTCHA
+   ============================================================ */
 
-/* ───────────────────────────────────────────────────────────
-   Existing CSS from your last file (UNCHANGED)
-   (I am including it in full as requested. Scroll if needed.)
-─────────────────────────────────────────────────────────── */
+.login-recaptcha {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.login-recaptcha .g-recaptcha {
+  display: flex;
+  justify-content: center;
+}
+
+.login-recaptcha .auth-field-error {
+  display: block;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .login-recaptcha {
+    overflow-x: auto;
+  }
+}
 
 /* ═══════════════════════════════════
    RESET

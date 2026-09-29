@@ -1068,6 +1068,7 @@ async function handleLogin(event) {
 
   const usernameEl = document.getElementById('login-username');
   const passwordEl = document.getElementById('login-password');
+  const recaptchaError = document.getElementById('err-recaptcha');
 
   const username = usernameEl.value.trim().toLowerCase();
   const password = passwordEl.value;
@@ -1076,24 +1077,60 @@ async function handleLogin(event) {
   clearFieldError('login-username');
   clearFieldError('login-password');
 
+  if (recaptchaError) {
+    recaptchaError.textContent = '';
+    recaptchaError.classList.remove('visible');
+  }
+
   // Basic field validation
   let hasError = false;
 
   if (!username) {
-    showFieldError('login-username', 'Username is required.');
+    showFieldError(
+      'login-username',
+      'Username is required.'
+    );
+
     hasError = true;
   }
 
   if (!password) {
-    showFieldError('login-password', 'Password is required.');
+    showFieldError(
+      'login-password',
+      'Password is required.'
+    );
+
     hasError = true;
   }
 
-  if (hasError) return;
+  if (hasError) {
+    return;
+  }
+
+  // Check reCAPTCHA
+  const recaptchaResponse =
+    typeof grecaptcha !== 'undefined'
+      ? grecaptcha.getResponse()
+      : '';
+
+  if (!recaptchaResponse) {
+
+    if (recaptchaError) {
+      recaptchaError.textContent =
+        'Please complete the CAPTCHA.';
+      recaptchaError.classList.add('visible');
+    }
+
+    return;
+  }
 
   // Show spinner
-  const btn = document.getElementById('login-submit-btn');
-  if (btn) btn.classList.add('loading');
+  const btn =
+    document.getElementById('login-submit-btn');
+
+  if (btn) {
+    btn.classList.add('loading');
+  }
 
   try {
     const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -1110,14 +1147,25 @@ async function handleLogin(event) {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-      if (btn) btn.classList.remove('loading');
+      if (btn) {
+        btn.classList.remove('loading');
+      }
+
+      // Reset CAPTCHA after failed login
+      if (typeof grecaptcha !== 'undefined') {
+        grecaptcha.reset();
+      }
 
       showFieldError(
         'login-password',
-        result.message || 'Incorrect username or password. Please try again.'
+        result.message ||
+          'Incorrect username or password. Please try again.'
       );
 
-      if (passwordEl) passwordEl.focus();
+      if (passwordEl) {
+        passwordEl.focus();
+      }
+
       return;
     }
 
@@ -1197,6 +1245,30 @@ async function handleLogin(event) {
       'login-password',
       'Unable to connect to the login server. Please try again.'
     );
+  }
+}
+
+// LOGIN reCAPTCHA
+
+function handleLoginRecaptchaSuccess() {
+  const error =
+    document.getElementById('err-recaptcha');
+
+  if (error) {
+    error.textContent = '';
+    error.classList.remove('visible');
+  }
+}
+
+function handleLoginRecaptchaExpired() {
+  const error =
+    document.getElementById('err-recaptcha');
+
+  if (error) {
+    error.textContent =
+      'CAPTCHA expired. Please complete it again.';
+
+    error.classList.add('visible');
   }
 }
 
