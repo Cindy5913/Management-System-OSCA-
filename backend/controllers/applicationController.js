@@ -24,7 +24,9 @@ const createSignedFileUrl = async (filePath) => {
 
 const getApplications = async (req, res) => {
   try {
-    // Get applications
+    // =========================================================
+    // GET APPLICATIONS
+    // =========================================================
     const {
       data: applications,
       error: applicationsError
@@ -44,12 +46,16 @@ const getApplications = async (req, res) => {
       });
     }
 
-    // Get application IDs
+    // =========================================================
+    // GET APPLICATION IDS
+    // =========================================================
     const applicationIds = applications.map(
       application => application.application_id
     );
 
-    // Get uploaded files
+    // =========================================================
+    // GET UPLOADED FILES
+    // =========================================================
     const {
       data: files,
       error: filesError
@@ -76,31 +82,83 @@ const getApplications = async (req, res) => {
       throw filesError;
     }
 
-    // Attach file information to each application
+    // =========================================================
+    // GET STATUS HISTORY
+    // =========================================================
+    const {
+      data: statusHistory,
+      error: statusHistoryError
+    } = await supabase
+      .from("application_status_history")
+      .select("*")
+      .in("application_id", applicationIds)
+      .order("updated_at", { ascending: false });
+
+    if (statusHistoryError) {
+      throw statusHistoryError;
+    }
+
+    // =========================================================
+    // ATTACH FILES + STATUS TO EACH APPLICATION
+    // =========================================================
     const applicationsWithFiles = await Promise.all(
       applications.map(async (application) => {
 
+        // -----------------------------------------------------
+        // Find latest status
+        // -----------------------------------------------------
+        const latestStatus = statusHistory?.find(
+          history =>
+            history.application_id ===
+            application.application_id
+        );
+
+        const currentStatus =
+          latestStatus?.status ||
+          application.status ||
+          "Pending";
+
+        const statusUpdatedAt =
+          latestStatus?.updated_at ||
+          application.updated_at ||
+          application.created_at ||
+          null;
+
+        // -----------------------------------------------------
+        // Find uploaded documents
+        // -----------------------------------------------------
         const fileRecord = files?.find(
           file =>
             file.application_id ===
             application.application_id
         );
 
+        // -----------------------------------------------------
+        // If no files exist
+        // -----------------------------------------------------
         if (!fileRecord) {
           return {
             ...application,
 
+            status: currentStatus,
+            status_updated_at: statusUpdatedAt,
+
             documents: {
+              idFront: null,
+              idBack: null,
               photo: null,
               bc: null,
-              cedula: null
+              cedula: null,
+              signature: null
             },
 
             document_files: null
           };
         }
 
-        // Create signed URLs for Supabase Storage files
+        // =====================================================
+        // CREATE SIGNED URLS
+        // =====================================================
         const [
           validIdFrontUrl,
           validIdBackUrl,
@@ -134,10 +192,19 @@ const getApplications = async (req, res) => {
           )
         ]);
 
+        // =====================================================
+        // RETURN COMPLETE APPLICATION
+        // =====================================================
         return {
           ...application,
 
-          // Used by the Applications table
+          // Current application status
+          status: currentStatus,
+
+          // Date/time when the current status was updated
+          status_updated_at: statusUpdatedAt,
+
+          // Used by the Applications and Applicants tables
           documents: {
             idFront: validIdFrontUrl,
             idBack: validIdBackUrl,
@@ -151,23 +218,38 @@ const getApplications = async (req, res) => {
           document_files: {
             ...fileRecord,
 
-            valid_id_url: validIdFrontUrl,
-            valid_id_back_url: validIdBackUrl,
-            latest_photo_url: photoUrl,
-            birth_certificate_url: birthCertificateUrl,
-            community_tax_certificate_url: cedulaUrl,
-            signature_url: signatureUrl
+            valid_id_url:
+              validIdFrontUrl,
+
+            valid_id_back_url:
+              validIdBackUrl,
+
+            latest_photo_url:
+              photoUrl,
+
+            birth_certificate_url:
+              birthCertificateUrl,
+
+            community_tax_certificate_url:
+              cedulaUrl,
+
+            signature_url:
+              signatureUrl
           }
         };
       })
     );
 
+    // =========================================================
+    // RESPONSE
+    // =========================================================
     res.status(200).json({
       success: true,
       applications: applicationsWithFiles
     });
 
   } catch (error) {
+
     console.error(
       "Error fetching applications:",
       error
@@ -181,9 +263,15 @@ const getApplications = async (req, res) => {
   }
 };
 
+
+// =============================================================
+// GET APPLICATION BY ID
+// =============================================================
 const getApplicationById = async (req, res) => {
   try {
-    const applicationId = req.params.applicationId;
+
+    const applicationId =
+      req.params.applicationId;
 
     if (!applicationId) {
       return res.status(400).json({
@@ -192,6 +280,9 @@ const getApplicationById = async (req, res) => {
       });
     }
 
+    // =========================================================
+    // GET ALL APPLICATION INFORMATION
+    // =========================================================
     const [
       applicationResult,
       familyResult,
@@ -207,58 +298,94 @@ const getApplicationById = async (req, res) => {
       supabase
         .from("applications")
         .select("*")
-        .eq("application_id", applicationId)
+        .eq(
+          "application_id",
+          applicationId
+        )
         .maybeSingle(),
 
       supabase
         .from("family_composition")
         .select("*")
-        .eq("application_id", applicationId)
-        .order("id", { ascending: true }),
+        .eq(
+          "application_id",
+          applicationId
+        )
+        .order("id", {
+          ascending: true
+        }),
 
       supabase
         .from("memberships")
         .select("*")
-        .eq("application_id", applicationId)
+        .eq(
+          "application_id",
+          applicationId
+        )
         .maybeSingle(),
 
       supabase
         .from("personal_background")
         .select("*")
-        .eq("application_id", applicationId)
+        .eq(
+          "application_id",
+          applicationId
+        )
         .maybeSingle(),
 
       supabase
         .from("problems_needs")
         .select("*")
-        .eq("application_id", applicationId)
+        .eq(
+          "application_id",
+          applicationId
+        )
         .maybeSingle(),
 
       supabase
         .from("application_files")
         .select("*")
-        .eq("application_id", applicationId)
+        .eq(
+          "application_id",
+          applicationId
+        )
         .maybeSingle(),
 
       supabase
         .from("confirmations")
         .select("*")
-        .eq("application_id", applicationId)
+        .eq(
+          "application_id",
+          applicationId
+        )
         .maybeSingle(),
 
       supabase
         .from("document_authentications")
         .select("*")
-        .eq("application_id", applicationId)
-        .order("id", { ascending: true }),
+        .eq(
+          "application_id",
+          applicationId
+        )
+        .order("id", {
+          ascending: true
+        }),
 
       supabase
         .from("application_status_history")
         .select("*")
-        .eq("application_id", applicationId)
-        .order("updated_at", { ascending: false })
+        .eq(
+          "application_id",
+          applicationId
+        )
+        .order("updated_at", {
+          ascending: false
+        })
     ]);
 
+    // =========================================================
+    // CHECK ERRORS
+    // =========================================================
     const errors = [
       applicationResult.error,
       familyResult.error,
@@ -275,6 +402,9 @@ const getApplicationById = async (req, res) => {
       throw errors[0];
     }
 
+    // =========================================================
+    // APPLICATION NOT FOUND
+    // =========================================================
     if (!applicationResult.data) {
       return res.status(404).json({
         success: false,
@@ -282,6 +412,9 @@ const getApplicationById = async (req, res) => {
       });
     }
 
+    // =========================================================
+    // APPLICATION FILES
+    // =========================================================
     const applicationFiles =
       applicationFilesResult.data || null;
 
@@ -346,10 +479,14 @@ const getApplicationById = async (req, res) => {
       };
     }
 
+    // =========================================================
+    // RESPONSE
+    // =========================================================
     res.status(200).json({
       success: true,
 
-      application: applicationResult.data,
+      application:
+        applicationResult.data,
 
       familyComposition:
         familyResult.data || [],
@@ -385,13 +522,121 @@ const getApplicationById = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve application details.",
+      message:
+        "Failed to retrieve application details.",
       error: error.message
     });
   }
 };
 
+// =============================================================
+// SAVE APPLICATION VALIDATION
+// =============================================================
+const saveApplicationValidation = async (req, res) => {
+
+  try {
+
+    const applicationId =
+      req.params.applicationId;
+
+    const {
+      validation_status,
+      validation_notes
+    } = req.body;
+
+
+    if (!applicationId) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Application ID is required."
+      });
+
+    }
+
+
+    if (!validation_status) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Validation status is required."
+      });
+
+    }
+
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from("applications")
+      .update({
+
+        validation_status:
+          validation_status,
+
+        validation_updated_at:
+          new Date().toISOString(),
+
+        validation_notes:
+          validation_notes || null
+
+      })
+      .eq(
+        "application_id",
+        applicationId
+      )
+      .select()
+      .single();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    res.status(200).json({
+
+      success: true,
+
+      message:
+        "Validation result saved successfully.",
+
+      application: data
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Error saving validation:",
+      error
+    );
+
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Failed to save validation result.",
+
+      error:
+        error.message
+
+    });
+
+  }
+
+};
+
+
+// =============================================================
+// EXPORT
+// =============================================================
 module.exports = {
   getApplications,
-  getApplicationById
+  getApplicationById,
+  saveApplicationValidation
 };

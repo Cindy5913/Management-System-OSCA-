@@ -2295,7 +2295,28 @@
             LIVE_APPLICATIONS.length
           );
 
-          renderLiveApplications(LIVE_APPLICATIONS);
+          // Update Applications table
+          renderLiveApplications(
+            LIVE_APPLICATIONS
+          );
+
+          // Update Applicants table
+          if (
+            typeof renderLiveApplicants === 'function'
+          ) {
+            renderLiveApplicants(
+              LIVE_APPLICATIONS
+            );
+          }
+
+          // Update dashboard scoreboards
+          if (
+            typeof updateLiveAnalyticsData === 'function'
+          ) {
+            updateLiveAnalyticsData(
+              LIVE_APPLICATIONS
+            );
+          }
 
         } catch (error) {
           console.error('Failed to load applications:', error);

@@ -1419,6 +1419,11 @@ async function openApplicationDetail(appId) {
 
           status: result.statusHistory?.[0]?.status || 'Pending',
 
+          // Saved validation result from database
+          validation_status: a.validation_status || null,
+          validation_updated_at: a.validation_updated_at || null,
+          validation_notes: a.validation_notes || null,
+
           // Family composition
           familyComposition: (result.familyComposition || []).map(member => ({
             name: member.name || '',
@@ -1746,6 +1751,7 @@ async function openApplicationDetail(appId) {
   // ── Documents (reset to pending + populate previews) ──
   resetDocStatuses();
   populateDocPreviews(app);
+  renderSavedValidation(app);
 
   // Add audit entry (view)
   appendAudit('Cindy B.', 'Opened application detail', 'Admin');
@@ -2114,28 +2120,541 @@ function downloadDigitalIssuanceDocs() {
 
 
 
-/* Rule-based validation (3.1) demo */
-function runValidation() {
-  if (!CURRENT_APP_ID) return;
-  const app = APP_DB[CURRENT_APP_ID];
-  const ageOk = true; // demo
-  const residencyOk = app.barangay !== '—';
-  const docsOk = false; // demo based on birth cert "blurry"
+/* =========================================================
+   RULE-BASED VALIDATION
+   ========================================================= */
 
-  const body = document.getElementById('validation-body');
+let CURRENT_VALIDATION_RESULT = null;
+
+
+function runValidation() {
+
+  if (!CURRENT_APP_ID) {
+
+    showToast(
+      'No application selected.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  const app =
+    APP_DB[CURRENT_APP_ID];
+
+
+  if (!app) {
+
+    showToast(
+      'Application data could not be found.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  // =========================================================
+  // AGE
+  // =========================================================
+
+  const age =
+    Number(app.age);
+
+  const ageOk =
+    !Number.isNaN(age) &&
+    age >= 60;
+
+
+  // =========================================================
+  // RESIDENCY
+  // =========================================================
+
+  const barangay =
+    String(
+      app.barangay || ''
+    ).trim();
+
+  const residencyOk =
+    barangay !== '' &&
+    barangay !== '—';
+
+
+  // =========================================================
+  // DOCUMENTS
+  // =========================================================
+
+  const documents =
+    app.documents || {};
+
+
+  const requiredDocuments = {
+
+    idFront:
+      'Valid ID (Front)',
+
+    idBack:
+      'Valid ID (Back)',
+
+    photo:
+      'Latest Photo',
+
+    bc:
+      'Birth Certificate',
+
+    cedula:
+      'Community Tax Certificate',
+
+    signature:
+      'Signature'
+
+  };
+
+
+  const missingDocuments = [];
+
+
+  Object.entries(
+    requiredDocuments
+  ).forEach(
+    ([key, label]) => {
+
+      const documentUrl =
+        documents[key];
+
+      if (
+        !documentUrl ||
+        String(documentUrl).trim() === ''
+      ) {
+
+        missingDocuments.push(
+          label
+        );
+
+      }
+
+    }
+  );
+
+
+  const docsOk =
+    missingDocuments.length === 0;
+
+
+  // =========================================================
+  // DUPLICATE
+  // =========================================================
+
+  const duplicateRisk =
+    app.duplicate || null;
+
+
+  const duplicateOk =
+    !duplicateRisk ||
+    Number(duplicateRisk.score || 0) < 0.80;
+
+
+  // =========================================================
+  // OVERALL VALIDATION
+  // =========================================================
+
+  const validationPassed =
+    ageOk &&
+    residencyOk &&
+    docsOk &&
+    duplicateOk;
+
+
+  const validationStatus =
+    validationPassed
+      ? 'Passed'
+      : 'Incomplete';
+
+
+  // =========================================================
+  // VALIDATION NOTES
+  // =========================================================
+
+  const notes = [];
+
+
+  if (ageOk) {
+
+    notes.push(
+      'Age 60+ passed.'
+    );
+
+  } else {
+
+    notes.push(
+      'Applicant is below 60 years old.'
+    );
+
+  }
+
+
+  if (residencyOk) {
+
+    notes.push(
+      'Residency information is valid.'
+    );
+
+  } else {
+
+    notes.push(
+      'Residency information needs checking.'
+    );
+
+  }
+
+
+  if (docsOk) {
+
+    notes.push(
+      'All required documents are uploaded.'
+    );
+
+  } else {
+
+    notes.push(
+      'Missing documents: ' +
+      missingDocuments.join(', ') +
+      '.'
+    );
+
+  }
+
+
+  if (duplicateOk) {
+
+    notes.push(
+      'Duplicate risk is low.'
+    );
+
+  } else {
+
+    notes.push(
+      'Duplicate risk requires review.'
+    );
+
+  }
+
+
+  // =========================================================
+  // SAVE RESULT TEMPORARILY
+  // =========================================================
+
+  CURRENT_VALIDATION_RESULT = {
+
+    status:
+      validationStatus,
+
+    passed:
+      validationPassed,
+
+    ageOk:
+      ageOk,
+
+    residencyOk:
+      residencyOk,
+
+    docsOk:
+      docsOk,
+
+    duplicateOk:
+      duplicateOk,
+
+    missingDocuments:
+      missingDocuments,
+
+    notes:
+      notes.join(' ')
+
+  };
+
+
+  // =========================================================
+  // DISPLAY RESULT
+  // =========================================================
+
+  const body =
+    document.getElementById(
+      'validation-body'
+    );
+
+
+  if (!body) {
+    return;
+  }
+
+
   body.innerHTML = `
-    <div style="display:flex;flex-wrap:wrap;gap:8px">
-      <span class="badge ${ageOk ? 'badge-approved' : 'badge-rejected'}">Age 60+ : ${ageOk ? 'Pass' : 'Fail'}</span>
-      <span class="badge ${residencyOk ? 'badge-approved' : 'badge-review'}">Residency : ${residencyOk ? 'Likely Valid' : 'Needs Check'}</span>
-      <span class="badge ${docsOk ? 'badge-approved' : 'badge-pending'}">Docs : ${docsOk ? 'Complete' : 'Incomplete'}</span>
-      ${app.duplicate ? `<span class="badge badge-rejected">Duplicate Risk: ${(app.duplicate.score * 100).toFixed(0)}%</span>` : `<span class="badge badge-approved">Duplicate Risk: Low</span>`}
+
+    <div
+      style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+      "
+    >
+
+      <span
+        class="badge ${
+          ageOk
+            ? 'badge-approved'
+            : 'badge-rejected'
+        }"
+      >
+        • AGE 60+:
+        ${ageOk ? 'Pass' : 'Fail'}
+      </span>
+
+
+      <span
+        class="badge ${
+          residencyOk
+            ? 'badge-approved'
+            : 'badge-review'
+        }"
+      >
+        • RESIDENCY:
+        ${
+          residencyOk
+            ? 'Likely Valid'
+            : 'Needs Check'
+        }
+      </span>
+
+
+      <span
+        class="badge ${
+          docsOk
+            ? 'badge-approved'
+            : 'badge-pending'
+        }"
+      >
+        • DOCS:
+        ${
+          docsOk
+            ? 'Complete'
+            : 'Incomplete'
+        }
+      </span>
+
+
+      ${
+        duplicateOk
+
+          ? `
+            <span
+              class="badge badge-approved"
+            >
+              • DUPLICATE RISK: LOW
+            </span>
+          `
+
+          : `
+            <span
+              class="badge badge-rejected"
+            >
+              • DUPLICATE RISK: HIGH
+            </span>
+          `
+      }
+
     </div>
-    <div style="margin-top:10px;font-size:12.5px;color:var(--text-muted);line-height:1.5">
-      Results are generated by rule checks and similarity matching (name/DOB/address).
+
+
+    <div
+      style="
+        margin-top:10px;
+        font-size:12.5px;
+        color:var(--text-muted);
+        line-height:1.5;
+      "
+    >
+
+      ${
+        validationPassed
+
+          ? `
+            <strong>
+              Validation Passed.
+            </strong>
+            All required checks passed.
+          `
+
+          : `
+            <strong>
+              Validation needs review.
+            </strong>
+            ${
+              missingDocuments.length > 0
+                ? 'Missing: ' +
+                  missingDocuments.join(', ')
+                : 'One or more validation checks failed.'
+            }
+          `
+      }
+
     </div>
+
   `;
-  appendAudit('System', 'Validation run', 'System');
-  showToast('Validation completed (demo)', 'info');
+
+
+  appendAudit(
+    CURRENT_USER?.displayName ||
+      'Staff',
+    'Validation run',
+    'System'
+  );
+
+
+  showToast(
+    validationPassed
+      ? 'Validation passed.'
+      : 'Validation completed with items to review.',
+    validationPassed
+      ? 'success'
+      : 'info'
+  );
+
+}
+
+function renderSavedValidation(app) {
+
+  const body =
+    document.getElementById(
+      'validation-body'
+    );
+
+
+  if (!body) {
+    return;
+  }
+
+
+  // No validation saved yet
+  if (
+    !app ||
+    !app.validation_status
+  ) {
+
+    CURRENT_VALIDATION_RESULT =
+      null;
+
+    body.innerHTML = `
+
+      <div
+        style="
+          display:flex;
+          flex-wrap:wrap;
+          gap:8px;
+        "
+      >
+
+        <span
+          class="badge badge-pending"
+        >
+          • AGE 60+: NOT VALIDATED
+        </span>
+
+        <span
+          class="badge badge-pending"
+        >
+          • RESIDENCY: NOT VALIDATED
+        </span>
+
+        <span
+          class="badge badge-pending"
+        >
+          • DOCS: NOT VALIDATED
+        </span>
+
+        <span
+          class="badge badge-pending"
+        >
+          • DUPLICATE RISK: NOT VALIDATED
+        </span>
+
+      </div>
+
+
+      <div
+        style="
+          margin-top:10px;
+          font-size:12.5px;
+          color:var(--text-muted);
+          line-height:1.5;
+        "
+      >
+        Click <strong>Run Validation</strong>
+        to check this application.
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  // =========================================================
+  // SAVED VALIDATION EXISTS
+  // =========================================================
+
+  const passed =
+    app.validation_status ===
+    'Passed';
+
+
+  body.innerHTML = `
+
+    <div
+      style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+      "
+    >
+
+      <span
+        class="badge ${
+          passed
+            ? 'badge-approved'
+            : 'badge-review'
+        }"
+      >
+        • VALIDATION:
+        ${app.validation_status}
+      </span>
+
+      <span
+        class="badge badge-approved"
+      >
+        • SAVED
+      </span>
+
+    </div>
+
+
+    <div
+      style="
+        margin-top:10px;
+        font-size:12.5px;
+        color:var(--text-muted);
+        line-height:1.5;
+      "
+    >
+
+      ${
+        app.validation_notes ||
+        'Validation result has been saved.'
+      }
+
+    </div>
+
+  `;
 }
 
 /* Document status helpers */
@@ -2358,10 +2877,145 @@ function rejectCurrent() {
   addNotifyLog(CURRENT_APP_ID, 'Status Updated: Rejected', 'SMS', 'Sent');
 }
 
-function saveCurrent() {
-  if (!CURRENT_APP_ID) return;
-  showToast('Changes saved (demo)', 'success');
-  appendAudit('Cindy B.', 'Saved changes', 'Admin');
+async function saveCurrent() {
+
+  if (!CURRENT_APP_ID) {
+
+    showToast(
+      'No application selected.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  // ---------------------------------------------------------
+  // Make sure validation was run first
+  // ---------------------------------------------------------
+
+  if (!CURRENT_VALIDATION_RESULT) {
+
+    showToast(
+      'Please run validation before saving.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  try {
+
+    // -------------------------------------------------------
+    // Send validation result to backend
+    // -------------------------------------------------------
+
+    const response =
+      await fetch(
+        `http://localhost:5000/api/applications/${encodeURIComponent(
+          CURRENT_APP_ID
+        )}/validation`,
+        {
+          method: 'PUT',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body: JSON.stringify({
+
+            validation_status:
+              CURRENT_VALIDATION_RESULT.status,
+
+            validation_notes:
+              CURRENT_VALIDATION_RESULT.notes
+
+          })
+
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (!response.ok || !result.success) {
+
+      throw new Error(
+        result.message ||
+        'Failed to save validation.'
+      );
+
+    }
+
+
+    // -------------------------------------------------------
+    // Update local application
+    // -------------------------------------------------------
+
+    if (APP_DB[CURRENT_APP_ID]) {
+
+      APP_DB[
+        CURRENT_APP_ID
+      ].validation_status =
+        CURRENT_VALIDATION_RESULT.status;
+
+
+      APP_DB[
+        CURRENT_APP_ID
+      ].validation_updated_at =
+        new Date().toISOString();
+
+
+      APP_DB[
+        CURRENT_APP_ID
+      ].validation_notes =
+        CURRENT_VALIDATION_RESULT.notes;
+
+    }
+
+
+    // -------------------------------------------------------
+    // Audit
+    // -------------------------------------------------------
+
+    appendAudit(
+      CURRENT_USER?.displayName ||
+        'Staff',
+      'Validation result saved',
+      CURRENT_ROLE || 'Staff'
+    );
+
+
+    // -------------------------------------------------------
+    // Success
+    // -------------------------------------------------------
+
+    showToast(
+      'Validation result saved successfully.',
+      'success'
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      'Unable to save validation:',
+      error
+    );
+
+
+    showToast(
+      'Failed to save validation: ' +
+      error.message,
+      'error'
+    );
+
+  }
+
 }
 
 /* Audit log helper (DPA) */

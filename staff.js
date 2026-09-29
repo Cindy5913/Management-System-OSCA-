@@ -1,258 +1,1374 @@
-// Role-based KPI Switcher - Staff Dashboard with Visible Icons & Trends
-// All icons verified. Values zeroed until integrated with the live system.
+// ============================================================
+// STAFF DASHBOARD
+// Live KPI + Live Applicant Data
+// ============================================================
 
-// Staff KPI data (5 cards - accurate icons)
-// TODO(integration): populate value/trend from the other application system.
+
+// ============================================================
+// STAFF KPI CONFIGURATION
+// ============================================================
+
 const STAFF_KPIS = [
   {
     label: 'Total applications',
     value: '0',
     sub: 'System Volume',
     icon: 'fi fi-rr-apps',
-    trend: '—',
+    trend: 'Live',
     trendClass: 'trend-up',
-    iconWrap: 'iwrap-blue'
+    iconWrap: 'blue'
   },
   {
     label: 'Pending Review',
     value: '0',
     sub: 'Awaiting action',
     icon: 'fi fi-rr-clock',
-    trend: '—',
+    trend: 'Live',
     trendClass: 'trend-up',
-    iconWrap: 'iwrap-warn'
+    iconWrap: 'warn'
   },
   {
     label: 'Approved Today',
     value: '0',
-    sub: 'Completed this shift',
+    sub: 'Approved today',
     icon: 'fi fi-rr-check-double',
-    trend: '—',
+    trend: 'Live',
     trendClass: 'trend-good',
-    iconWrap: 'iwrap-green'
+    iconWrap: 'green'
   },
   {
     label: 'Applications processed',
     value: '0',
     sub: 'This month',
     icon: 'fi fi-rr-chart-line-up',
-    trend: '—',
+    trend: 'Live',
     trendClass: 'trend-good',
-    iconWrap: 'iwrap-teal'
+    iconWrap: 'teal'
   },
   {
     label: 'Rejected Applications',
     value: '0',
     sub: 'This month',
     icon: 'fi fi-rr-x',
-    trend: '—',
+    trend: 'Live',
     trendClass: 'trend-down',
-    iconWrap: 'iwrap-red'
+    iconWrap: 'red'
   }
 ];
 
-function switchKPIs(role) {
-  const adminStrip = document.querySelector('.admin-kpi-strip');
-  const staffStrip = document.getElementById('staff-kpi-strip');
-  
-  if (role === 'Staff') {
-    adminStrip.style.display = 'none';
-    
-    if (!staffStrip) {
-      const staffContainer = document.createElement('div');
-      staffContainer.id = 'staff-kpi-strip';
-      staffContainer.className = 'admin-kpi-strip';
-      
-      STAFF_KPIS.forEach((kpi, i) => {
-        const card = document.createElement('div');
-        card.className = `stat-card${i === 1 ? ' stat-card--warn' : ''}`;
-        card.innerHTML = `
-          <div class="stat-card__top">
-            <div class="stat-card__icon-wrap iwrap-${kpi.iconWrap}">
-              <i class="${kpi.icon} ic-${kpi.iconWrap === 'iwrap-blue' ? 'blue' : kpi.iconWrap.replace('iwrap-','')}"></i>
-            </div>
-            <div class="stat-card__meta">
-              <div class="stat-card__trend ${kpi.trendClass}">${kpi.trend || kpi.trendText || ''}</div>
-            </div>
-          </div>
-          <div class="stat-card__body">
-            <div class="stat-card__label">${kpi.label}</div>
-            <div class="stat-card__value">${kpi.value}</div>
-            <div class="stat-card__sub">${kpi.sub}</div>
-          </div>
-        `;
-        staffContainer.appendChild(card);
-      });
-      
-      adminStrip.parentNode.insertBefore(staffContainer, adminStrip.nextSibling);
-    } else {
-      staffStrip.style.display = 'grid';
-    }
-    
-    document.querySelectorAll('.admin-only-panel, .ai-panel').forEach(el => el.style.display = 'none');
-    document.getElementById('dashboard-role-badge').textContent = 'Staff View';
-    document.getElementById('dashboard-title').textContent = 'Staff Dashboard';
-    
-  } else if (role === 'ID Maker') {
-    adminStrip.style.display = 'none';
-    const idMakerStaffStrip = document.getElementById('staff-kpi-strip');
-    if (idMakerStaffStrip) idMakerStaffStrip.style.display = 'none';
-    document.querySelectorAll('.admin-only-panel, .ai-panel').forEach(el => el.style.display = 'none');
-    const idBadge = document.getElementById('dashboard-role-badge');
-    const idTitle = document.getElementById('dashboard-title');
-    if (idBadge) idBadge.textContent = 'ID Maker View';
-    if (idTitle) idTitle.textContent = 'ID Maker Dashboard';
-  } else {
-    adminStrip.style.display = 'grid';
-    const staffStrip = document.getElementById('staff-kpi-strip');
-    if (staffStrip) staffStrip.remove();
-    
-    document.querySelectorAll('.admin-only-panel, .ai-panel').forEach(el => el.style.display = '');
-    document.getElementById('dashboard-role-badge').textContent = 'Admin View';
-    document.getElementById('dashboard-title').textContent = 'Dashboard';
+
+// ============================================================
+// STATUS HELPERS
+// ============================================================
+
+function normalizeApplicationStatus(status) {
+
+  const value =
+    String(status || 'Pending')
+      .trim()
+      .toLowerCase();
+
+  if (
+    value === 'pending' ||
+    value === 'unverified'
+  ) {
+    return 'pending';
   }
+
+  if (
+    value === 'under review' ||
+    value === 'in review'
+  ) {
+    return 'review';
+  }
+
+  if (
+    value === 'verified'
+  ) {
+    return 'approved';
+  }
+
+  if (
+    value === 'ready for release'
+  ) {
+    return 'ready';
+  }
+
+  if (
+    value === 'id issued'
+  ) {
+    return 'issued';
+  }
+
+  if (
+    value === 'completed'
+  ) {
+    return 'completed';
+  }
+
+  if (
+    value === 'rejected'
+  ) {
+    return 'rejected';
+  }
+
+  if (
+    value === 'in process'
+  ) {
+    return 'process';
+  }
+
+  return 'pending';
 }
 
-// Override setRole if exists
-const originalSetRole = window.setRole || (() => {});
-window.setRole = function(role, silent = false) {
-  originalSetRole(role, silent);
-  // Only restyle the KPI strips for the role the core actually adopted —
-  // a gated (blocked) switch must not change the dashboard view.
-  if (typeof CURRENT_ROLE !== 'undefined') switchKPIs(CURRENT_ROLE);
-};
 
-// Auto-init — apply the correct KPI display based on the logged-in role
-document.addEventListener('DOMContentLoaded', () => {
-  if (typeof CURRENT_ROLE !== 'undefined' && CURRENT_ROLE) {
-    switchKPIs(CURRENT_ROLE);
+// ============================================================
+// DATE HELPERS
+// ============================================================
+
+function isSameDay(dateValue, referenceDate = new Date()) {
+
+  if (!dateValue) {
+    return false;
   }
-});
 
-async function loadApplicationsFromDatabase() {
-  try {
-    const response = await fetch("http://localhost:5000/api/applications");
+  const date = new Date(dateValue);
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch applications");
-    }
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.message || "Failed to load applications");
-    }
-
-    console.log("Applications loaded from database:", result.applications);
-
-    displayApplications(result.applications);
-
-  } catch (error) {
-    console.error("Error loading applications:", error);
-
-    if (typeof showToast === "function") {
-      showToast("Failed to load applications.", "error");
-    }
+  if (Number.isNaN(date.getTime())) {
+    return false;
   }
+
+  return (
+    date.getFullYear() ===
+      referenceDate.getFullYear() &&
+
+    date.getMonth() ===
+      referenceDate.getMonth() &&
+
+    date.getDate() ===
+      referenceDate.getDate()
+  );
 }
 
-function displayApplications(applications) {
-  const tbody = document.getElementById("applications-tbody");
 
-  if (!tbody) {
-    console.error("applications-tbody not found.");
+function isSameMonth(dateValue, referenceDate = new Date()) {
+
+  if (!dateValue) {
+    return false;
+  }
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  return (
+    date.getFullYear() ===
+      referenceDate.getFullYear() &&
+
+    date.getMonth() ===
+      referenceDate.getMonth()
+  );
+}
+
+
+// ============================================================
+// UPDATE ANALYTICS DATA
+// ============================================================
+
+function updateLiveAnalyticsData(applications) {
+
+  if (!Array.isArray(applications)) {
     return;
   }
 
-  tbody.innerHTML = "";
+  const now = new Date();
 
-  applications.forEach((application) => {
+  let pending = 0;
+  let inReview = 0;
+  let approved = 0;
+  let rejected = 0;
+  let idsIssued = 0;
 
-    const fullName = [
-      application.first_name,
-      application.middle_name,
-      application.surname
-    ]
-      .filter(Boolean)
-      .join(" ");
+  let approvedToday = 0;
+  let processedThisMonth = 0;
+  let rejectedThisMonth = 0;
 
-    const date = application.created_at
-      ? new Date(application.created_at).toLocaleDateString()
-      : "—";
+  applications.forEach(application => {
 
-    const barangay = application.barangay_district || "—";
+    const status =
+      normalizeApplicationStatus(
+        application.status
+      );
 
-    const status = application.status || "Pending";
+    const statusDate =
+      application.status_updated_at ||
+      application.created_at ||
+      null;
 
-    const row = document.createElement("tr");
 
-    row.innerHTML = `
-      <td>
-        <input
-          type="checkbox"
-          class="row-check"
-          data-app-id="${application.application_id}"
-        >
-      </td>
+    // --------------------------------------------------------
+    // CURRENT STATUS COUNTS
+    // --------------------------------------------------------
 
-      <td>
-        <div class="applicant-name">${fullName || "Unnamed Applicant"}</div>
-        <div class="applicant-id">${application.application_id || "—"}</div>
-      </td>
-
-      <td>${date}</td>
-
-      <td data-label="Barangay">
-        ${barangay}
-      </td>
-
-      <td>
-        <span class="status-select__label">
-          ${status}
-        </span>
-      </td>
-    `;
-
-    tbody.appendChild(row);
-  });
-
-  console.log(`${applications.length} applications displayed.`);
-}
-
-// Load complete application details when the existing Open button is used
-async function loadApplicationDetails(applicationId) {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/applications/${encodeURIComponent(applicationId)}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch application details");
+    if (status === 'pending') {
+      pending++;
     }
 
-    const result = await response.json();
+    if (status === 'review') {
+      inReview++;
+    }
 
-    if (!result.success) {
-      throw new Error(
-        result.message || "Failed to load application details"
+    if (
+      status === 'approved' ||
+      status === 'ready' ||
+      status === 'issued' ||
+      status === 'completed'
+    ) {
+      approved++;
+    }
+
+    if (status === 'rejected') {
+      rejected++;
+    }
+
+    if (
+      status === 'issued' ||
+      status === 'completed'
+    ) {
+      idsIssued++;
+    }
+
+
+    // --------------------------------------------------------
+    // APPROVED TODAY
+    // --------------------------------------------------------
+
+    if (
+      (
+        status === 'approved' ||
+        status === 'ready' ||
+        status === 'issued' ||
+        status === 'completed'
+      ) &&
+      isSameDay(statusDate, now)
+    ) {
+      approvedToday++;
+    }
+
+
+    // --------------------------------------------------------
+    // PROCESSED THIS MONTH
+    // --------------------------------------------------------
+
+    if (
+      (
+        status === 'process' ||
+        status === 'approved' ||
+        status === 'ready' ||
+        status === 'issued' ||
+        status === 'completed' ||
+        status === 'rejected'
+      ) &&
+      isSameMonth(statusDate, now)
+    ) {
+      processedThisMonth++;
+    }
+
+
+    // --------------------------------------------------------
+    // REJECTED THIS MONTH
+    // --------------------------------------------------------
+
+    if (
+      status === 'rejected' &&
+      isSameMonth(statusDate, now)
+    ) {
+      rejectedThisMonth++;
+    }
+
+  });
+
+
+  const pendingReview =
+    pending + inReview;
+
+
+  // ==========================================================
+  // UPDATE ANALYTICS_DATA
+  // ==========================================================
+
+  if (
+    typeof ANALYTICS_DATA !== 'undefined'
+  ) {
+
+    const roles = [
+      'Admin',
+      'Staff',
+      'ID Maker'
+    ];
+
+    roles.forEach(role => {
+
+      if (!ANALYTICS_DATA[role]) {
+        return;
+      }
+
+      ANALYTICS_DATA[role].totalApplications =
+        applications.length;
+
+      ANALYTICS_DATA[role].pending =
+        pending;
+
+      ANALYTICS_DATA[role].inReview =
+        inReview;
+
+      ANALYTICS_DATA[role].pendingReview =
+        pendingReview;
+
+      ANALYTICS_DATA[role].approved =
+        approved;
+
+      ANALYTICS_DATA[role].rejected =
+        rejected;
+
+      ANALYTICS_DATA[role].idsIssued =
+        idsIssued;
+
+      ANALYTICS_DATA[role].statusDenominator =
+        applications.length;
+    });
+  }
+
+
+  // ==========================================================
+  // UPDATE MAIN DASHBOARD
+  // ==========================================================
+
+  if (
+    typeof applyDashboardMetrics === 'function'
+  ) {
+    applyDashboardMetrics();
+  }
+
+
+  if (
+    typeof applyAnalyticsRoleView === 'function'
+  ) {
+    try {
+      applyAnalyticsRoleView();
+    } catch (error) {
+      console.warn(
+        'Unable to refresh analytics view:',
+        error
+      );
+    }
+  }
+
+
+  // ==========================================================
+  // UPDATE STAFF KPI STRIP
+  // ==========================================================
+
+  updateStaffKPICards({
+    total: applications.length,
+    pendingReview,
+    approvedToday,
+    processedThisMonth,
+    rejectedThisMonth
+  });
+}
+
+
+// ============================================================
+// UPDATE STAFF KPI CARDS
+// ============================================================
+
+function updateStaffKPICards(metrics) {
+
+  const strip =
+    document.getElementById(
+      'staff-kpi-strip'
+    );
+
+  if (!strip) {
+    return;
+  }
+
+  const cards =
+    strip.querySelectorAll(
+      '.stat-card'
+    );
+
+  if (!cards.length) {
+    return;
+  }
+
+
+  const values = [
+    metrics.total,
+    metrics.pendingReview,
+    metrics.approvedToday,
+    metrics.processedThisMonth,
+    metrics.rejectedThisMonth
+  ];
+
+
+  const subtitles = [
+    'System Volume',
+    'Awaiting action',
+    'Approved today',
+    'This month',
+    'This month'
+  ];
+
+
+  cards.forEach((card, index) => {
+
+    const value =
+      card.querySelector(
+        '.stat-card__value'
+      );
+
+    const sub =
+      card.querySelector(
+        '.stat-card__sub'
+      );
+
+    const trend =
+      card.querySelector(
+        '.stat-card__trend'
+      );
+
+
+    if (value) {
+      value.textContent =
+        Number(values[index] || 0)
+          .toLocaleString();
+    }
+
+    if (sub) {
+      sub.textContent =
+        subtitles[index] || '';
+    }
+
+    if (trend) {
+      trend.textContent = 'Live';
+    }
+
+  });
+}
+
+
+// ============================================================
+// ROLE-BASED KPI SWITCHER
+// ============================================================
+
+function switchKPIs(role) {
+
+  const adminStrip =
+    document.querySelector(
+      '.admin-kpi-strip'
+    );
+
+  const staffStrip =
+    document.getElementById(
+      'staff-kpi-strip'
+    );
+
+
+  if (role === 'Staff') {
+
+    if (adminStrip) {
+      adminStrip.style.display =
+        'none';
+    }
+
+
+    if (!staffStrip) {
+
+      const staffContainer =
+        document.createElement(
+          'div'
+        );
+
+      staffContainer.id =
+        'staff-kpi-strip';
+
+      staffContainer.className =
+        'admin-kpi-strip';
+
+
+      STAFF_KPIS.forEach(
+        (kpi, index) => {
+
+          const card =
+            document.createElement(
+              'div'
+            );
+
+          card.className =
+            `stat-card${
+              index === 1
+                ? ' stat-card--warn'
+                : ''
+            }`;
+
+
+          card.innerHTML = `
+            <div class="stat-card__top">
+
+              <div class="stat-card__icon-wrap iwrap-${kpi.iconWrap}">
+                <i class="${kpi.icon}"></i>
+              </div>
+
+              <div class="stat-card__meta">
+                <div class="stat-card__trend ${kpi.trendClass}">
+                  ${kpi.trend}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="stat-card__body">
+
+              <div class="stat-card__label">
+                ${kpi.label}
+              </div>
+
+              <div class="stat-card__value">
+                ${kpi.value}
+              </div>
+
+              <div class="stat-card__sub">
+                ${kpi.sub}
+              </div>
+
+            </div>
+          `;
+
+          staffContainer.appendChild(
+            card
+          );
+        }
+      );
+
+
+      if (adminStrip) {
+
+        adminStrip.parentNode.insertBefore(
+          staffContainer,
+          adminStrip.nextSibling
+        );
+
+      }
+
+    } else {
+
+      staffStrip.style.display =
+        'grid';
+    }
+
+
+    document
+      .querySelectorAll(
+        '.admin-only-panel, .ai-panel'
+      )
+      .forEach(
+        element => {
+          element.style.display =
+            'none';
+        }
+      );
+
+
+    const roleBadge =
+      document.getElementById(
+        'dashboard-role-badge'
+      );
+
+    const dashboardTitle =
+      document.getElementById(
+        'dashboard-title'
+      );
+
+
+    if (roleBadge) {
+      roleBadge.textContent =
+        'Staff View';
+    }
+
+    if (dashboardTitle) {
+      dashboardTitle.textContent =
+        'Staff Dashboard';
+    }
+
+
+  } else if (
+    role === 'ID Maker'
+  ) {
+
+    if (adminStrip) {
+      adminStrip.style.display =
+        'none';
+    }
+
+
+    const idMakerStaffStrip =
+      document.getElementById(
+        'staff-kpi-strip'
+      );
+
+    if (idMakerStaffStrip) {
+      idMakerStaffStrip.style.display =
+        'none';
+    }
+
+
+    document
+      .querySelectorAll(
+        '.admin-only-panel, .ai-panel'
+      )
+      .forEach(
+        element => {
+          element.style.display =
+            'none';
+        }
+      );
+
+
+    const idBadge =
+      document.getElementById(
+        'dashboard-role-badge'
+      );
+
+    const idTitle =
+      document.getElementById(
+        'dashboard-title'
+      );
+
+
+    if (idBadge) {
+      idBadge.textContent =
+        'ID Maker View';
+    }
+
+    if (idTitle) {
+      idTitle.textContent =
+        'ID Maker Dashboard';
+    }
+
+
+  } else {
+
+    if (adminStrip) {
+      adminStrip.style.display =
+        'grid';
+    }
+
+
+    const staffStrip =
+      document.getElementById(
+        'staff-kpi-strip'
+      );
+
+    if (staffStrip) {
+      staffStrip.remove();
+    }
+
+
+    document
+      .querySelectorAll(
+        '.admin-only-panel, .ai-panel'
+      )
+      .forEach(
+        element => {
+          element.style.display =
+            '';
+        }
+      );
+
+
+    const roleBadge =
+      document.getElementById(
+        'dashboard-role-badge'
+      );
+
+    const dashboardTitle =
+      document.getElementById(
+        'dashboard-title'
+      );
+
+
+    if (roleBadge) {
+      roleBadge.textContent =
+        'Admin View';
+    }
+
+    if (dashboardTitle) {
+      dashboardTitle.textContent =
+        'Dashboard';
+    }
+  }
+}
+
+
+// ============================================================
+// SET ROLE OVERRIDE
+// ============================================================
+
+const originalSetRole =
+  window.setRole || (() => {});
+
+
+window.setRole =
+  function (
+    role,
+    silent = false
+  ) {
+
+    originalSetRole(
+      role,
+      silent
+    );
+
+
+    if (
+      typeof CURRENT_ROLE !==
+      'undefined'
+    ) {
+
+      switchKPIs(
+        CURRENT_ROLE
+      );
+
+    }
+  };
+
+
+// ============================================================
+// RENDER LIVE APPLICANTS
+// ============================================================
+
+function renderLiveApplicants(
+  applications
+) {
+
+  const tbody =
+    document.getElementById(
+      'applicants-tbody'
+    );
+
+  if (!tbody) {
+    return;
+  }
+
+
+  if (
+    !Array.isArray(applications) ||
+    applications.length === 0
+  ) {
+
+    tbody.innerHTML = `
+      <tr>
+        <td
+          colspan="9"
+          style="
+            text-align:center;
+            padding:32px;
+            color:var(--text-muted);
+          "
+        >
+          No applicants found.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+
+  tbody.innerHTML =
+    applications.map(
+      application => {
+
+        const appId =
+          application.application_id ||
+          application.id ||
+          '';
+
+
+        const fullName = [
+          application.first_name,
+          application.middle_name,
+          application.surname
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .trim() ||
+          'Unnamed Applicant';
+
+
+        const initials =
+          fullName
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(
+              part =>
+                part
+                  .charAt(0)
+                  .toUpperCase()
+            )
+            .join('');
+
+
+        const barangay =
+          application.barangay_district ||
+          '—';
+
+
+        const age =
+          application.age ??
+          '—';
+
+
+        const occupation =
+          application.occupation ||
+          '—';
+
+
+        const status =
+          application.status ||
+          'Pending';
+
+
+        let docsHtml =
+          '<span class="docs-pill">—</span>';
+
+
+        if (
+          typeof buildDocsStatusPill ===
+          'function'
+        ) {
+
+          try {
+
+            docsHtml =
+              buildDocsStatusPill(
+                application
+              );
+
+          } catch (error) {
+
+            console.warn(
+              'Unable to build document status:',
+              error
+            );
+
+          }
+        }
+
+
+        let statusHtml =
+          `<span class="status-select__label">
+            ${escapeApplicationHtml(status)}
+          </span>`;
+
+
+        if (
+          typeof buildStatusSelect ===
+          'function'
+        ) {
+
+          try {
+
+            statusHtml =
+              buildStatusSelect(
+                appId,
+                status
+              );
+
+          } catch (error) {
+
+            console.warn(
+              'Unable to build applicant status:',
+              error
+            );
+
+          }
+        }
+
+
+        return `
+          <tr
+            data-app-id="${escapeApplicationHtml(appId)}"
+          >
+
+            <!-- NAME -->
+            <td>
+
+              <div class="applicant-cell">
+
+                <div class="applicant-avatar">
+                  ${escapeApplicationHtml(initials)}
+                </div>
+
+                <div class="applicant-info">
+
+                  <span class="applicant-name">
+                    ${escapeApplicationHtml(fullName)}
+                  </span>
+
+                  <span class="applicant-id">
+                    ${escapeApplicationHtml(
+                      application.sex || 'Applicant'
+                    )}
+                    ·
+                    ${escapeApplicationHtml(
+                      String(age)
+                    )}
+                    yrs
+                  </span>
+
+                </div>
+
+              </div>
+
+            </td>
+
+
+            <!-- ID NUMBER -->
+            <td>
+              <span class="cell-text">
+                ${escapeApplicationHtml(appId)}
+              </span>
+            </td>
+
+
+            <!-- BARANGAY -->
+            <td>
+              <span class="cell-text">
+                ${escapeApplicationHtml(barangay)}
+              </span>
+            </td>
+
+
+            <!-- AGE -->
+            <td>
+              <span class="cell-text">
+                ${escapeApplicationHtml(
+                  String(age)
+                )}
+              </span>
+            </td>
+
+
+            <!-- OCCUPATION -->
+            <td>
+              <span class="cell-text">
+                ${escapeApplicationHtml(
+                  occupation
+                )}
+              </span>
+            </td>
+
+
+            <!-- APPLICATION TYPE -->
+            <td>
+
+              ${
+                typeof buildApplicationTypePill ===
+                'function'
+                  ? (() => {
+                      try {
+                        return buildApplicationTypePill(
+                          application
+                        );
+                      } catch (error) {
+                        return `
+                          <span class="badge badge-pending">
+                            Application
+                          </span>
+                        `;
+                      }
+                    })()
+                  : `
+                    <span class="badge badge-pending">
+                      Application
+                    </span>
+                  `
+              }
+
+            </td>
+
+
+            <!-- DOCUMENT STATUS -->
+            <td>
+              ${docsHtml}
+            </td>
+
+
+            <!-- STATUS -->
+            <td>
+              ${statusHtml}
+            </td>
+
+
+            <!-- ACTION -->
+            <td
+              style="text-align:right"
+            >
+
+              <button
+                class="row-action always-visible"
+                onclick="
+                  openApplicationDetail(
+                    '${escapeApplicationHtml(appId)}'
+                  )
+                "
+              >
+                View
+              </button>
+
+            </td>
+
+          </tr>
+        `;
+      }
+    )
+    .join('');
+
+
+  // ==========================================================
+  // UPDATE APPLICANTS COUNTERS
+  // ==========================================================
+
+  const applicantsBadge =
+    document.querySelector(
+      '[data-module="applicants"] .nav-link__badge'
+    );
+
+  if (applicantsBadge) {
+
+    applicantsBadge.textContent =
+      applications.length.toLocaleString();
+
+  }
+
+
+  // ==========================================================
+  // UPDATE APPLICANTS FOOTER
+  // ==========================================================
+
+  const applicantCards =
+    document.querySelectorAll(
+      '.data-table-card'
+    );
+
+
+  applicantCards.forEach(card => {
+
+    const title =
+      card
+        .querySelector(
+          '.table-header__title'
+        )
+        ?.textContent
+        ?.trim();
+
+
+    if (
+      title !== 'Applicants'
+    ) {
+      return;
+    }
+
+
+    const footer =
+      card.querySelector(
+        '.table-footer__info'
+      );
+
+
+    if (footer) {
+
+      footer.textContent =
+        `Showing ${applications.length.toLocaleString()} of ${applications.length.toLocaleString()} applicants`;
+
+    }
+
+  });
+
+
+  // ==========================================================
+  // UPDATE FILTER COUNTS
+  // ==========================================================
+
+  if (
+    typeof updateStatusTabCounts ===
+    'function'
+  ) {
+
+    try {
+      updateStatusTabCounts();
+    } catch (error) {
+      console.warn(
+        'Unable to update applicant status counts:',
+        error
       );
     }
 
-    console.log("Complete application details:", result);
+  }
+
+}
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeApplicationHtml(
+  value
+) {
+
+  return String(
+    value ?? ''
+  )
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+    .replace(
+      /</g,
+      '&lt;'
+    )
+    .replace(
+      />/g,
+      '&gt;'
+    )
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+}
+
+
+// ============================================================
+// LOAD APPLICATIONS
+// ============================================================
+
+async function loadApplicationsFromDatabase() {
+
+  try {
+
+    const response =
+      await fetch(
+        "http://localhost:5000/api/applications"
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Failed to fetch applications"
+      );
+
+    }
+
+
+    const result =
+      await response.json();
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.message ||
+        "Failed to load applications"
+      );
+
+    }
+
+
+    const applications =
+      Array.isArray(
+        result.applications
+      )
+        ? result.applications
+        : [];
+
+
+    console.log(
+      "Applications loaded from database:",
+      applications.length
+    );
+
+
+    // --------------------------------------------------------
+    // UPDATE DASHBOARD
+    // --------------------------------------------------------
+
+    updateLiveAnalyticsData(
+      applications
+    );
+
+
+    // --------------------------------------------------------
+    // UPDATE APPLICANTS TABLE
+    // --------------------------------------------------------
+
+    renderLiveApplicants(
+      applications
+    );
+
+
+    // --------------------------------------------------------
+    // UPDATE APPLICATIONS TABLE
+    // --------------------------------------------------------
+
+    if (
+      typeof displayApplications ===
+      'function'
+    ) {
+
+      displayApplications(
+        applications
+      );
+
+    }
+
+
+    return applications;
+
+  } catch (error) {
+
+    console.error(
+      "Error loading applications:",
+      error
+    );
+
+
+    if (
+      typeof showToast ===
+      "function"
+    ) {
+
+      showToast(
+        "Failed to load applications.",
+        "error"
+      );
+
+    }
+
+    return [];
+
+  }
+}
+
+
+// ============================================================
+// APPLICATION DETAILS
+// ============================================================
+
+async function loadApplicationDetails(
+  applicationId
+) {
+
+  try {
+
+    const response =
+      await fetch(
+        `http://localhost:5000/api/applications/${encodeURIComponent(
+          applicationId
+        )}`
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Failed to fetch application details"
+      );
+
+    }
+
+
+    const result =
+      await response.json();
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.message ||
+        "Failed to load application details"
+      );
+
+    }
+
+
+    console.log(
+      "Complete application details:",
+      result
+    );
+
 
     return result;
 
   } catch (error) {
-    console.error("Error loading application details:", error);
 
-    if (typeof showToast === "function") {
-      showToast("Failed to load application details.", "error");
+    console.error(
+      "Error loading application details:",
+      error
+    );
+
+
+    if (
+      typeof showToast ===
+      "function"
+    ) {
+
+      showToast(
+        "Failed to load application details.",
+        "error"
+      );
+
     }
+
 
     return null;
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadApplicationsFromDatabase();
-});
+
+// ============================================================
+// AUTO INITIALIZATION
+// ============================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    if (
+      typeof CURRENT_ROLE !==
+        'undefined' &&
+      CURRENT_ROLE
+    ) {
+
+      switchKPIs(
+        CURRENT_ROLE
+      );
+
+    }
+
+
+    loadApplicationsFromDatabase();
+
+  }
+);
