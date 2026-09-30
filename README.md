@@ -1,42 +1,54 @@
-Senior Citizens Bureau — ID Management System
+Senior Citizens Bureau - ID Management System
 
-A web-based management portal designed for the Office of the Senior Citizens Affairs (OSCA), Municipality of Bauan. The system streamlines citizen record administration, application processing, and ID issuance while ensuring operational transparency and data privacy compliance (RA 10173 and RA 9994).
+A web-based management portal for the Office of the Senior Citizens Affairs (OSCA), Municipality of Bauan. It supports application processing and ID issuance through Admin, Staff, and ID Maker portals.
 
-Key Features
+## Features
 
-- Role-Based Access (RBAC): Tailored dashboards for Applicants, Staff, ID Makers, and Administrators.
-- Application Processing: Fast review, approval, rejection, and tracking of senior citizen records.
-- System Monitoring & Security: Real-time storage tracking, visual audit logging with PII masking, automated backups, and security alerts.
+- Role-based portals and access
+- Application review, status updates, and ID issuance
+- Application document retrieval through Supabase Storage
 
-Quick Start
-Run instantly on any HTTP server (no database or backend configuration required):
+## Local Setup
 
-1. Node.js: `node local-server.js --port=5500`
-2. Python: `python -m http.server 5500`
-3. VS Code Live Server: Right-click `login.html` → *Open with Live Server*
+Requires Node.js and a configured Supabase project. The frontend and API run as separate local servers.
 
-Open [`http://localhost:5500/login.html`](http://localhost:5500/login.html) to access the system.
+1. Install dependencies from the project root:
 
-Demo Credentials
-- Admin   un: admin   | pw: admin123  
-- Staff   un: staff   | pw: staff123 
-- IDMaker un: idmaker | pw: idmaker123|
+	```bash
+	npm install
+	```
 
+2. Create or update the root `.env` file with the backend configuration:
 
-Project Structure
-- login.html         Portal entry point & role authentication
-- admin.html         Admin dashboard (users, settings, logs, backups)
-- staff.html         Staff dashboard (application processing & intake)
-- idmaker.html       ID Maker dashboard (production queue & card layout)
-- app.js             Core architecture (auth, RBAC, modal control, state)
-- admin.js           Admin logic (user lifecycle, backups, audit system)
-- staff.js           Staff logic (KPI tracking, application evaluation)
-- idmaker.js         ID Maker logic (print queue, card rendering, analytics)
-- base.css           Global design tokens, layout grid, and shared UI components
-- admin.css          Dedicated styling for Admin portal
-- staff.css          Dedicated styling for Staff portal
-- idmaker.css        Dedicated styling for ID Maker portal
-- portal-logo.jpg    Official OSCA municipal logo
-- local-server.js    Built-in Node.js development server
+	```env
+	SUPABASE_URL=your_supabase_project_url
+	SUPABASE_SECRET_KEY=your_supabase_secret_key
+	PORT=5000
+	```
 
-Created by: Cindy B.
+	Keep `.env` private. Never expose the Supabase secret key in frontend code or commit it to source control.
+
+3. Start the API in one terminal:
+
+	```bash
+	node backend/server.js
+	```
+
+4. Start the frontend static server in another terminal:
+
+	```bash
+	node local-server.js --port=5500
+	```
+
+5. Open [http://localhost:5500/login.html](http://localhost:5500/login.html).
+
+The frontend currently sends API requests to `http://localhost:5000`; keep the backend on port 5000 for local use. Login and application data require valid Supabase credentials, database tables, and user records. The repository does not include seed credentials.
+
+## Project Structure
+
+- `login.html`, `admin.html`, `staff.html`, `idmaker.html`: Portal pages
+- `app.js`, `admin.js`, `staff.js`, `idmaker.js`: Shared and portal-specific behavior
+- `base.css`, `admin.css`, `staff.css`, `idmaker.css`: Shared and portal-specific styles
+- `backend/`: Express API, routes, Supabase configuration, and application controller
+- `local-server.js`: Static frontend development server
+- `package.json`: Dependencies and frontend server scripts
