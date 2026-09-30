@@ -1,12 +1,6 @@
-// ============================================================
-// STAFF DASHBOARD
-// Live KPI + Live Applicant Data
-// ============================================================
+// Staff dashboard
 
-
-// ============================================================
-// STAFF KPI CONFIGURATION
-// ============================================================
+// Staff KPI configuration
 
 const STAFF_KPIS = [
   {
@@ -57,9 +51,7 @@ const STAFF_KPIS = [
 ];
 
 
-// ============================================================
-// STATUS HELPERS
-// ============================================================
+// Status helpers
 
 function normalizeApplicationStatus(status) {
 
@@ -122,9 +114,7 @@ function normalizeApplicationStatus(status) {
 }
 
 
-// ============================================================
 // DATE HELPERS
-// ============================================================
 
 function isSameDay(dateValue, referenceDate = new Date()) {
 
@@ -173,9 +163,7 @@ function isSameMonth(dateValue, referenceDate = new Date()) {
 }
 
 
-// ============================================================
 // UPDATE ANALYTICS DATA
-// ============================================================
 
 function updateLiveAnalyticsData(applications) {
 
@@ -208,9 +196,7 @@ function updateLiveAnalyticsData(applications) {
       null;
 
 
-    // --------------------------------------------------------
-    // CURRENT STATUS COUNTS
-    // --------------------------------------------------------
+    // Current status counts
 
     if (status === 'pending') {
       pending++;
@@ -241,9 +227,7 @@ function updateLiveAnalyticsData(applications) {
     }
 
 
-    // --------------------------------------------------------
-    // APPROVED TODAY
-    // --------------------------------------------------------
+    // Approved today
 
     if (
       (
@@ -258,9 +242,7 @@ function updateLiveAnalyticsData(applications) {
     }
 
 
-    // --------------------------------------------------------
-    // PROCESSED THIS MONTH
-    // --------------------------------------------------------
+    // Processed this month
 
     if (
       (
@@ -277,9 +259,7 @@ function updateLiveAnalyticsData(applications) {
     }
 
 
-    // --------------------------------------------------------
-    // REJECTED THIS MONTH
-    // --------------------------------------------------------
+    // Rejected this month
 
     if (
       status === 'rejected' &&
@@ -295,9 +275,7 @@ function updateLiveAnalyticsData(applications) {
     pending + inReview;
 
 
-  // ==========================================================
   // UPDATE ANALYTICS_DATA
-  // ==========================================================
 
   if (
     typeof ANALYTICS_DATA !== 'undefined'
@@ -342,9 +320,7 @@ function updateLiveAnalyticsData(applications) {
   }
 
 
-  // ==========================================================
   // UPDATE MAIN DASHBOARD
-  // ==========================================================
 
   if (
     typeof applyDashboardMetrics === 'function'
@@ -366,16 +342,12 @@ function updateLiveAnalyticsData(applications) {
     }
   }
 
-  // ==========================================================
   // UPDATE APPLICATION SUMMARY CARDS
-  // ==========================================================
 
   updateApplicationSummaryCards(applications);
 
 
-  // ==========================================================
   // UPDATE STAFF KPI STRIP
-  // ==========================================================
 
   updateStaffKPICards({
     total: applications.length,
@@ -386,9 +358,7 @@ function updateLiveAnalyticsData(applications) {
   });
 }
 
-// ============================================================
 // UPDATE APPLICATION SUMMARY CARDS
-// ============================================================
 
 function updateApplicationSummaryCards(applications) {
 
@@ -405,36 +375,28 @@ function updateApplicationSummaryCards(applications) {
 
   applications.forEach(application => {
 
-    // ========================================================
     // CURRENT STATUS
-    // ========================================================
 
     const status = normalizeApplicationStatus(
       application.status
     );
 
 
-    // ========================================================
     // 1. PENDING
-    // ========================================================
 
     if (status === 'pending') {
       pending++;
     }
 
 
-    // ========================================================
     // 2. UNDER REVIEW
-    // ========================================================
 
     if (status === 'review') {
       underReview++;
     }
 
 
-    // ========================================================
     // 3. FLAGGED DUPLICATES
-    // ========================================================
 
     const duplicate =
       application.duplicate;
@@ -457,9 +419,7 @@ function updateApplicationSummaryCards(applications) {
     }
 
 
-    // ========================================================
     // 4. INCOMPLETE DOCUMENTS
-    // ========================================================
 
     const documents =
       application.documents || {};
@@ -492,9 +452,7 @@ function updateApplicationSummaryCards(applications) {
     }
 
 
-    // ========================================================
     // 5. READY FOR ID MAKER
-    // ========================================================
 
     if (status === 'ready') {
       readyForIdMaker++;
@@ -503,9 +461,7 @@ function updateApplicationSummaryCards(applications) {
   });
 
 
-  // ==========================================================
   // UPDATE THE FIVE APPLICATION SUMMARY CARDS
-  // ==========================================================
 
   const values = {
     'summary-pending': pending,
@@ -532,9 +488,7 @@ function updateApplicationSummaryCards(applications) {
 
 }
 
-// ============================================================
 // UPDATE STAFF KPI CARDS
-// ============================================================
 
 function updateStaffKPICards(metrics) {
 
@@ -612,9 +566,7 @@ function updateStaffKPICards(metrics) {
 }
 
 
-// ============================================================
 // ROLE-BASED KPI SWITCHER
-// ============================================================
 
 function switchKPIs(role) {
 
@@ -865,9 +817,7 @@ function switchKPIs(role) {
 }
 
 
-// ============================================================
 // SET ROLE OVERRIDE
-// ============================================================
 
 const originalSetRole =
   window.setRole || (() => {});
@@ -898,9 +848,7 @@ window.setRole =
   };
 
 
-// ============================================================
 // RENDER LIVE APPLICANTS
-// ============================================================
 
 function renderLiveApplicants(
   applications
@@ -1192,9 +1140,7 @@ function renderLiveApplicants(
     .join('');
 
 
-  // ==========================================================
   // UPDATE APPLICANTS COUNTERS
-  // ==========================================================
 
   const applicantsBadge =
     document.querySelector(
@@ -1209,9 +1155,7 @@ function renderLiveApplicants(
   }
 
 
-  // ==========================================================
   // UPDATE APPLICANTS FOOTER
-  // ==========================================================
 
   const applicantCards =
     document.querySelectorAll(
@@ -1253,9 +1197,7 @@ function renderLiveApplicants(
   });
 
 
-  // ==========================================================
   // UPDATE FILTER COUNTS
-  // ==========================================================
 
   if (
     typeof updateStatusTabCounts ===
@@ -1276,9 +1218,7 @@ function renderLiveApplicants(
 }
 
 
-// ============================================================
 // ESCAPE HTML
-// ============================================================
 
 function escapeApplicationHtml(
   value
@@ -1310,9 +1250,7 @@ function escapeApplicationHtml(
 }
 
 
-// ============================================================
 // LOAD APPLICATIONS
-// ============================================================
 
 async function loadApplicationsFromDatabase() {
   try {
@@ -1355,25 +1293,19 @@ async function loadApplicationsFromDatabase() {
       applications.length
     );
 
-    // ============================================
     // UPDATE LIVE ANALYTICS
-    // ============================================
 
     if (typeof updateLiveAnalyticsData === "function") {
       updateLiveAnalyticsData(applications);
     }
 
-    // ============================================
     // UPDATE APPLICANTS TABLE
-    // ============================================
 
     if (typeof renderLiveApplicants === "function") {
       renderLiveApplicants(applications);
     }
 
-    // ============================================
     // UPDATE APPLICATIONS TABLE
-    // ============================================
 
     if (typeof displayApplications === "function") {
       displayApplications(applications);
@@ -1406,9 +1338,7 @@ async function loadApplicationsFromDatabase() {
 }
 
 
-// ============================================================
 // APPLICATION DETAILS
-// ============================================================
 
 async function loadApplicationDetails(
   applicationId
@@ -1481,9 +1411,7 @@ async function loadApplicationDetails(
 }
 
 
-// ============================================================
 // AUTO INITIALIZATION
-// ============================================================
 
 document.addEventListener(
   "DOMContentLoaded",

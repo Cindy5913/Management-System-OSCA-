@@ -1,8 +1,4 @@
-// ============================================================
-// ADMIN — role-specific module: user management, system backup,
-// activity/audit log filtering, and settings panel switching.
-// Loaded after app.js (shared core).
-// ============================================================
+// Admin portal logic
 
 document.addEventListener('DOMContentLoaded', () => {
   // Restore the persisted Audit Log Summary range before the first paint.
@@ -102,20 +98,10 @@ function runSystemBackup() {
   setTimeout(() => showToast('Backup completed successfully. Restore point verified.', 'success'), 900);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   NEW: Dedicated Admin Console modules (B / C / D / E)
-══════════════════════════════════════════════════════════════ */
+/* NEW: Dedicated Admin Console modules (B / C / D / E) */
 
 // Personnel accounts for Module B (RBAC)
-/* ==========================================================
-   ADMIN_USER_ACCOUNTS — EMPTY bootstrap.
-   All demo personnel have been removed. This array holds the
-   user-account registry shown in User Management. Keep each
-   record shape: { key, fullName, username, designation, role,
-   email, status, lastActive } so your team can map responses
-   from the other application system (e.g. GET /users).
-   TODO(integration): load accounts from the live system.
-========================================================== */
+/* Admin user accounts bootstrap */
 const ADMIN_USER_ACCOUNTS = [];
 let editingUserKey = null;
 
@@ -344,7 +330,6 @@ function exportUsers() {
 }
 
 /* ── Module C: Audit Logs ── */
-/* ==========================================================
    AUDIT_LOG_DATA — EMPTY bootstrap.
    All demo log events have been removed. Each audit entry keeps
    the shape: { ts, user, role, action, ip, device } so the table
@@ -369,7 +354,6 @@ function determineAuditActionType(action) {
   return 'other';
 }
 
-/* ==========================================================
    AUDIT USER FILTER — populated from ADMIN_USER_ACCOUNTS
    (plus any audit-only actors such as "System").
 ========================================================== */
@@ -584,7 +568,6 @@ function exportAuditReport() {
 }
 
 /* ── Module D: AI & API Service Status ── */
-/* ==========================================================
    SERVICE_STATUS — EMPTY bootstrap.
    All demo service monitors have been removed. Each entry keeps
    the shape: { name, desc, icon, status, latency, action? }
@@ -669,7 +652,6 @@ function tplSave() {
 
 /* ── Module E: Backup & Recovery ── */
 let backupIsRunning = false;
-/* ==========================================================
    BACKUP_HISTORY — EMPTY bootstrap.
    All demo backup records have been removed. Each entry keeps the
    shape: { ts, type, size, status, loc } so the history table can
@@ -698,7 +680,6 @@ function renderBackupHistory() {
   }).join('');
 }
 
-/* ==========================================================
    RESTORE POINT SELECT — options are bound to BACKUP_HISTORY
    (newest first) instead of hardcoded literals.
 ========================================================== */

@@ -1,19 +1,6 @@
-// ============================================================
-// ID MAKER — role-specific module: production queue,
-// queue analytics/charts, and print-queue status controls.
-// Loaded after app.js (shared core). All functions are global so
-// cross-file calls from the core resolve at runtime.
-// ============================================================
+// ID maker portal logic
 
-/* ==========================================================
-   ID_MAKER_QUEUE — EMPTY bootstrap.
-   All demo queue items have been removed. This array holds the
-   ID production queue (print status per applicant). Each item
-   keeps the shape built below (fields from the applicant plus
-   printStatus and controlNo) so your team can push queue items
-   received from the other application system.
-   TODO(integration): load/populate the queue from the live system.
-========================================================== */
+/* ID maker queue bootstrap */
 const ID_MAKER_QUEUE = (function(){
   var stages = ['Queued','In Production','Printed','In Transit'];
   // NOTE(staff): previously seeded from FULL_APPLICANTS. Now empty until

@@ -29,9 +29,7 @@
 
   <div class="app-shell" id="portal-shell">
 
-    <!-- ═══════════════════════════════════
-     SIDEBAR (UNCHANGED)
-═══════════════════════════════════ -->
+    <!-- SIDEBAR (UNCHANGED) -->
     <aside class="sidebar">
       <a href="#" class="sidebar__brand">
         <div class="sidebar__brand-icon">
@@ -124,9 +122,7 @@
       </div>
     </aside>
 
-    <!-- ═══════════════════════════════════
-     MAIN
-═══════════════════════════════════ -->
+    <!-- MAIN -->
     <!-- Off-canvas drawer backdrop -->
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebarDrawer()"></div>
 
@@ -140,7 +136,7 @@
         <strong style="font-family:var(--font-display);font-size:16px;color:var(--text-primary)" id="mobile-topbar-title">Admin Portal</strong>
       </div>
 
-      <!-- ══════════ DASHBOARD (unchanged content + ADDED AI panel + notifications log) ══════════ -->
+      <!-- DASHBOARD -->
       <div class="module active" id="mod-dashboard">
         <header class="page-header">
           <div class="page-header__left">
@@ -398,8 +394,8 @@
 
       </div>
 
-      <!-- ══════════ APPLICANTS (unchanged; only RBAC controls apply via JS) ══════════ -->
-      <!-- ══════════ ID MAKER DASHBOARD (role-restricted module) ══════════ -->
+      <!-- APPLICANTS -->
+      <!-- ID MAKER DASHBOARD -->
   <div class="module" id="mod-user-mgmt">
     <header class="page-header">
       <div class="page-header__left">
@@ -518,7 +514,7 @@
     </div>
   </div>
 
-  <!-- ══════════ MODULE C: AUDIT LOGS ══════════ -->
+  <!-- MODULE C: AUDIT LOGS -->
   <div class="module" id="mod-audit-logs">
     <header class="page-header">
       <div class="page-header__left">
@@ -596,7 +592,7 @@
     </div>
   </div>
 
-  <!-- ══════════ MODULE D: SYSTEM CONFIGURATION & PARAMETERS ══════════ -->
+  <!-- MODULE D: SYSTEM CONFIGURATION & PARAMETERS -->
   <div class="module" id="mod-system-config">
     <header class="page-header">
       <div class="page-header__left">
@@ -795,7 +791,7 @@
     </div>
   </div>
 
-  <!-- ══════════ MODULE E: DATABASE BACKUP & RECOVERY ══════════ -->
+  <!-- MODULE E: DATABASE BACKUP & RECOVERY -->
   <div class="module" id="mod-backup">
     <header class="page-header">
       <div class="page-header__left">
@@ -972,7 +968,7 @@
     </div>
   </div>
 
-  <!-- ══════════ USER ACCOUNT MODAL (Add / Edit) ══════════ -->
+  <!-- USER ACCOUNT MODAL (Add / Edit) -->
   <div class="modal-backdrop" id="user-modal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="user-modal-title" style="width:min(560px,100%)">
       <div class="modal__header">
@@ -1043,7 +1039,7 @@
     </div>
   </div>
 
-  <!-- ══════════ USER ACTIONS MODAL (Reset / More) ══════════ -->
+  <!-- USER ACTIONS MODAL (Reset / More) -->
   <div class="modal-backdrop" id="user-actions-modal">
     <div class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="ua-modal-title"
       style="width:min(480px,100%)">
@@ -1083,13 +1079,7 @@
 
   </main>
 
-  <!-- ═══════════════════════════════════
-     APPLICATION DETAIL MODAL (ADDED)
-     - Workflow stages (Pending → In Review → ID on Process → Ready for Release)
-     - Document verification UI
-     - AI duplicate detection banner
-     - Audit log (DPA)
-═══════════════════════════════════ -->
+  <!-- APPLICATION DETAIL MODAL -->
   <!-- Logout confirmation modal -->
   <div class="modal-backdrop" id="logout-confirm-modal">
     <div class="modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title">
@@ -1116,7 +1106,7 @@
     </div>
   </div>
 
-  <!-- ══════════ CONFIRMATION MODAL (destructive backup / restore) ══════════ -->
+  <!-- CONFIRMATION MODAL (destructive backup / restore) -->
   <div class="modal-backdrop" id="confirm-modal">
     <div class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="cf-modal-title">
       <div class="confirm-hero">

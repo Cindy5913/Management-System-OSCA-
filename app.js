@@ -1,10 +1,4 @@
-/* ============================================================
-   Existing JS from your last file (kept) + NEW JS for features:
-   - RBAC (role switching)
-   - Application detail modal workflow + docs verification + audit log
-   - AI flags (duplicate detection demo)
-   - Exports & scheduling (demo)
-============================================================ */
+/* Shared portal logic */
 
 /* ── Chart palette + chart init from your previous code (kept) ── */
 const C = {
@@ -34,20 +28,7 @@ if (typeof Chart !== 'undefined') {
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-/* ==========================================================
-   ANALYTICS_DATA — EMPTY bootstrap.
-   All demo figures have been removed. The field/role shape is
-   preserved so your team can map responses from the other
-   application system (e.g. a /analytics endpoint) onto these keys.
-   Each role exposes:
-     totalApplications, pending, inReview, pendingReview,
-     approved, rejected, idsIssued,
-     submitted[], approvedMonthly[], rejectedMonthly[],
-     barangayLabels[], barangayTotal[], barangayApproved[],
-     barangayPending[], statusDenominator, issuance[], processing[]
-   TODO(integration): populate from the live system, then call the
-   relevant init* chart functions to re-render.
-========================================================== */
+/* Analytics data bootstrap */
 const ANALYTICS_DATA = {
   Admin: {
     scopeLabel: 'Admin Scope',
@@ -2024,9 +2005,7 @@ async function updateTableStatus(
   updateStatusTabCounts();
 
   try {
-    // ========================================================
-    // SAVE STATUS TO DATABASE
-    // ========================================================
+    // Save status to database
 
     const response =
       await fetch(
@@ -2060,9 +2039,7 @@ async function updateTableStatus(
       );
     }
 
-    // ========================================================
-    // USE THE STATUS CONFIRMED BY THE DATABASE
-    // ========================================================
+    // Use the status confirmed by the database
 
     const savedStatus =
       result.status ||
@@ -2088,9 +2065,7 @@ async function updateTableStatus(
       'success'
     );
 
-    // ========================================================
-    // RELOAD FROM DATABASE
-    // ========================================================
+    // Reload from database
     // This makes the database the source of truth.
     // The table will now display whatever status the backend
     // retrieves from application_status_history.
@@ -2109,9 +2084,7 @@ async function updateTableStatus(
       error
     );
 
-    // ========================================================
-    // ROLLBACK UI IF DATABASE SAVE FAILED
-    // ========================================================
+    // Rollback UI if database save failed
 
     app.status =
       previousStatus;
@@ -2171,9 +2144,7 @@ async function updateTableStatus(
   }
 }
 
-/* ═══════════════════════════════════
-   DIGITAL ISSUANCE FORM (Small Form Modal)
-═══════════════════════════════════ */
+/* DIGITAL ISSUANCE FORM (Small Form Modal) */
 let DI_CURRENT_APP_ID = null;
 let DI_MODE = 'idmaker'; // 'staff' | 'idmaker'
 
@@ -2409,9 +2380,7 @@ function downloadDigitalIssuanceDocs() {
 
 
 
-/* =========================================================
-   RULE-BASED VALIDATION
-   ========================================================= */
+/* Rule-based validation */
 
 let CURRENT_VALIDATION_RESULT = null;
 
@@ -2444,9 +2413,7 @@ function runValidation() {
   }
 
 
-  // =========================================================
-  // AGE
-  // =========================================================
+  // Age
 
   const age =
     Number(app.age);
@@ -2456,9 +2423,7 @@ function runValidation() {
     age >= 60;
 
 
-  // =========================================================
-  // RESIDENCY
-  // =========================================================
+  // Residency
 
   const barangay =
     String(
@@ -2470,9 +2435,7 @@ function runValidation() {
     barangay !== '—';
 
 
-  // =========================================================
-  // DOCUMENTS
-  // =========================================================
+  // Documents
 
   const documents =
     app.documents || {};
@@ -2531,9 +2494,7 @@ function runValidation() {
     missingDocuments.length === 0;
 
 
-  // =========================================================
-  // DUPLICATE
-  // =========================================================
+  // Duplicate
 
   const duplicateRisk =
     app.duplicate || null;
@@ -2544,9 +2505,7 @@ function runValidation() {
     Number(duplicateRisk.score || 0) < 0.80;
 
 
-  // =========================================================
-  // OVERALL VALIDATION
-  // =========================================================
+  // Overall validation
 
   const validationPassed =
     ageOk &&
@@ -2561,9 +2520,7 @@ function runValidation() {
       : 'Incomplete';
 
 
-  // =========================================================
-  // VALIDATION NOTES
-  // =========================================================
+  // Validation notes
 
   const notes = [];
 
@@ -2630,9 +2587,7 @@ function runValidation() {
   }
 
 
-  // =========================================================
   // SAVE RESULT TEMPORARILY
-  // =========================================================
 
   CURRENT_VALIDATION_RESULT = {
 
@@ -2663,9 +2618,7 @@ function runValidation() {
   };
 
 
-  // =========================================================
   // DISPLAY RESULT
-  // =========================================================
 
   const body =
     document.getElementById(
@@ -2888,9 +2841,7 @@ function renderSavedValidation(app) {
   }
 
 
-  // =========================================================
   // SAVED VALIDATION EXISTS
-  // =========================================================
 
   const passed =
     app.validation_status ===
@@ -3179,9 +3130,7 @@ async function saveCurrent() {
   }
 
 
-  // ---------------------------------------------------------
   // Make sure validation was run first
-  // ---------------------------------------------------------
 
   if (!CURRENT_VALIDATION_RESULT) {
 
@@ -3196,9 +3145,7 @@ async function saveCurrent() {
 
   try {
 
-    // -------------------------------------------------------
     // Send validation result to backend
-    // -------------------------------------------------------
 
     const response =
       await fetch(
@@ -3241,9 +3188,7 @@ async function saveCurrent() {
     }
 
 
-    // -------------------------------------------------------
     // Update local application
-    // -------------------------------------------------------
 
     if (APP_DB[CURRENT_APP_ID]) {
 
@@ -3267,9 +3212,7 @@ async function saveCurrent() {
     }
 
 
-    // -------------------------------------------------------
     // Audit
-    // -------------------------------------------------------
 
     appendAudit(
       CURRENT_USER?.displayName ||
@@ -3279,9 +3222,7 @@ async function saveCurrent() {
     );
 
 
-    // -------------------------------------------------------
     // Success
-    // -------------------------------------------------------
 
     showToast(
       'Validation result saved successfully.',
@@ -3492,9 +3433,7 @@ function initSmallFormIssuance() {
   });
 }
 
-/* ═══════════════════════════════════
-   ID Card Preview & Print
-═══════════════════════════════════ */
+/* ID Card Preview & Print */
 let currentCardSide = 'front';
 
 function openIdCardModal(appId) {
@@ -3569,9 +3508,7 @@ function downloadIdCard() {
 
 
 
-/* ═══════════════════════════════════
-   Existing generateID override
-═══════════════════════════════════ */
+/* Existing generateID override */
 function generateID() {
   var app = getCurrentApplicant();
   var dateIssued = document.getElementById('id-date-issued')?.value || '';
@@ -3732,9 +3669,7 @@ function togglePwVis(btn) {
   }
 }
 
-/* ═══════════════════════════════════
-   SESSION TIMEOUT (30 min inactivity)
-═══════════════════════════════════ */
+/* SESSION TIMEOUT (30 min inactivity) */
 let inactivityTimer = null;
 const INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes
 function resetInactivityTimer() {
@@ -3749,21 +3684,11 @@ function resetInactivityTimer() {
   document.addEventListener(evt, resetInactivityTimer, { passive: true });
 });
 
-/* ═══════════════════════════════════
-   ACTIVITY LOG FILTERING
-═══════════════════════════════════ */
+/* ACTIVITY LOG FILTERING */
 
-/* ═══════════════════════════════════
-   USER MANAGEMENT CRUD
-═══════════════════════════════════ */
+/* USER MANAGEMENT CRUD */
 
-
-
-
-
-/* ═══════════════════════════════════
-   APPLICANTS BARANGAY FILTER
-═══════════════════════════════════ */
+/* APPLICANTS BARANGAY FILTER */
 function filterApplicantsByBarangay(barangay) {
   document.querySelectorAll('#applicants-tbody tr').forEach(r => {
     if (!barangay) { r.style.display = ''; return; }
@@ -3928,7 +3853,7 @@ function updateStatusTabCounts() {
   if (allTab) allTab.dataset.count = counts.all;
 }
 
-/* ---------- Add Applicant ---------- */
+/* Add Applicant */
 function openAddApplicantModal() {
   const modal = document.getElementById('add-applicant-modal');
   if (!modal) return;
@@ -4070,7 +3995,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // --- Portal page initialization (admin.html / staff.html / idmaker.html) ---
+  // Portal page initialization (admin.html / staff.html / idmaker.html)
 
   // Show the role dashboard first. Optional widgets below should never leave
   // the protected shell hidden if one widget has a browser-specific error.

@@ -24,9 +24,7 @@ const createSignedFileUrl = async (filePath) => {
 
 const getApplications = async (req, res) => {
   try {
-    // =========================================================
-    // GET APPLICATIONS
-    // =========================================================
+    // Get applications
     const {
       data: applications,
       error: applicationsError
@@ -46,16 +44,12 @@ const getApplications = async (req, res) => {
       });
     }
 
-    // =========================================================
-    // GET APPLICATION IDS
-    // =========================================================
+    // Get application IDs
     const applicationIds = applications.map(
       application => application.application_id
     );
 
-    // =========================================================
-    // GET UPLOADED FILES
-    // =========================================================
+    // Get uploaded files
     const {
       data: files,
       error: filesError
@@ -82,9 +76,7 @@ const getApplications = async (req, res) => {
       throw filesError;
     }
 
-    // =========================================================
-    // GET STATUS HISTORY
-    // =========================================================
+    // Get status history
     const {
       data: statusHistory,
       error: statusHistoryError
@@ -98,15 +90,11 @@ const getApplications = async (req, res) => {
       throw statusHistoryError;
     }
 
-    // =========================================================
-    // ATTACH FILES + STATUS TO EACH APPLICATION
-    // =========================================================
+    // Attach files + status to each application
     const applicationsWithFiles = await Promise.all(
       applications.map(async (application) => {
 
-        // -----------------------------------------------------
         // Find latest status
-        // -----------------------------------------------------
         const latestStatus = statusHistory?.find(
           history =>
             history.application_id ===
@@ -124,18 +112,14 @@ const getApplications = async (req, res) => {
           application.created_at ||
           null;
 
-        // -----------------------------------------------------
         // Find uploaded documents
-        // -----------------------------------------------------
         const fileRecord = files?.find(
           file =>
             file.application_id ===
             application.application_id
         );
 
-        // -----------------------------------------------------
         // If no files exist
-        // -----------------------------------------------------
         if (!fileRecord) {
           return {
             ...application,
@@ -156,9 +140,7 @@ const getApplications = async (req, res) => {
           };
         }
 
-        // =====================================================
         // CREATE SIGNED URLS
-        // =====================================================
         const [
           validIdFrontUrl,
           validIdBackUrl,
@@ -192,9 +174,7 @@ const getApplications = async (req, res) => {
           )
         ]);
 
-        // =====================================================
         // RETURN COMPLETE APPLICATION
-        // =====================================================
         return {
           ...application,
 
@@ -240,9 +220,7 @@ const getApplications = async (req, res) => {
       })
     );
 
-    // =========================================================
     // RESPONSE
-    // =========================================================
     res.status(200).json({
       success: true,
       applications: applicationsWithFiles
@@ -264,9 +242,7 @@ const getApplications = async (req, res) => {
 };
 
 
-// =============================================================
 // GET APPLICATION BY ID
-// =============================================================
 const getApplicationById = async (req, res) => {
   try {
 
@@ -280,9 +256,7 @@ const getApplicationById = async (req, res) => {
       });
     }
 
-    // =========================================================
     // GET ALL APPLICATION INFORMATION
-    // =========================================================
     const [
       applicationResult,
       familyResult,
@@ -383,9 +357,7 @@ const getApplicationById = async (req, res) => {
         })
     ]);
 
-    // =========================================================
     // CHECK ERRORS
-    // =========================================================
     const errors = [
       applicationResult.error,
       familyResult.error,
@@ -402,9 +374,7 @@ const getApplicationById = async (req, res) => {
       throw errors[0];
     }
 
-    // =========================================================
     // APPLICATION NOT FOUND
-    // =========================================================
     if (!applicationResult.data) {
       return res.status(404).json({
         success: false,
@@ -412,9 +382,7 @@ const getApplicationById = async (req, res) => {
       });
     }
 
-    // =========================================================
     // APPLICATION FILES
-    // =========================================================
     const applicationFiles =
       applicationFilesResult.data || null;
 
@@ -479,9 +447,7 @@ const getApplicationById = async (req, res) => {
       };
     }
 
-    // =========================================================
     // RESPONSE
-    // =========================================================
     res.status(200).json({
       success: true,
 
@@ -529,9 +495,7 @@ const getApplicationById = async (req, res) => {
   }
 };
 
-// =============================================================
 // SAVE APPLICATION VALIDATION
-// =============================================================
 const saveApplicationValidation = async (req, res) => {
 
   try {
@@ -631,9 +595,7 @@ const saveApplicationValidation = async (req, res) => {
 
 };
 
-// =============================================================
 // UPDATE APPLICATION STATUS
-// =============================================================
 const updateApplicationStatus = async (req, res) => {
   try {
     const applicationId = req.params.applicationId;
@@ -729,9 +691,7 @@ const updateApplicationStatus = async (req, res) => {
   }
 };
 
-// =============================================================
 // EXPORT
-// =============================================================
 module.exports = {
   getApplications,
   getApplicationById,
